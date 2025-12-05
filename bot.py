@@ -27,19 +27,23 @@ import datetime
 from pathlib import Path
 import asyncio
 from discord.ext import tasks
+from utils.locks import esta_ocupado
+import json
+from collections import defaultdict
 
 
 # ---------- CARGA DE ITEMS / INDICES ----------
-ITEMS_FILE = Path(__file__).parent / "data" / "items.json"
-with open(ITEMS_FILE, "r", encoding="utf-8") as f:
-    ITEMS = json.load(f)["items_equipables"]
+p = Path(__file__).parent / "data" / "items.json"
+ITEMS = json.loads(p.read_text(encoding="utf-8"))["items_equipables"]
 
-ITEMS_BY_RARITY = {}
 ITEMS_BY_ID = {}
+ITEMS_BY_TYPE = defaultdict(list)
+ITEMS_BY_RARITY = defaultdict(list)
+
 for item in ITEMS:
     ITEMS_BY_ID[item["id"]] = item
-    r = item.get("rareza", "comun")
-    ITEMS_BY_RARITY.setdefault(r, []).append(item)
+    ITEMS_BY_TYPE[item["tipo"]].append(item)
+    ITEMS_BY_RARITY[item["rareza"]].append(item)
 
 # (Opcional) exportar ITEMS_BY_ID a un módulo data_loader.py para que utils/db.py lo importe
 # Si no querés crear data_loader.py, editá utils/db.py para importar ITEMS_BY_ID desde aquí.
@@ -59,8 +63,25 @@ intents.message_content = True
 bot = commands.Bot(command_prefix=PREFIX, intents=intents)
 
 
+@bot.check
+async def evitar_acciones_simultaneas(ctx):
+    user_id = str(ctx.author.id)
+
+    if esta_ocupado(user_id):
+        await ctx.send(
+            "⚠️ Ya tenés otra acción en progreso. Esperá a que termine.",
+            ephemeral=True
+        )
+        return False
+
+    return True
+
+# ---------- INICIALIZACIÓN DE BASE DE DATOS ----------
 # db.borrar_tabla_jugadores()
+
 db.crear_tabla_jugadores()
+db.crear_tabla_inventario()
+db.crear_tabla_items_consumibles()
 print("Base de datos borrada y tabla recreada al iniciar el bot.")
 
 
@@ -81,6 +102,9 @@ async def main():
         await bot.load_extension("commands.profile")  # <- cog de perfil
         await bot.load_extension("commands.inventory")  # <- cog de inventario
         await bot.load_extension("commands.loot")     # <- cog de loot
+        # await bot.load_extension("commands.menu") PARA UNA PROX IMPLEMENTACION, ES MAS DIFICIL VER LOS PROBLEMAS
+        await bot.load_extension("commands.sleep")    # <- cog de descansar
+        await bot.load_extension("commands.recolectar")
         await bot.start(TOKEN)
 
 

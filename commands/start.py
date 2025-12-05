@@ -3,20 +3,36 @@ from discord.ext import commands
 from data.texts import WELCOME_MESSAGE
 from views.affinity import ElegirAfinidad
 from utils import db
+from utils.locks import esta_ocupado, comenzar_accion
 
 class StartCommand(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @app_commands.command(name="start", description="Crear tu personaje y elegir tu afinidad.")
+    @app_commands.command(
+        name="start",
+        description="Crear tu personaje y elegir tu afinidad."
+    )
     async def start(self, interaction: Interaction):
         user_id = str(interaction.user.id)
+
+        # Verificar si está ocupado
+        if esta_ocupado(user_id):
+            return await interaction.response.send_message(
+                "⚠️ Tenés una acción pendiente. Terminá eso primero.",
+                ephemeral=True
+            )
+
+        # Verificar si ya tiene personaje
         row = db.obtener_jugador(user_id)
         if row:
-            await interaction.response.send_message(
-                "⚠️ Ya tenés un personaje creado.", ephemeral=True
+            return await interaction.response.send_message(
+                "⚠️ Ya tenés un personaje creado.",
+                ephemeral=True
             )
-            return
+
+        # Bloquear
+        comenzar_accion(user_id)
 
         view = ElegirAfinidad(user_id)
         await interaction.response.send_message(

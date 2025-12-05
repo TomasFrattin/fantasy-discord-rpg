@@ -1,5 +1,4 @@
 # commands/inventario.py
-import json
 import discord
 from discord import app_commands
 from discord.ext import commands
@@ -17,7 +16,7 @@ class InventoryCommand(commands.Cog):
 
         if not row:
             return await interaction.response.send_message(
-                f"⚠️ No tenés personaje. Usá **/start**.",
+                "⚠️ No tenés personaje. Usá **/start**.",
                 ephemeral=True
             )
 
@@ -27,25 +26,31 @@ class InventoryCommand(commands.Cog):
             item = ITEMS_BY_ID.get(item_id)
             return item["nombre"] if item else item_id
 
-        arma = nombre_item(row["arma_equipada"])
-        armadura = nombre_item(row["armadura_equipada"])
-        casco = nombre_item(row["casco_equipado"])
-        botas = nombre_item(row["botas_equipadas"])
+        # Slots equipables
+        slots = {
+            "🗡 Arma": row["arma_equipada"],
+            "🛡 Armadura": row["armadura_equipada"],
+            "👑 Casco": row["casco_equipado"],
+            "🥾 Botas": row["botas_equipadas"]
+        }
+        slots_texto = "\n".join(f"{emoji}: {nombre_item(item)}" for emoji, item in slots.items())
 
-        inv_raw = json.loads(row["inventario"]) if row["inventario"] else []
-        consumibles = [ITEMS_BY_ID.get(i, {"nombre": i})["nombre"] for i in inv_raw]
-        consumibles_texto = ", ".join(consumibles[:12]) if consumibles else "Vacío"
+        # Inventario de consumibles/materiales/crafting
+        consumibles_rows = db.obtener_inventario(user_id)
+        if consumibles_rows:
+            consumibles_texto = ", ".join(
+                f"{r['cantidad']}× {r['nombre']}" for r in consumibles_rows
+            )
+        else:
+            consumibles_texto = "Vacío"
 
         msg = (
             f"💰 Oro: **{row['oro']}**\n\n"
-            f"🗡 Arma equipada: {arma}\n"
-            f"🛡 Armadura equipada: {armadura}\n"
-            f"👑 Casco: {casco}\n"
-            f"🥾 Botas: {botas}\n\n"
-            f"🎒 Consumibles: {consumibles_texto}"
+            f"{slots_texto}\n\n"
+            f"🎒 Inventario: {consumibles_texto}"
         )
 
-        await interaction.response.send_message(msg)
+        await interaction.response.send_message(msg, ephemeral=True)
 
 async def setup(bot):
     await bot.add_cog(InventoryCommand(bot))
