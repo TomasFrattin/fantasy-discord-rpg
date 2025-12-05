@@ -125,18 +125,18 @@ def recalcular_stats(id_usuario):
     bonus_hp = 0
     bonus_dmg = 0
 
-    from data_loader import ITEMS_BY_ID  # evita import circular
+    from data_loader import EQUIPABLES_BY_ID  # evita import circular
 
     # ARMA
     if pj["arma_equipada"]:
-        arma = ITEMS_BY_ID.get(pj["arma_equipada"])
+        arma = EQUIPABLES_BY_ID.get(pj["arma_equipada"])
         if arma:
             bonus_dmg += arma["stats"].get("ataque", 0)
 
     # ARMADURA / CASCO / BOTAS
     for slot in ("armadura_equipada", "casco_equipado", "botas_equipadas"):
         if pj[slot]:
-            item = ITEMS_BY_ID.get(pj[slot])
+            item = EQUIPABLES_BY_ID.get(pj[slot])
             if item:
                 bonus_hp += item["stats"].get("vida", 0)
 

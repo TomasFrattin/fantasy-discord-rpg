@@ -5,7 +5,7 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 from utils import db
-from data_loader import ITEMS, ITEMS_BY_ID
+from data_loader import EQUIPABLES, EQUIPABLES_BY_ID
 from views.equip import EquiparOVender
 
 RARITY_COLORS = {
@@ -15,10 +15,10 @@ RARITY_COLORS = {
     "legendario": 0xFF8000
 }
 
-ITEMS_BY_RARITY = {}
-for item in ITEMS:
+EQUIPABLES_BY_RARITY = {}
+for item in EQUIPABLES:
     r = item.get("rareza", "comun")
-    ITEMS_BY_RARITY.setdefault(r, []).append(item)
+    EQUIPABLES_BY_RARITY.setdefault(r, []).append(item)
 
 def obtener_tier():
     prob = random.random()
@@ -45,7 +45,7 @@ class LootCommand(commands.Cog):
         db.gastar_energia(user_id, 1)
 
         tier = obtener_tier()
-        item = random.choice(ITEMS_BY_RARITY[tier])
+        item = random.choice(EQUIPABLES_BY_RARITY[tier])
         tipo = item.get("tipo", "otro")
         jugador = db.obtener_jugador(user_id)
 
@@ -89,7 +89,7 @@ class LootCommand(commands.Cog):
             view = EquiparOVender(user_id, item, slot_col=columna_equipo)
             return await interaction.response.send_message(embed=embed, view=view)
 
-        equipado = ITEMS_BY_ID.get(equipada_id)
+        equipado = EQUIPABLES_BY_ID.get(equipada_id)
         actual_atk = equipado.get("stats", {}).get("ataque", 0)
         actual_hp  = equipado.get("stats", {}).get("vida", 0)
 

@@ -7,7 +7,7 @@
 # import json
 # p = Path(__file__).parent / "data" / "items.json"
 # ITEMS = json.loads(p.read_text(encoding="utf-8"))["items_equipables"]
-# ITEMS_BY_ID = { item["id"]: item for item in ITEMS }
+# EQUIPABLES_BY_ID = { item["id"]: item for item in ITEMS }
 #
 # Esto lo necesita utils/db.py para recalcular stats sin import circular.
 # ------------------------
@@ -31,30 +31,6 @@ from utils.locks import esta_ocupado
 import json
 from collections import defaultdict
 
-
-# ---------- CARGA DE ITEMS / INDICES ----------
-p = Path(__file__).parent / "data" / "items.json"
-ITEMS = json.loads(p.read_text(encoding="utf-8"))["items_equipables"]
-
-ITEMS_BY_ID = {}
-ITEMS_BY_TYPE = defaultdict(list)
-ITEMS_BY_RARITY = defaultdict(list)
-
-for item in ITEMS:
-    ITEMS_BY_ID[item["id"]] = item
-    ITEMS_BY_TYPE[item["tipo"]].append(item)
-    ITEMS_BY_RARITY[item["rareza"]].append(item)
-
-# (Opcional) exportar ITEMS_BY_ID a un módulo data_loader.py para que utils/db.py lo importe
-# Si no querés crear data_loader.py, editá utils/db.py para importar ITEMS_BY_ID desde aquí.
-# Recomiendo crear data_loader.py con el snippet indicado arriba.
-
-RARITY_COLORS = {
-    "comun": 0xB0B0B0,       # gris
-    "raro": 0x3A82F7,        # azul
-    "epico": 0xA335EE,       # violeta
-    "legendario": 0xFF8000   # naranja
-}
 
 
 # ---------- BOT ----------

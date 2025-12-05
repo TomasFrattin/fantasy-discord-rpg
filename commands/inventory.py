@@ -3,7 +3,7 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 from utils import db
-from data_loader import ITEMS_BY_ID
+from data_loader import EQUIPABLES_BY_ID
 
 class InventoryCommand(commands.Cog):
     def __init__(self, bot):
@@ -23,7 +23,7 @@ class InventoryCommand(commands.Cog):
         def nombre_item(item_id):
             if not item_id:
                 return "Nada"
-            item = ITEMS_BY_ID.get(item_id)
+            item = EQUIPABLES_BY_ID.get(item_id)
             return item["nombre"] if item else item_id
 
         # Slots equipables
