@@ -1,0 +1,188 @@
+{
+  "items_equipables": [
+    {
+      "id": "weapon_001",
+      "nombre": "Espada Rota",
+      "tipo": "arma",
+      "rareza": "comun",
+      "stats": { "ataque": 3 },
+      "valor_oro": 5,
+      "descripcion": "Una espada oxidada y débil."
+    },
+    {
+      "id": "weapon_002",
+      "nombre": "Espada de Cobre",
+      "tipo": "arma",
+      "rareza": "raro",
+      "stats": { "ataque": 8 },
+      "valor_oro": 15,
+      "descripcion": "El arma básica de un aventurero novato."
+    },
+    {
+      "id": "weapon_003",
+      "nombre": "Hacha de Guerra",
+      "tipo": "arma",
+      "rareza": "raro",
+      "stats": { "ataque": 12 },
+      "valor_oro": 28,
+      "descripcion": "Un hacha pesada diseñada para combate."
+    },
+    {
+      "id": "weapon_004",
+      "nombre": "Espada Flamígera",
+      "tipo": "arma",
+      "rareza": "epico",
+      "stats": { "ataque": 20 },
+      "valor_oro": 75,
+      "descripcion": "Emanando calor, su filo arde en batalla."
+    },
+    {
+      "id": "weapon_005",
+      "nombre": "Lanza del Coloso",
+      "tipo": "arma",
+      "rareza": "epico",
+      "stats": { "ataque": 24 },
+      "valor_oro": 95,
+      "descripcion": "Una lanza enorme que requiere fuerza notable."
+    },
+    {
+      "id": "weapon_006",
+      "nombre": "Hoja del Dragón",
+      "tipo": "arma",
+      "rareza": "legendario",
+      "stats": { "ataque": 35 },
+      "valor_oro": 180,
+      "descripcion": "Forjada en el aliento de un dragón ancestral."
+    },
+
+    {
+      "id": "helmet_001",
+      "nombre": "Casco de Cuero",
+      "tipo": "casco",
+      "rareza": "comun",
+      "stats": { "vida": 5 },
+      "valor_oro": 7,
+      "descripcion": "Protección básica para principiantes."
+    },
+    {
+      "id": "helmet_002",
+      "nombre": "Casco de Hierro",
+      "tipo": "casco",
+      "rareza": "raro",
+      "stats": { "vida": 10 },
+      "valor_oro": 20,
+      "descripcion": "Un casco fuerte y confiable."
+    },
+    {
+      "id": "helmet_003",
+      "nombre": "Yelmo del Templario",
+      "tipo": "casco",
+      "rareza": "epico",
+      "stats": { "vida": 18 },
+      "valor_oro": 55,
+      "descripcion": "Su diseño sagrado mejora la resistencia."
+    },
+    {
+      "id": "helmet_004",
+      "nombre": "Corona del Inmortal",
+      "tipo": "casco",
+      "rareza": "legendario",
+      "stats": { "vida": 30 },
+      "valor_oro": 130,
+      "descripcion": "Un relicario que otorga poder prohibido."
+    },
+
+    {
+      "id": "armor_001",
+      "nombre": "Armadura Liviana",
+      "tipo": "armadura",
+      "rareza": "comun",
+      "stats": { "vida": 10 },
+      "valor_oro": 10,
+      "descripcion": "Ligera y flexible."
+    },
+    {
+      "id": "armor_002",
+      "nombre": "Cota de Malla",
+      "tipo": "armadura",
+      "rareza": "raro",
+      "stats": { "vida": 18 },
+      "valor_oro": 30,
+      "descripcion": "Protección sólida para aventureros."
+    },
+    {
+      "id": "armor_003",
+      "nombre": "Armadura del Guardián",
+      "tipo": "armadura",
+      "rareza": "epico",
+      "stats": { "vida": 30 },
+      "valor_oro": 80,
+      "descripcion": "Otorga una defensa notable."
+    },
+    {
+      "id": "armor_004",
+      "nombre": "Placas del Rey Caído",
+      "tipo": "armadura",
+      "rareza": "legendario",
+      "stats": { "vida": 50 },
+      "valor_oro": 190,
+      "descripcion": "Un símbolo de soberanía olvidada."
+    },
+
+    {
+      "id": "boots_001",
+      "nombre": "Botas de Viaje",
+      "tipo": "botas",
+      "rareza": "comun",
+      "stats": { "vida": 2 },
+      "valor_oro": 6,
+      "descripcion": "Botas cómodas para caminar largas distancias."
+    },
+    {
+      "id": "boots_002",
+      "nombre": "Botas de Aceleración",
+      "tipo": "botas",
+      "rareza": "raro",
+      "stats": { "vida": 5 },
+      "valor_oro": 18,
+      "descripcion": "Mejoran la movilidad en combate."
+    },
+    {
+      "id": "boots_003",
+      "nombre": "Grebas del Corredor Eterno",
+      "tipo": "botas",
+      "rareza": "legendario",
+      "stats": { "vida": 10 },
+      "valor_oro": 120,
+      "descripcion": "Otorgan una velocidad sobrenatural."
+    },
+
+    {
+      "id": "acc_001",
+      "nombre": "Anillo de Cobre",
+      "tipo": "accesorio",
+      "rareza": "comun",
+      "stats": { "critico": 1 },
+      "valor_oro": 4,
+      "descripcion": "Un anillo sencillo."
+    },
+    {
+      "id": "acc_002",
+      "nombre": "Anillo del Vigía",
+      "tipo": "accesorio",
+      "rareza": "raro",
+      "stats": { "critico": 3, "vida": 5 },
+      "valor_oro": 20,
+      "descripcion": "Favorece la percepción y la precisión."
+    },
+    {
+      "id": "acc_003",
+      "nombre": "Amuleto del Alba",
+      "tipo": "accesorio",
+      "rareza": "legendario",
+      "stats": { "critico": 6, "vida": 15 },
+      "valor_oro": 140,
+      "descripcion": "Bendecido por antiguos guardianes."
+    }
+  ]
+}
