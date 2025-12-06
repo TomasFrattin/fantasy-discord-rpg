@@ -67,3 +67,37 @@ RECOLECTAR_DESCRIPTIONS = [
     "💨 El viento mueve hojas y polvo, revelando pequeñas reliquias olvidadas en un sendero abandonado.",
     "🌑 Entre la penumbra de un bosque denso, fragmentos de minerales y ramitas brillan débilmente bajo la luna."
 ]
+
+
+ENERGY_DESCS = {
+    "high": [
+        "⚡ Sentís el vigor recorriendo tu cuerpo, como si la magia del mundo te impulsara.",
+        "🔥 Tus pasos resuenan con fuerza heroica; podrías recorrer un reino entero sin cansarte.",
+        "💥 La energía fluye en vos como una corriente arcana, nada puede frenarte."
+    ],
+    "mid": [
+        "✨ Conservás un buen caudal de energía, suficiente para seguir explorando sin preocupaciones.",
+        "🏃 Tu pulso se mantiene firme; aún podés enfrentar desafíos sin dudar.",
+        "🔋 La energía sigue contigo, como una brasa constante que te impulsa hacia adelante."
+    ],
+    "low": [
+        "😮‍💨 La vitalidad empieza a escaparse de tu cuerpo; cada movimiento requiere más esfuerzo.",
+        "🥱 La fatiga te muerde los talones, recordándote que incluso los aventureros necesitan descanso.",
+        "⚠️ La energía se reduce a un hilo tenue; conviene que busques un lugar seguro para reponerte."
+    ],
+    "zero": [
+        "🔻 Tu cuerpo cede al agotamiento absoluto; la aventura debe esperar.",
+        "🛌 Las fuerzas te abandonan por completo, como si una sombra drenara tu energía.",
+        "💀 No queda chispa alguna en tu interior; sólo el descanso puede devolverte la vida."
+    ]
+}
+
+
+SLEEP_DESCS = [
+    "🌾 Te recostás bajo un cielo silencioso mientras una brisa suave recorre tu cuerpo. El cansancio se disuelve lentamente, como si la tierra misma te devolviera un fragmento de tu vitalidad.",
+    "🍃 Encontrás un rincón tranquilo, alejándote del ruido del mundo. Cerrás los ojos y sentís cómo una cálida energía se enciende dentro tuyo, reparando cada fibra agotada.",
+    "🌙 Te acomodás en un lugar seguro y dejás que el sueño te alcance. Es un descanso profundo, casi ritual, donde la vida vuelve a fluir en vos con un pulso renovado.",
+    "🔥 Te envolvés en un silencio reparador. Durante unos minutos, el peso de la aventura desaparece, y cuando despertás sentís que una parte de tu fuerza retorna desde lo más hondo.",
+    "🌲 Apoyás la espalda contra un tronco firme, respirás hondo y cerrás los ojos. La fatiga se disipa como una sombra, dejando que la energía renazca lentamente en tu interior."
+]
+

@@ -20,14 +20,16 @@ def crear_tabla_jugadores():
         afinidad TEXT,
         
         -- stats base
-        base_vida INTEGER DEFAULT 100,
+        vida_base INTEGER DEFAULT 100,
         base_damage INTEGER DEFAULT 10,
 
-        -- stats finales
+        -- stats actuales
         vida INTEGER DEFAULT 100,
         damage INTEGER DEFAULT 10,
-
         energia INTEGER DEFAULT 30,
+
+        -- stats máximos
+        vida_max INTEGER DEFAULT 100,
 
         exploracion INTEGER DEFAULT 0,
         combate INTEGER DEFAULT 0,

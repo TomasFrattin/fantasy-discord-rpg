@@ -24,6 +24,13 @@ class RecolectarCommand(commands.Cog):
             resultados = db.recolectar_materiales(user_id)
             texto_flavor = random.choice(RECOLECTAR_DESCRIPTIONS)
 
+            # --- Agrupar duplicados ---
+            agrupados = {}
+            for item_id, nombre, cantidad in resultados:
+                if item_id not in agrupados:
+                    agrupados[item_id] = {"nombre": nombre, "cantidad": 0}
+                agrupados[item_id]["cantidad"] += cantidad
+
             # Crear embed
             embed = Embed(
                 title="🧺 Recolección completada",
@@ -31,11 +38,11 @@ class RecolectarCommand(commands.Cog):
                 color=0x00ff00
             )
 
-            # Agregar los items encontrados
-            for _, nombre, cantidad in resultados:
+            # Agregar items finales ya sumados
+            for info in agrupados.values():
                 embed.add_field(
-                    name=f"{nombre}",
-                    value=f"Cantidad: × {cantidad} ",
+                    name=info["nombre"],
+                    value=f"Cantidad: × {info['cantidad']}",
                     inline=True
                 )
 

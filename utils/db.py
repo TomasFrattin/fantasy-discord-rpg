@@ -20,7 +20,7 @@ def recalcular_stats(id_usuario):
     cursor = conn.cursor()
 
     cursor.execute("""
-        SELECT base_vida, base_damage, 
+        SELECT vida_base, base_damage, 
                arma_equipada, armadura_equipada, casco_equipado, botas_equipadas
         FROM jugadores WHERE id_usuario = ?
     """, (id_usuario,))
@@ -30,7 +30,7 @@ def recalcular_stats(id_usuario):
         conn.close()
         return
 
-    base_hp = pj["base_vida"]
+    base_hp = pj["vida_base"]
     base_dmg = pj["base_damage"]
 
     bonus_hp = 0
@@ -54,9 +54,9 @@ def recalcular_stats(id_usuario):
     # actualizar stats finales
     cursor.execute("""
         UPDATE jugadores
-        SET vida = ?, damage = ?
+        SET vida_max = ?, damage = ?, vida = MIN(vida, ?)
         WHERE id_usuario = ?
-    """, (base_hp + bonus_hp, base_dmg + bonus_dmg, id_usuario))
+    """, (base_hp + bonus_hp, base_dmg + bonus_dmg, base_hp + bonus_hp, id_usuario))
 
     conn.commit()
     conn.close()
@@ -66,22 +66,25 @@ def sleep(user_id: str):
     conn = conectar()
     cursor = conn.cursor()
 
-    # Obtener vida actual y máxima
-    cursor.execute("SELECT vida, base_vida FROM jugadores WHERE id_usuario = ?", (user_id,))
+    # Obtener vida actual y vida máxima real
+    cursor.execute("SELECT vida, vida_max FROM jugadores WHERE id_usuario = ?", (user_id,))
     row = cursor.fetchone()
 
     if not row:
         conn.close()
         return None
 
-    vida_actual, vida_max = row["vida"], row["base_vida"]
-    recuperar = max(1, int(vida_max * 0.10))  # 10% mínimo 1
+    vida_actual, vida_max = row["vida"], row["vida_max"]
+
+    # Recupera el 10% de la vida máxima (mínimo 1)
+    recuperar = max(1, int(vida_max * 0.10))
     nueva_vida = min(vida_actual + recuperar, vida_max)
 
     cursor.execute(
         "UPDATE jugadores SET vida = ? WHERE id_usuario = ?",
         (nueva_vida, user_id)
     )
+
     conn.commit()
     conn.close()
 

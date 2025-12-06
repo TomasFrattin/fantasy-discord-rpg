@@ -24,34 +24,40 @@ class ProfileCommand(commands.Cog):
         # --------------------------
         embed = discord.Embed(
             title=f"📜 Perfil de {row['username']}",
-            description=f"🔮 **Afinidad:** {row['afinidad']}",
-            color=0x9B59B6
+            color=0x1ABC9C
         )
 
-        # Stats principales
+        vida_actual = row["vida"]
+        vida_max = row["vida_max"]
+
         embed.add_field(
-            name="⚔️ Daño total",
+            name="❤️ Vida",
+            value=f"**{vida_actual} / {vida_max}**",
+            inline=True
+        )
+
+        embed.add_field(
+            name="⚔️ Daño",
             value=f"**{row['damage']}**",
             inline=True
         )
-        embed.add_field(
-            name="❤️ Vida total",
-            value=f"**{row['vida']}**",
-            inline=True
-        )
 
-        # Progresión
-        progreso = (
-            f"🧭 Exploración: **{row['exploracion']}**\n"
-            f"⚔️ Combate: **{row['combate']}**\n"
-            f"🏹 Cacería: **{row['caceria']}**"
+        embed.add_field(
+            name="🔮 Afinidad",
+            value=f"**{row['afinidad']}**",
+            inline=False
         )
 
         embed.add_field(
             name="📈 Progresión",
-            value=progreso,
+            value=(
+                f"🧭 Exploración: **{row['exploracion']}**\n"
+                f"⚔️ Combate: **{row['combate']}**\n"
+                f"🏹 Cacería: **{row['caceria']}**"
+            ),
             inline=False
         )
+
 
         await interaction.response.send_message(embed=embed)
 

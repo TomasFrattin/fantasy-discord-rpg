@@ -9,6 +9,7 @@ from data.texts import STARTUP_MESSAGE
 from views.equip import EquiparOVender
 import asyncio
 from utils.locks import esta_ocupado
+from utils import db
 
 # ---------- BOT ----------
 intents = discord.Intents.default()
@@ -35,6 +36,8 @@ tablas.crear_tabla_jugadores()
 tablas.crear_tabla_inventario()
 tablas.crear_tabla_items_consumibles()
 print("Base de datos borrada y tabla recreada al iniciar el bot.")
+
+db.resetear_todos()
 
 async def main():
     async with bot:

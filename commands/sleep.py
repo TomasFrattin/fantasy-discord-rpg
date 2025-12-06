@@ -1,6 +1,8 @@
-from discord import app_commands, Interaction
+from discord import app_commands, Interaction, Embed
 from discord.ext import commands
 from utils import db
+import random
+from data.texts import SLEEP_DESCS
 
 class SleepCommand(commands.Cog):
     def __init__(self, bot):
@@ -8,37 +10,58 @@ class SleepCommand(commands.Cog):
 
     @app_commands.command(name="sleep", description="Recuperar 10% de tu vida máxima.")
     async def sleep(self, interaction: Interaction):
-        print("Comando /sleep ejecutado")
         user_id = str(interaction.user.id)
         energia = db.obtener_energia(user_id)
-        print(f"Energía: {energia}")
 
         row = db.obtener_jugador(user_id)
-        print(f"Row: {row}")
         if not row:
-            print("No tiene personaje")
             return await interaction.response.send_message(
-                "⚠️ No tenés personaje. Usá **/start**.", ephemeral=True
+                "⚠️ No tenés personaje. Usá **/start**.",
+                ephemeral=True
             )
 
         if energia <= 0:
-            print("No tiene energía")
             return await interaction.response.send_message(
                 "⚠️ No te queda energía.",
                 ephemeral=True
             )
-        
+
+        # Gastar energía
         db.gastar_energia(user_id, 1)
-        print("Gastó energía")
 
+        # Realizar recuperación
         nueva_vida, recuperado = db.sleep(user_id)
-        print(f"Recuperado: {recuperado}, Nueva vida: {nueva_vida}")
 
-        await interaction.response.send_message(
-            f"😴 Descansás y recuperás **{recuperado}** de vida.\n"
-            f"❤️ Vida actual: **{nueva_vida}**.",
-            ephemeral=True
+        # Descripción larga y estética
+        texto_flavor = random.choice(SLEEP_DESCS)
+
+        # Crear embed bonito
+        embed = Embed(
+            title="😴 Descanso reparador",
+            description=texto_flavor,
+            color=0xC9A0DC  # lavanda/místico, queda re bien
         )
+
+        embed.add_field(
+            name="❤️ Vida recuperada",
+            value=f"**+{recuperado}**",
+            inline=False
+        )
+
+        embed.add_field(
+            name="💗 Vida actual",
+            value=f"**{nueva_vida}**",
+            inline=False
+        )
+
+        # Lo dejaremos para si en un futuro podemos elegir la cantidad de energía a gastar
+        # embed.add_field(
+        #     name="🔋 Energía consumida",
+        #     value="**1 punto**",
+        #     inline=False
+        # )
+
+        await interaction.response.send_message(embed=embed, ephemeral=True)
 
 async def setup(bot):
     await bot.add_cog(SleepCommand(bot))
