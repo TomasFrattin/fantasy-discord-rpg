@@ -5,6 +5,14 @@ from discord.ext import commands
 from utils import db
 from data_loader import EQUIPABLES_BY_ID
 
+# Rareza → emoji + color sugerido
+RARITY_STYLE = {
+    "comun":       {"emoji": "⚪", "color": 0xA8A8A8},
+    "raro":        {"emoji": "🔵", "color": 0x4A90E2},
+    "epico":       {"emoji": "🟣", "color": 0x9B59B6},
+    "legendario":  {"emoji": "🟡", "color": 0xF1C40F},
+}
+
 class InventoryCommand(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -20,37 +28,87 @@ class InventoryCommand(commands.Cog):
                 ephemeral=True
             )
 
-        def nombre_item(item_id):
-            if not item_id:
-                return "Nada"
-            item = EQUIPABLES_BY_ID.get(item_id)
-            return item["nombre"] if item else item_id
+        # -------------------------
+        # FUNCIONES AUXILIARES
+        # -------------------------
 
-        # Slots equipables
+        def formatear_stat_unico(item):
+            stats = item.get("stats", {})
+            if not stats:
+                return ""
+
+            if "ataque" in stats:
+                return f" (**+{stats['ataque']} ATK**)"
+            if "vida" in stats:
+                return f" (**+{stats['vida']} HP**)"
+            return ""
+
+        def formatear_slot(item_id):
+            if not item_id:
+                return "—"
+
+            item = EQUIPABLES_BY_ID.get(item_id)
+            if not item:
+                return item_id  # fallback raro pero seguro
+
+            bonus = formatear_stat_unico(item)
+
+            rareza = item.get("rareza", "comun")
+            emoji = RARITY_STYLE.get(rareza, RARITY_STYLE["comun"])["emoji"]
+
+            return f"{emoji} {item['nombre']}{bonus}"
+
+        # -------------------------
+        # SLOTS EQUIPADOS
+        # -------------------------
+
         slots = {
             "🗡 Arma": row["arma_equipada"],
             "🛡 Armadura": row["armadura_equipada"],
             "👑 Casco": row["casco_equipado"],
             "🥾 Botas": row["botas_equipadas"]
         }
-        slots_texto = "\n".join(f"{emoji}: {nombre_item(item)}" for emoji, item in slots.items())
 
-        # Inventario de consumibles/materiales/crafting
-        consumibles_rows = db.obtener_inventario(user_id)
-        if consumibles_rows:
-            consumibles_texto = ", ".join(
-                f"{r['cantidad']}× {r['nombre']}" for r in consumibles_rows
-            )
-        else:
-            consumibles_texto = "Vacío"
-
-        msg = (
-            f"💰 Oro: **{row['oro']}**\n\n"
-            f"{slots_texto}\n\n"
-            f"🎒 Inventario: {consumibles_texto}"
+        slots_texto = "\n".join(
+            f"{emoji}: {formatear_slot(item_id)}"
+            for emoji, item_id in slots.items()
         )
 
-        await interaction.response.send_message(msg, ephemeral=True)
+        # -------------------------
+        # INVENTARIO
+        # -------------------------
+
+        inventario = db.obtener_inventario(user_id)
+
+        if inventario:
+            inv_lindo = []
+            for obj in inventario:
+                rareza = obj["rareza"]
+                emoji = RARITY_STYLE.get(rareza, RARITY_STYLE["comun"])["emoji"]
+
+                inv_lindo.append(
+                    f"{emoji} **{obj['nombre']}** × {obj['cantidad']}"
+                )
+
+            inventario_texto = "\n".join(inv_lindo)
+        else:
+            inventario_texto = "Vacío"
+
+        # -------------------------
+        # EMBED FINAL
+        # -------------------------
+
+        embed = discord.Embed(
+            title="🎒 Inventario de tu personaje",
+            description=f"💰 **Oro:** {row['oro']}",
+            color=0x4CAF50
+        )
+
+        embed.add_field(name="⚔️ Equipo", value=slots_texto, inline=False)
+        embed.add_field(name="📦 Objetos", value=inventario_texto, inline=False)
+
+        await interaction.response.send_message(embed=embed, ephemeral=True)
+
 
 async def setup(bot):
     await bot.add_cog(InventoryCommand(bot))

@@ -1,4 +1,4 @@
-from discord import app_commands, Interaction
+from discord import app_commands, Interaction, Embed
 from discord.ext import commands
 from utils import db
 
@@ -18,15 +18,18 @@ class EnergyCommand(commands.Cog):
                 ephemeral=True
             )
 
-        mensaje = (
-            "⚡ **Energía Actual**\n"
-            f"Tenés **{energia}** puntos de energía."
+        # Embed estilo similar a /recolectar
+        embed = Embed(
+            title="⚡ Energía Actual",
+            description=f"**{energia} puntos**",
+            color=0xF7D358
         )
 
         await interaction.response.send_message(
-            mensaje,
+            embed=embed,
             ephemeral=True
         )
+
 
 async def setup(bot):
     await bot.add_cog(EnergyCommand(bot))

@@ -1,5 +1,4 @@
-# commands/perfil.py
-import json
+# commands/profile.py
 import discord
 from discord import app_commands
 from discord.ext import commands
@@ -16,23 +15,45 @@ class ProfileCommand(commands.Cog):
 
         if not row:
             return await interaction.response.send_message(
-                f"⚠️ No tenés personaje. Usá **/start**.",
+                "⚠️ No tenés personaje. Usá **/start**.",
                 ephemeral=True
             )
 
-        msg = (
-            f"📜 **Perfil de {row['username']}**\n"
-            f"🔮 Afinidad: **{row['afinidad']}**\n"
-            f"⚡ Energía: {row['energia']}\n"
-            f"💰 Oro: {row['oro']}\n"
-            f"❤️ Vida total: {row['vida']}\n"
-            f"⚔️ Daño total: {row['damage']}\n"
-            f"🧭 Exploración: {row['exploracion']}\n"
-            f"⚔️ Combate: {row['combate']}\n"
-            f"🏹 Cacería: {row['caceria']}\n"
+        # --------------------------
+        # EMBED DEL PERFIL
+        # --------------------------
+        embed = discord.Embed(
+            title=f"📜 Perfil de {row['username']}",
+            description=f"🔮 **Afinidad:** {row['afinidad']}",
+            color=0x9B59B6
         )
 
-        await interaction.response.send_message(msg)
+        # Stats principales
+        embed.add_field(
+            name="⚔️ Daño total",
+            value=f"**{row['damage']}**",
+            inline=True
+        )
+        embed.add_field(
+            name="❤️ Vida total",
+            value=f"**{row['vida']}**",
+            inline=True
+        )
+
+        # Progresión
+        progreso = (
+            f"🧭 Exploración: **{row['exploracion']}**\n"
+            f"⚔️ Combate: **{row['combate']}**\n"
+            f"🏹 Cacería: **{row['caceria']}**"
+        )
+
+        embed.add_field(
+            name="📈 Progresión",
+            value=progreso,
+            inline=False
+        )
+
+        await interaction.response.send_message(embed=embed)
 
 async def setup(bot):
     await bot.add_cog(ProfileCommand(bot))

@@ -1,0 +1,84 @@
+{
+  "materiales": [
+    {
+      "id": "hierba_verde",
+      "nombre": "Hierba Verde",
+      "tipo": "material",
+      "rareza": "comun",
+      "descripcion": "Hierba común, utilizada en pociones básicas de curación y para infusiones ligeras. Tiene un aroma fresco y ligeramente dulce.",
+      "valor_oro": 2
+    },
+    {
+      "id": "ramita_seca",
+      "nombre": "Ramita Seca",
+      "tipo": "material",
+      "rareza": "comun",
+      "descripcion": "Madera ligera, útil para encender antorchas, reparaciones simples o como ingrediente en rituales menores. Cruje fácilmente al romperse.",
+      "valor_oro": 1
+    },
+    {
+      "id": "fragmento_cristal",
+      "nombre": "Fragmento de Cristal",
+      "tipo": "material",
+      "rareza": "raro",
+      "descripcion": "Fragmento brillante con destellos mágicos leves. Puede usarse en pociones avanzadas, encantamientos o cristalería especial. Su pureza determina su valor.",
+      "valor_oro": 15
+    },
+    {
+      "id": "piedra_lunar",
+      "nombre": "Piedra Lunar",
+      "tipo": "material",
+      "rareza": "epico",
+      "descripcion": "Piedra que emite un suave resplandor plateado bajo la luz de la luna. Es codiciada para rituales de magia lunar y amuletos de protección.",
+      "valor_oro": 50
+    },
+    {
+      "id": "pluma_fenix",
+      "nombre": "Pluma de Fénix",
+      "tipo": "material",
+      "rareza": "legendario",
+      "descripcion": "Pluma de ave mítica que nunca se quema. Vital para pociones de resurrección o conjuros poderosos. Extremadamente rara y valiosa.",
+      "valor_oro": 300
+    },
+    {
+      "id": "arcilla_comun",
+      "nombre": "Arcilla Común",
+      "tipo": "material",
+      "rareza": "comun",
+      "descripcion": "Arcilla maleable usada para cerámica básica, sellos y moldes. Puede mezclarse con agua para dar forma a objetos simples.",
+      "valor_oro": 1
+    },
+    {
+      "id": "hueso_antiguo",
+      "nombre": "Hueso Antiguo",
+      "tipo": "material",
+      "rareza": "raro",
+      "descripcion": "Fragmento óseo de criatura ancestral. Usado en encantamientos, pócimas de fuerza o para fabricar talismanes. Tiene grabados naturales que parecen símbolos antiguos.",
+      "valor_oro": 20
+    },
+    {
+      "id": "mina_de_oro",
+      "nombre": "Mina de Oro",
+      "tipo": "material",
+      "rareza": "epico",
+      "descripcion": "Lingote de oro puro extraído de vetas subterráneas. Esencial para joyería, comercio de alto valor o rituales de riqueza. Su brillo es inconfundible.",
+      "valor_oro": 100
+    },
+    {
+      "id": "esencia_floral",
+      "nombre": "Esencia Floral",
+      "tipo": "material",
+      "rareza": "raro",
+      "descripcion": "Líquido concentrado extraído de flores mágicas. Ideal para pociones de belleza, perfumes encantados o hechizos de atracción.",
+      "valor_oro": 25
+    },
+    {
+      "id": "cuerno_de_unicornio",
+      "nombre": "Cuerno de Unicornio",
+      "tipo": "material",
+      "rareza": "legendario",
+      "descripcion": "Raro cuerno de criatura mítica con propiedades curativas y mágicas. Utilizado en pociones suprahumanas y objetos de poder. Extremadamente valioso y codiciado.",
+      "valor_oro": 500
+    }
+  ]
+}

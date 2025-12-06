@@ -2,12 +2,16 @@ STARTUP_MESSAGE = """
 🌌 **Arkanor Bot iniciado!**
 Comandos disponibles:
 
-- `/help`: Mostrar todos los comandos disponibles.
 - `/start`: Crear tu personaje y elegir tu afinidad.
+- `/commands`: Mostrar todos los comandos disponibles.
 - `/energy`: Mostrar tu energía actual.
-- `/profile`: Mostrar tu perfil de personaje.
 - `/inventory`: Mostrar tu inventario de personaje.
 - `/loot`: Consume energía para obtener un ítem aleatorio.
+- `/menu`: Crea un menu con las acciones disponibles.
+- `/profile`: Mostrar tu perfil de personaje.
+- `/recolectar`: Gasta energía para recolectar materiales.
+- `/sleep`: Recupera energía descansando.
+
 
 🧙 Que la aventura comience!
 """
@@ -30,3 +34,36 @@ ELEMENT_DESCRIPTIONS = {
     "Sombra": "🌑 **Sombra**\n_Los susurros en la penumbra y la noche que oculta secretos._\n🕶️ Te moverás entre los pliegues del mundo sin ser visto, dominando la astucia y el misterio.",
     "Arcano": "🔮 **Arcano**\n_Conocimiento antiguo que atraviesa los límites del tiempo._\n✨ Tu mente será faro de sabiduría y tu magia te permitirá comprender y alterar la realidad a tu voluntad."
 }
+
+RECOLECTAR_DESCRIPTIONS = [
+    "🌿 Recorrés un sendero cubierto de hojas secas, y al levantar unas raíces entre la tierra húmeda, un débil destello llama tu atención.",
+    "🪨 Subís por un risco rocoso mientras el viento mueve la hierba; entre las piedras, algo brillante parece haber sido olvidado.",
+    "🍂 Escudriñás bajo unos arbustos densos y encontrás tesoros humildes de la naturaleza, como ramitas quebradizas y pequeñas piedras curiosas.",
+    "🌞 Avanzás por un claro del bosque, y al apartar hojas marchitas, un tenue brillo entre la maleza capta tu mirada.",
+    "🌳 Te agachás junto a un tronco caído y descubrís fragmentos olvidados, restos de minerales o cristales erosionados por el tiempo.",
+    "🏞️ Caminás por un sendero junto al río, y entre piedras húmedas hallás objetos que parecen insignificantes, pero útiles.",
+    "🕯️ Explorás una cueva pequeña y, al iluminar sus rincones, descubrís fragmentos que podrían tener algún valor.",
+    "🌸 Te adentrás entre hierbas altas y flores silvestres, y algo entre la maleza capta tu atención por un instante.",
+    "🐦 Siguiendo un rastro de pájaros, llegás a un claro donde el suelo revela pequeños tesoros naturales escondidos.",
+    "🪵 Te apoyás en una roca y, al remover hojas secas, hallás restos curiosos que podrían servirte más adelante.",
+    "🗻 Avanzás por un sendero pedregoso y notás pequeños objetos entre las grietas de las piedras y el musgo.",
+    "🌬️ Caminás al borde del acantilado, y el viento mueve arena y hojas, dejando ver algún fragmento olvidado.",
+    "🌲 Explorás junto a un árbol viejo y hueco, y entre sus raíces retorcidas encontrás restos de minerales y hierbas secas.",
+    "💧 Siguiendo un arroyo, removés algunas piedras lisas y descubrís pequeños tesoros que el agua ha dejado atrás.",
+    "🌼 Recorrés un prado tranquilo y, entre flores y pasto alto, notás destellos de objetos escondidos.",
+    "⛰️ Subís a un montículo de tierra y, al mover un montón de hojas, hallás cosas olvidadas por el tiempo.",
+    "🪨 Explorás una zona rocosa y húmeda, donde los líquenes cubren todo; entre ellos se distinguen fragmentos curiosos.",
+    "🍁 Te adentrás en un bosque otoñal, y al apartar hojas secas y ramas caídas, descubrís pequeños restos brillantes.",
+    "🌳 Caminás cerca de un árbol caído y, entre la tierra removida, hallás fragmentos que podrían ser útiles.",
+    "🌒 Recorrés un sendero estrecho y sombrío, y al levantar piedras sueltas, descubrís humildes tesoros de la naturaleza.",
+    "🔥 Al caminar por un sendero cerca de un volcán dormido, el suelo cálido revela fragmentos minerales resplandecientes.",
+    "❄️ Entre la nieve y el hielo, pequeñas piedras y raíces aparecen como diminutos secretos del paisaje invernal.",
+    "🌊 A orillas de un río cristalino, el agua deja ver brillantes fragmentos entre las piedras pulidas.",
+    "🍄 Entre hongos y helechos, notás pequeñas gemas naturales escondidas bajo la vegetación.",
+    "🌾 Caminás por un campo dorado, y al apartar espigas secas, descubrís fragmentos que relucen al sol.",
+    "🪶 Encontrás plumas caídas de aves misteriosas mezcladas con hierba y hojas, con un leve destello mágico.",
+    "🦴 Entre raíces y tierra removida, hallás huesos antiguos y fragmentos que parecen contener historia.",
+    "🌌 En un claro nocturno, la luz de las estrellas ilumina pequeños destellos entre piedras y raíces.",
+    "💨 El viento mueve hojas y polvo, revelando pequeñas reliquias olvidadas en un sendero abandonado.",
+    "🌑 Entre la penumbra de un bosque denso, fragmentos de minerales y ramitas brillan débilmente bajo la luna."
+]

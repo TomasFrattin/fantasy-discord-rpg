@@ -1,5 +1,5 @@
 {
-  "items_equipables": [
+  "equipables": [
     {
       "id": "weapon_001",
       "nombre": "Espada Rota",

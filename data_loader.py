@@ -3,8 +3,12 @@ import json
 from pathlib import Path
 
 # ---------- CARGA DE ITEMS / INDICES ----------
-p = Path(__file__).parent / "data" / "items.json"
-EQUIPABLES = json.loads(p.read_text(encoding="utf-8"))["items_equipables"]
+p = Path(__file__).parent / "data" / "materiales.json"
+MATERIALES = json.loads(p.read_text(encoding="utf-8"))["materiales"]
+
+
+p = Path(__file__).parent / "data" / "equipables.json"
+EQUIPABLES = json.loads(p.read_text(encoding="utf-8"))["equipables"]
 
 EQUIPABLES_BY_ID = {}
 EQUIPABLES_BY_TYPE = defaultdict(list)

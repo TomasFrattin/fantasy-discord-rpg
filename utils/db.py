@@ -3,6 +3,8 @@ import sqlite3
 from config import DB_FILE, ENERGIA_MAX
 from datetime import datetime
 import random
+from data.texts import RECOLECTAR_DESCRIPTIONS
+from data_loader import MATERIALES
 
 # -------------------- CONEXIÓN --------------------
 def conectar():
@@ -11,97 +13,6 @@ def conectar():
     conn.execute("PRAGMA journal_mode=WAL;")
     return conn
 
-
-# -------------------- TABLAS --------------------
-def borrar_tabla_jugadores():
-    conn = sqlite3.connect(DB_FILE)
-    c = conn.cursor()
-    c.execute("DROP TABLE IF EXISTS jugadores")
-    conn.commit()
-    conn.close()
-
-def crear_tabla_jugadores():
-    conn = conectar()
-    cursor = conn.cursor()
-    cursor.execute(f'''
-    CREATE TABLE IF NOT EXISTS jugadores (
-        id_usuario TEXT PRIMARY KEY,
-        username TEXT,
-        afinidad TEXT,
-        
-        -- stats base
-        base_vida INTEGER DEFAULT 100,
-        base_damage INTEGER DEFAULT 10,
-
-        -- stats finales
-        vida INTEGER DEFAULT 100,
-        damage INTEGER DEFAULT 10,
-
-        energia INTEGER DEFAULT 30,
-
-        exploracion INTEGER DEFAULT 0,
-        combate INTEGER DEFAULT 0,
-        caceria INTEGER DEFAULT 0,
-
-        arma_equipada TEXT,
-        armadura_equipada TEXT,
-        casco_equipado TEXT,
-        botas_equipadas TEXT,
-
-        oro INTEGER DEFAULT 0,
-        last_reset TIMESTAMP
-    )
-    ''')
-    conn.commit()
-    conn.close()
-
-def crear_tabla_items_consumibles():
-    conn = conectar()
-    cur = conn.cursor()
-
-    # Crear tabla si no existe
-    cur.execute("""
-        CREATE TABLE IF NOT EXISTS items (
-            id TEXT PRIMARY KEY,
-            nombre TEXT NOT NULL,
-            tipo TEXT,
-            descripcion TEXT,
-            rareza TEXT
-        );
-    """)
-
-    # Insertar ítems base (solo si no existen)
-    cur.executemany("""
-        INSERT OR IGNORE INTO items (id, nombre, tipo, descripcion, rareza) VALUES 
-        (?, ?, ?, ?, ?)
-    """, [
-        ('hierba_verde', 'Hierba Verde', 'material', 'Hierba común, usada en pociones básicas.', 'comun'),
-        ('ramita_seca', 'Ramita Seca', 'material', 'Madera ligera, útil para antorchas y reparaciones simples.', 'comun'),
-        ('mineral_rugoso', 'Mineral Rugoso', 'material', 'Mineral de baja calidad para forja inicial.', 'comun'),
-        ('petalo_blanco', 'Pétalo Blanco', 'material', 'Pétalo frágil para ungüentos.', 'poco_comun'),
-        ('fragmento_cristal', 'Fragmento de Cristal', 'material', 'Brilla con magia leve; sirve para cristalería.', 'raro'),
-        ('esencia_arcana', 'Esencia Arcana', 'material', 'Residuos de magia pura. Muy valioso.', 'epico')
-    ])
-
-    conn.commit()
-    conn.close()
-
-def crear_tabla_inventario():
-    conn = conectar()
-    cur = conn.cursor()
-
-    cur.execute("""
-        CREATE TABLE IF NOT EXISTS inventario (
-            user_id TEXT NOT NULL,
-            item_id TEXT NOT NULL,
-            cantidad INTEGER NOT NULL DEFAULT 0,
-            PRIMARY KEY (user_id, item_id),
-            FOREIGN KEY (item_id) REFERENCES items(id) ON DELETE CASCADE
-        );
-    """)
-
-    conn.commit()
-    conn.close()
 # -------------------- STATS --------------------
 def recalcular_stats(id_usuario):
     """Recalcula daño y vida en base al equipamiento."""
@@ -240,55 +151,35 @@ def obtener_inventario(user_id: str):
     conn.close()
     return [{"item_id": r[0], "nombre": r[1], "cantidad": r[2], "tipo": r[3], "rareza": r[4]} for r in rows]
 
-def recolectar_materiales(user_id: str, zona: str = "colina"):
-    """Selecciona materiales, los guarda en inventario y genera texto de salida."""
-    pool = [
-        ("hierba_verde", 50, 3),
-        ("ramita_seca", 40, 2),
-        ("mineral_rugoso", 30, 2),
-        ("petalo_blanco", 15, 1),
-        ("fragmento_cristal", 6, 1),
-        ("esencia_arcana", 2, 1)
-    ]
+import random
 
-    # Cantidad de tipos diferentes a obtener
-    n_types = random.choices([1, 2, 3], weights=[60, 30, 10])[0]
+from data_loader import MATERIALES
 
-    # Elegir items con pesos
+def recolectar_materiales(user_id: str):
+    """Lógica de recolección: selecciona items y devuelve resultados."""
+    import random
+    pool = []
+    for item in MATERIALES:
+        rareza = item.get("rareza", "comun")
+        if rareza == "comun":
+            max_q, peso = 3, 50
+        elif rareza == "raro":
+            max_q, peso = 2, 20
+        else:
+            max_q, peso = 1, 5
+        pool.append((item["id"], peso, max_q))
+
+    n_types = random.choices([1, 2, 3], weights=[60,30,10])[0]
     chosen = random.choices(pool, weights=[p[1] for p in pool], k=n_types)
 
     resultados = []
     for item_id, _, max_q in chosen:
         cantidad = random.randint(1, max_q)
-        agregar_item(user_id, item_id, cantidad)  # guardar en inventario
+        agregar_item(user_id, item_id, cantidad)
         resultados.append((item_id, cantidad))
 
-    if not resultados:
-        return [], "No se encontraron materiales."
-
-    # Obtener nombres de los items
-    conn = conectar()
-    cur = conn.cursor()
-    ids = tuple(r[0] for r in resultados)
-    query_marks = ",".join(["?"] * len(ids))
-    cur.execute(f"SELECT id, nombre FROM items WHERE id IN ({query_marks})", ids)
-    mapping = {row["id"]: row["nombre"] for row in cur.fetchall()}
-    conn.close()
-
-    resultados_finales = [(item_id, mapping.get(item_id, item_id), cantidad) for item_id, cantidad in resultados]
-
-    # Texto de flavor
-    textos = [
-        "Recorrés los senderos polvorientos y apartás unas raíces; algo brilla entre la maleza.",
-        "Subís por un risco y el viento deja caer pequeños fragmentos entre las piedras.",
-        "Escudriñas bajo unas rocas y hallás tesoros humildes de la naturaleza."
-    ]
-    descripcion = f"{random.choice(textos)}\nEncontraste: " + ", ".join(
-        f"{cantidad}× {nombre}" for _, nombre, cantidad in resultados_finales
-    )
-
-    return resultados_finales, descripcion
-
+    mapping = {item["id"]: item["nombre"] for item in MATERIALES}
+    return [(item_id, mapping.get(item_id, item_id), cantidad) for item_id, cantidad in resultados]
 
 # -------------------- EQUIPAMIENTO --------------------
 def equipar(id_usuario, slot, item_id):
