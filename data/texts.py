@@ -1,14 +1,17 @@
 STARTUP_COMMANDS = [
     {"comando": "🧙 /start", "descripcion": "Crear tu personaje y elegir tu afinidad."},
     {"comando": "📜 /commands", "descripcion": "Mostrar todos los comandos disponibles."},
+    {"comando": "❓ /howtoplay", "descripcion": "Mostrar las instrucciones para jugar."},
     {"comando": "⚡ /energy", "descripcion": "Mostrar tu energía actual."},
     {"comando": "🎒 /inventory", "descripcion": "Mostrar tu inventario de personaje."},
-    {"comando": "🐺 /hunt", "descripcion": "Combatir y conseguir items o morir en el intento."},
+    {"comando": "🐺 /hunt (⚡)", "descripcion": "Combatir y conseguir items o morir en el intento."},
     {"comando": "🧾 /profile", "descripcion": "Mostrar tu perfil de personaje."},
-    {"comando": "🧺 /forage", "descripcion": "Recolectar materiales."},
-    {"comando": "😴 /sleep", "descripcion": "Recupera energía descansando."},
+    {"comando": "🧺 /forage (⚡)", "descripcion": "Recolectar materiales."},
+    {"comando": "😴 /sleep (⚡)", "descripcion": "Recupera vida descansando."},
     {"comando": "🏪 /merchant", "descripcion": "Visitar al mercader para comprar objetos."},
+    {"comando": "🔨 /craft", "descripcion": "Crear objetos equipables o consumibles."}
 ]
+
 
 # - `/menu`: Crea un menu con las acciones disponibles.
 

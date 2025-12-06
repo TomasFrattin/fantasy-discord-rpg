@@ -5,6 +5,7 @@ from datetime import datetime
 import random
 from data.texts import RECOLECTAR_DESCRIPTIONS
 from data_loader import MATERIALES
+from config import DB_FILE
 
 # -------------------- CONEXIÓN --------------------
 def conectar():
@@ -254,5 +255,13 @@ def resetear_todos():
         nueva_vida = min(vida_actual + recuperar, vida_max)
         cursor.execute("UPDATE jugadores SET vida = ? WHERE id_usuario = ?", (nueva_vida, user_id))
 
+    conn.commit()
+    conn.close()
+
+
+def eliminar_jugador(user_id: str):
+    conn = sqlite3.connect(DB_FILE)
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM jugadores WHERE id_usuario = ?", (user_id,))
     conn.commit()
     conn.close()

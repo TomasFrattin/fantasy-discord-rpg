@@ -40,11 +40,13 @@ for item in EQUIPABLES:
     
 def obtener_tier():
     prob = random.random()
-    if prob < 0.65: return "comun"
-    if prob < 0.91: return "raro"
-    if prob < 0.99: return "epico"
+    if prob < 0.65:
+        return "comun"
+    if prob < 0.91:
+        return "raro"
+    if prob < 0.999:
+        return "epico"
     return "legendario"
-
 
 class LootCommand(commands.Cog):
     def __init__(self, bot):

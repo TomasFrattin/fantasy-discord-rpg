@@ -39,6 +39,12 @@ print("Base de datos borrada y tabla recreada al iniciar el bot.")
 
 db.resetear_todos()
 
+mi_id = "366690600709521419"
+db.eliminar_jugador(mi_id)
+# mi_id_2 = "323250219796135937"
+# db.eliminar_jugador(mi_id_2)
+print("Jugador eliminado de la base de datos.")
+
 async def main():
     async with bot:
         await bot.load_extension("commands.start")
@@ -67,8 +73,6 @@ async def on_ready():
 
     except Exception as e:
         print(f"Error al sincronizar comandos slash: {e}")
-
-    WELCOME_CHANNELS = [1422721307455524916, 1446937772781863124]
 
     description = "\n".join(f"- `{c['comando']}`: {c['descripcion']}" for c in STARTUP_COMMANDS)
     embed = discord.Embed(

@@ -3,6 +3,7 @@ from discord.ui import View, Button
 from utils import db
 from data.texts import ELEMENT_DESCRIPTIONS
 from utils.locks import terminar_accion
+import random
 
 ELEMENTS = [
     {"name": "Fuego", "emoji": "🔥"},
@@ -23,6 +24,41 @@ class ElegirAfinidad(View):
             btn.emoji = elem["emoji"]
             self.add_item(btn)
 
+        # Botón Random
+        random_btn = RandomAfinidadButton(self)
+        self.add_item(random_btn)
+
+class RandomAfinidadButton(Button):
+    def __init__(self, view_obj):
+        super().__init__(label="Random 🎲", style=discord.ButtonStyle.primary)
+        self.view_obj = view_obj
+
+    async def callback(self, interaction: discord.Interaction):
+        if str(interaction.user.id) != self.view_obj.user_id:
+            return await interaction.response.send_message(
+                "❌ No podés elegir afinidad para otro jugador.",
+                ephemeral=True
+            )
+
+        # Elegir aleatoriamente
+        afinidad_random = random.choice(ELEMENTS)["name"]
+        emoji = next((e["emoji"] for e in ELEMENTS if e["name"] == afinidad_random), "")
+
+        # Registrar directamente al jugador
+        db.registrar_jugador(self.view_obj.user_id, interaction.user.name, afinidad_random)
+        description = ELEMENT_DESCRIPTIONS.get(afinidad_random, "")
+
+        # Liberar el lock
+        terminar_accion(self.view_obj.user_id)
+
+        await interaction.response.edit_message(
+            content=(
+                f"{emoji} **{interaction.user.name}**, tu afinidad ha sido elegida automáticamente como **{afinidad_random}**.\n\n"
+                f"{description}\n\n"
+                "⚔️ Que tu viaje en **Arkanor** comience, y que los elementos te acompañen."
+            ),
+            view=None
+        )
 
 class AfinidadButton(Button):
     def __init__(self, afinidad, view_obj):

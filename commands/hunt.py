@@ -211,8 +211,6 @@ class HuntView(View):
         create_combat(self.user_id, combate)
         await interaction.response.edit_message(embed=embed, view=self)
 
-
-
     @button(label="Huir", style=ButtonStyle.danger)
     async def huir(self, interaction: Interaction, button: Button):
         if str(interaction.user.id) != self.user_id:
@@ -292,7 +290,7 @@ class HuntCommand(commands.Cog):
         embed.add_field(name="🗡️ Daño", value=f"**{jugador['damage']}**", inline=True)
 
         view = HuntView(user_id)
-        await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
+        await interaction.response.send_message(embed=embed, view=view)
 
 async def setup(bot):
     await bot.add_cog(HuntCommand(bot))

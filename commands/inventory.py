@@ -99,7 +99,7 @@ class InventoryCommand(commands.Cog):
         # -------------------------
 
         embed = discord.Embed(
-            title="🎒 Inventario",
+            title=f"🎒 Inventario de {interaction.user.name}",
             description=f"💰 **Oro:** {row['oro']}",
             color=0x4CAF50
         )
@@ -107,7 +107,7 @@ class InventoryCommand(commands.Cog):
         embed.add_field(name="⚔️ Equipo", value=slots_texto, inline=False)
         embed.add_field(name="📦 Objetos", value=inventario_texto, inline=False)
 
-        await interaction.response.send_message(embed=embed, ephemeral=True)
+        await interaction.response.send_message(embed=embed)
 
 
 async def setup(bot):
