@@ -6,7 +6,7 @@ Comandos disponibles:
 - `/commands`: Mostrar todos los comandos disponibles.
 - `/energy`: Mostrar tu energía actual.
 - `/inventory`: Mostrar tu inventario de personaje.
-- `/loot`: Consume energía para obtener un ítem aleatorio.
+- `/hunt`: Consume energía para combatir y conseguir items o morir en el intento.
 - `/menu`: Crea un menu con las acciones disponibles.
 - `/profile`: Mostrar tu perfil de personaje.
 - `/recolectar`: Gasta energía para recolectar materiales.
@@ -101,3 +101,9 @@ SLEEP_DESCS = [
     "🌲 Apoyás la espalda contra un tronco firme, respirás hondo y cerrás los ojos. La fatiga se disipa como una sombra, dejando que la energía renazca lentamente en tu interior."
 ]
 
+DEFEAT_DESCS = [
+    "⚡ Una fuerza mística te envuelve y tu alma se eleva, solo para volver a tu cuerpo.",
+    "🕯️ Las luces del más allá parpadean mientras sientes un llamado a seguir adelante.",
+    "🌌 Una energía ancestral te envuelve y renace tu espíritu, listo para continuar la aventura.",
+    "🔥 Espíritus antiguos susurran y tu esencia regresa, fortalecida y renovada."
+]

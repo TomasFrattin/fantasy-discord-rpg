@@ -26,6 +26,14 @@ class SleepCommand(commands.Cog):
                 ephemeral=True
             )
 
+        if row["vida"] >= row["vida_max"]:
+            embed = Embed(
+                title="🤔 Vida al máximo",
+                description="Tu vida ya está completa. ¡No necesitas descansar ahora!",
+                color=0xC9A0DC  # lavanda/místico, queda re bien
+                )
+            return await interaction.response.send_message(embed=embed, ephemeral=True)
+
         # Gastar energía
         db.gastar_energia(user_id, 1)
 

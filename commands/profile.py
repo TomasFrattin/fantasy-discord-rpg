@@ -51,9 +51,12 @@ class ProfileCommand(commands.Cog):
         embed.add_field(
             name="📈 Progresión",
             value=(
-                f"🧭 Exploración: **{row['exploracion']}**\n"
-                f"⚔️ Combate: **{row['combate']}**\n"
-                f"🏹 Cacería: **{row['caceria']}**"
+                # f"🧭 Exploración: **{row['exploracion']}W**\n"
+                # f"⚔️ Combate: **{row['combate']}**\n"
+                # f"🏹 Cacería: **{row['caceria']}**"
+                f"🧭 Exploración: **WIP**\n"
+                f"⚔️ Combate: **WIP**\n"
+                f"🏹 Cacería: **WIP**"
             ),
             inline=False
         )

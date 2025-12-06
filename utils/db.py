@@ -112,7 +112,12 @@ def obtener_jugador(id_usuario):
     conn.close()
     return row
 
-
+def actualizar_vida(user_id, nueva_vida):
+    conn = conectar()
+    cursor = conn.cursor()
+    cursor.execute("UPDATE jugadores SET vida = ? WHERE id_usuario = ?", (nueva_vida, user_id))
+    conn.commit()
+    conn.close()
 # -------------------- INVENTARIO --------------------
 def agregar_consumible(id_usuario, item_id):
     conn = conectar()

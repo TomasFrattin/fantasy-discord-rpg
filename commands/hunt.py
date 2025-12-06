@@ -1,5 +1,201 @@
+# commands/hunt.py
+import random
+from discord import app_commands, Interaction, Embed, ButtonStyle
+from discord.ext import commands
+from discord.ui import View, button, Button
+from utils import db
+from utils.combat_manager import create_combat, get_combat, delete_combat, has_combat
+import logging
+from data.texts import DEFEAT_DESCS
+
+# Pool simple inicial de mobs (expandible)
 MOBS = [
-    {"id": "slime", "nombre": "Slime", "vida": 20, "ataque": 3, "emoji": "🫧"},
-    {"id": "lobo", "nombre": "Lobo Salvaje", "vida": 35, "ataque": 5, "emoji": "🐺"},
-    {"id": "bandido", "nombre": "Bandido", "vida": 40, "ataque": 6, "emoji": "🗡️"},
+    {"id": "slime", "nombre": "Slime", "vida_max": 20, "ataque": 30, "emoji": "🫧"},
+    {"id": "lobo", "nombre": "Lobo Salvaje", "vida_max": 35, "ataque": 50, "emoji": "🐺"},
+    {"id": "bandido", "nombre": "Bandido Errante", "vida_max": 40, "ataque": 60, "emoji": "🗡️"},
+    {"id": "espiritu", "nombre": "Espíritu Menor", "vida_max": 28, "ataque": 40, "emoji": "👻"},
 ]
+
+def elegir_mob() -> dict:
+    """Elige un mob aleatorio (posible lugar para tier/probabilidades)."""
+    return random.choice(MOBS)
+
+
+class HuntView(View):
+    def __init__(self, user_id: str):
+        super().__init__(timeout=60)  # expira en 60s
+        self.user_id = user_id
+
+    @button(label="Atacar", style=ButtonStyle.primary)
+    async def atacar(self, interaction: Interaction, button: Button):
+        if str(interaction.user.id) != self.user_id:
+            return await interaction.response.send_message("No podés usar este menú.", ephemeral=True)
+
+        combate = get_combat(self.user_id)
+        if not combate:
+            return await interaction.response.send_message("El combate ya no está activo.", ephemeral=True)
+
+        import random
+        # --- Ataque del jugador ---
+        player_atk = random.randint(5, 15)  # Puedes personalizar usando stats reales
+        mob_def = int(combate["mob_hp_max"] * 0.02)
+        daño_jugador = max(player_atk - mob_def, 0)
+        fallo_jugador = random.random() < 0.1
+        if fallo_jugador:
+            daño_jugador = 0
+
+        combate["mob_hp"] -= daño_jugador
+        if combate["mob_hp"] < 0:
+            combate["mob_hp"] = 0
+
+        # --- Ataque del mob (si sigue vivo) ---
+        daño_mob = 0
+        fallo_mob = False
+        if combate["mob_hp"] > 0:
+            mob_atk = combate["mob_atk"]
+            player_def = int(combate["player_hp_max"] * 0.02)
+            daño_mob = max(mob_atk - player_def, 0)
+            fallo_mob = random.random() < 0.1
+            if fallo_mob:
+                daño_mob = 0
+            combate["player_hp"] -= daño_mob
+            db.actualizar_vida(self.user_id, combate["player_hp"])
+            if combate["player_hp"] < 0:
+                combate["player_hp"] = 0
+
+        # --- Construir embed ---
+        embed = Embed(
+            title=f"⚔️ Combate vs {combate['mob_emoji']} {combate['mob_nombre']}",
+            color=0xFF4500
+        )
+        embed.add_field(
+            name=f"💀 {combate['mob_nombre']}",
+            value=f"HP: **{combate['mob_hp']}/{combate['mob_hp_max']}**",
+            inline=False
+        )
+        embed.add_field(
+            name=f"🧍 Jugador",
+            value=f"HP: **{combate['player_hp']}/{combate['player_hp_max']}**",
+            inline=False
+        )
+
+        turno_msg = ""
+        if fallo_jugador:
+            turno_msg += f"⚠️ Fallaste tu ataque!\n"
+        else:
+            turno_msg += f"🗡️ Le hiciste **{daño_jugador}** de daño.\n"
+
+        if combate["mob_hp"] > 0:
+            if fallo_mob:
+                turno_msg += f"⚠️ {combate['mob_nombre']} falló su ataque!\n"
+            else:
+                turno_msg += f"💥 {combate['mob_nombre']} te hizo **{daño_mob}** de daño.\n"
+
+        embed.description = turno_msg
+
+        # --- Chequear resultados ---
+        if combate["player_hp"] <= 0:
+            embed.title += "\n❌ Derrota"
+            embed.color = 0x8B0000
+            # Perder todo el oro
+            db.sumar_oro(self.user_id, -db.obtener_jugador(self.user_id)["oro"])
+            jugador = db.obtener_jugador(self.user_id)
+            vida_max = jugador["vida_max"]
+            db.actualizar_vida(self.user_id, max(1, vida_max // 2))  # Deja la vida a la mitad, mínimo 1
+            delete_combat(self.user_id)
+            desc = random.choice(DEFEAT_DESCS)
+            embed.add_field(
+                name="🪦 Derrota",
+                value=f"{desc}\n\nAl incorporarte, notas que perdiste todo tu oro 💰 y sientes un gran cansancio. 😓",
+                inline=False
+            )       
+            await interaction.response.edit_message(embed=embed, view=None)
+            return
+
+        if combate["mob_hp"] <= 0:
+            embed.title += "\n🏆 Victoria"
+            embed.color = 0x00FF00
+            delete_combat(self.user_id)
+            # Llamar función de loot y mostrar resultado
+            from commands.loot import generar_loot_para_usuario
+            loot_embed, loot_view = generar_loot_para_usuario(self.user_id)
+            await interaction.response.edit_message(embed=embed, view=None)
+            # Enviar loot como nuevo mensaje (no ephemeral, para que pueda interactuar)
+            await interaction.followup.send(embed=loot_embed, view=loot_view, ephemeral=True)
+            return
+
+        # Si sigue el combate, actualiza el mensaje y guarda el estado
+        create_combat(self.user_id, combate)
+        await interaction.response.edit_message(embed=embed, view=self)
+
+    @button(label="Huir", style=ButtonStyle.danger)
+    async def huir(self, interaction: Interaction, button: Button):
+        if str(interaction.user.id) != self.user_id:
+            return await interaction.response.send_message("No podés usar este menú.", ephemeral=True)
+
+        # Borrar combate y notificar
+        delete_combat(self.user_id)
+        await interaction.response.edit_message(content="🏃‍♂️ Huiste del combate. Volvés a un lugar seguro.", embed=None, view=None)
+
+
+class HuntCommand(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+
+    @app_commands.command(name="hunt", description="Buscar un enemigo para combatir (gasta 1 energía).")
+    async def hunt(self, interaction: Interaction):
+        user_id = str(interaction.user.id)
+
+        # Verificar personaje y energía
+        energia = db.obtener_energia(user_id)
+        if energia is None:
+            return await interaction.response.send_message("⚠️ No tenés personaje. Usá /start", ephemeral=True)
+        if energia <= 0:
+            return await interaction.response.send_message("⚠️ No te queda energía.", ephemeral=True)
+
+        # Si ya tiene un combate activo, avisar
+        if has_combat(user_id):
+            return await interaction.response.send_message(
+                "⚠️ Ya tenés un combate activo. Usá los botones o huí antes de buscar otro.",
+                ephemeral=True
+            )
+
+        # Gastar energía
+        db.gastar_energia(user_id, 1)
+        logging.info(f"[HUNT] Usuario {user_id} ha gastado 1 energía para cazar.")
+        # Elegir mob y crear estado de combate
+        mob = elegir_mob()
+        logging.info(f"[HUNT] Usuario {user_id} ha encontrado un mob: {mob['nombre']} (ID: {mob['id']}).")
+        
+        jugador = db.obtener_jugador(user_id)
+        player_hp = int(jugador["vida"])  # vida actual
+        mob_hp = int(mob["vida_max"])
+
+        combat_payload = {
+            "mob_id": mob["id"],
+            "mob_nombre": mob["nombre"],
+            "mob_emoji": mob.get("emoji", ""),
+            "mob_hp": mob_hp,
+            "mob_hp_max": mob_hp,
+            "mob_atk": mob["ataque"],
+            "player_hp": player_hp,
+            "player_hp_max": int(jugador["vida_max"]),
+        }
+        create_combat(user_id, combat_payload)
+
+        # Embed inicial
+        embed = Embed(
+            title=f"{mob.get('emoji','')} ¡Has encontrado un enemigo! {mob.get('emoji','')}",
+            description=f"Se ha topado con **{mob['nombre']}**. ¿Qué harás?",
+            color=0xA335EE
+        )
+        embed.add_field(name="🔴 Vida", value=f"**{mob_hp} / {mob_hp}**", inline=True)
+        embed.add_field(name="⚔️ Ataque", value=f"**{mob['ataque']}**", inline=True)
+        embed.set_footer(text=f"⚡ Energía restante: {db.obtener_energia(user_id)}")
+
+        view = HuntView(user_id)
+        await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
+
+
+async def setup(bot):
+    await bot.add_cog(HuntCommand(bot))

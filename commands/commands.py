@@ -45,7 +45,7 @@ class CommandsCommand(commands.Cog):
         )
 
         embed.add_field(
-            name="💎 **/loot**",
+            name="🐺 **/hunt**",
             value="Buscá tesoros y objetos valiosos.",
             inline=False
         )

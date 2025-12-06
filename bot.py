@@ -46,10 +46,10 @@ async def main():
         await bot.load_extension("commands.energy")   # <- nuevo
         await bot.load_extension("commands.profile")  # <- cog de perfil
         await bot.load_extension("commands.inventory")  # <- cog de inventario
-        await bot.load_extension("commands.loot")     # <- cog de loot
         # await bot.load_extension("commands.menu") PARA UNA PROX IMPLEMENTACION, ES MAS DIFICIL VER LOS PROBLEMAS
         await bot.load_extension("commands.sleep")    # <- cog de descansar
         await bot.load_extension("commands.recolectar")
+        await bot.load_extension("commands.hunt")     # <- cog de cacería
         await bot.start(TOKEN)
 
 # -------------------- EVENTOS --------------------

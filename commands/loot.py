@@ -162,6 +162,92 @@ class LootCommand(commands.Cog):
         view = EquiparOVender(user_id, item, slot_col=columna_equipo)
         await interaction.response.send_message(embed=embed, view=view)
 
+def generar_loot_para_usuario(user_id):
+    tier = obtener_tier()
+    item = random.choice(EQUIPABLES_BY_RARITY[tier])
+    tipo = item.get("tipo", "otro")
+    emoji = RARITY_EMOJIS.get(tier, "🔹")
+    color = RARITY_COLORS[tier]
+
+    embed = discord.Embed(
+        title=f"{emoji} {item['nombre']} {emoji}",
+        color=color
+    )
+    embed.add_field(
+        name="🔖 Rareza",
+        value=f"{emoji} **{tier.capitalize()}**",
+        inline=False
+    )
+
+    if tipo not in ("arma", "armadura", "casco", "botas"):
+        db.agregar_consumible(user_id, item["id"])
+        embed.description = (
+            f"**Tipo:** {tipo.capitalize()}\n"
+            f"**Rareza:** {emoji} **{tier.capitalize()}**"
+        )
+        return embed, None  # No hay vista para consumibles
+
+    # Equipable
+    jugador = db.obtener_jugador(user_id)
+    columnas = {
+        "arma": "arma_equipada",
+        "armadura": "armadura_equipada",
+        "casco": "casco_equipado",
+        "botas": "botas_equipadas"
+    }
+    columna_equipo = columnas[tipo]
+    equipada_id = jugador[columna_equipo]
+
+    nuevo_atk = item.get("stats", {}).get("ataque", 0)
+    nuevo_hp  = item.get("stats", {}).get("vida", 0)
+
+    if not equipada_id:
+        embed.set_footer(text="No tenés nada equipado de este tipo.")
+        if nuevo_atk:
+            embed.add_field(
+                name="⚔️ Daño",
+                value=(
+                    f"**Objeto Actual:** —\n"
+                    f"**Objeto Nuevo:** {item['nombre']} (+{nuevo_atk})"
+                ),
+                inline=False
+            )
+        if nuevo_hp:
+            embed.add_field(
+                name="❤️ Vida",
+                value=(
+                    f"**Objeto Actual:** —\n"
+                    f"**Objeto Nuevo:** {item['nombre']} (+{nuevo_hp})"
+                ),
+                inline=False
+            )
+    else:
+        from data_loader import EQUIPABLES_BY_ID
+        equipado = EQUIPABLES_BY_ID.get(equipada_id)
+        actual_atk = equipado.get("stats", {}).get("ataque", 0)
+        actual_hp  = equipado.get("stats", {}).get("vida", 0)
+        if nuevo_atk or actual_atk:
+            embed.add_field(
+                name="⚔️ Daño",
+                value=(
+                    f"**Objeto Actual:** {equipado['nombre']} (+{actual_atk})\n"
+                    f"**Objeto Nuevo:** {item['nombre']} (+{nuevo_atk})"
+                ),
+                inline=False
+            )
+        if nuevo_hp or actual_hp:
+            embed.add_field(
+                name="❤️ Vida",
+                value=(
+                    f"**Objeto Actual:** {equipado['nombre']} (+{actual_hp})\n"
+                    f"**Objeto Nuevo:** {item['nombre']} (+{nuevo_hp})"
+                ),
+                inline=False
+            )
+    from views.equip import EquiparOVender
+    view = EquiparOVender(user_id, item, slot_col=columna_equipo)
+    db.agregar_item(user_id, item["id"], 1)
+    return embed, view
 
 async def setup(bot):
     await bot.add_cog(LootCommand(bot))
