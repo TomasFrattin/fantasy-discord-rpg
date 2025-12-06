@@ -3,6 +3,7 @@ from discord.ext import commands
 from utils import db
 import random
 from data.texts import ENERGY_DESCS
+from utils.messages import mensaje_usuario_no_creado
 
 class EnergyCommand(commands.Cog):
     def __init__(self, bot):
@@ -11,14 +12,12 @@ class EnergyCommand(commands.Cog):
     @app_commands.command(name="energy", description="Muestra tu energía actual.")
     async def energy(self, interaction: Interaction):
         user_id = str(interaction.user.id)
+        
+        row = db.obtener_jugador(user_id)
+        if not row:
+            return await interaction.response.send_message(embed=mensaje_usuario_no_creado(), ephemeral=True)
+
         energia = db.obtener_energia(user_id)
-
-        if energia is None:
-            return await interaction.response.send_message(
-                "⚠️ Aún no tenés personaje. Usá **/start**.",
-                ephemeral=True
-            )
-
         if energia >= 3:
             desc = random.choice(ENERGY_DESCS["high"])
         elif energia == 2:

@@ -7,7 +7,7 @@ load_dotenv()
 TOKEN = os.getenv("DISCORD_TOKEN")
 DB_FILE = os.getenv("DB_FILE", "data/arkanor.db")
 PREFIX = os.getenv("PREFIX", "!")
-ENERGIA_MAX = 30
+ENERGIA_MAX = 3
 WELCOME_CHANNEL_ID = 1422721307455524916
 
 # URL para invitar al bot con todos los permisos

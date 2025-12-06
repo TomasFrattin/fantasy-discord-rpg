@@ -7,6 +7,7 @@ from utils import db
 from utils.combat_manager import create_combat, get_combat, delete_combat, has_combat
 import logging
 from data.texts import DEFEAT_DESCS
+from utils.messages import mensaje_usuario_no_creado, mensaje_sin_energia
 
 # Pool simple inicial de mobs (expandible)
 MOBS = [
@@ -161,11 +162,12 @@ class HuntCommand(commands.Cog):
         user_id = str(interaction.user.id)
 
         # Verificar personaje y energía
+        row = db.obtener_jugador(user_id)
+        if not row:
+            return await interaction.response.send_message(embed=mensaje_usuario_no_creado(), ephemeral=True)
         energia = db.obtener_energia(user_id)
-        if energia is None:
-            return await interaction.response.send_message("⚠️ No tenés personaje. Usá /start", ephemeral=True)
         if energia <= 0:
-            return await interaction.response.send_message("⚠️ No te queda energía.", ephemeral=True)
+            return await interaction.response.send_message(embed=mensaje_sin_energia(), ephemeral=True)
 
         # Si ya tiene un combate activo, avisar
         if has_combat(user_id):

@@ -4,7 +4,7 @@ from data.texts import WELCOME_MESSAGE
 from views.affinity import ElegirAfinidad
 from utils import db
 from utils.locks import esta_ocupado, comenzar_accion
-
+from utils.messages import mensaje_usuario_ya_existente
 class StartCommand(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -26,10 +26,7 @@ class StartCommand(commands.Cog):
         # Verificar si ya tiene personaje
         row = db.obtener_jugador(user_id)
         if row:
-            return await interaction.response.send_message(
-                "⚠️ Ya tenés un personaje creado.",
-                ephemeral=True
-            )
+            return await interaction.response.send_message(embed=mensaje_usuario_ya_existente(), ephemeral=True)
 
         # Bloquear
         comenzar_accion(user_id)

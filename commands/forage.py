@@ -4,6 +4,7 @@ from utils import db
 from data.texts import RECOLECTAR_DESCRIPTIONS
 import random
 from discord import Embed
+from utils.messages import mensaje_usuario_no_creado, mensaje_sin_energia
 
 class ForageCommand(commands.Cog):
     def __init__(self, bot):
@@ -12,11 +13,13 @@ class ForageCommand(commands.Cog):
     @app_commands.command(name="forage", description="Gastas 1 energía y recolectás materiales.")
     async def forage(self, interaction: Interaction):
         user_id = str(interaction.user.id)
+
+        row = db.obtener_jugador(user_id)
+        if not row:
+            return await interaction.response.send_message(embed=mensaje_usuario_no_creado(), ephemeral=True)
         energia = db.obtener_energia(user_id)
-        if energia is None:
-            return await interaction.response.send_message("⚠️ No tenés personaje. Usá /start", ephemeral=True)
         if energia <= 0:
-            return await interaction.response.send_message("⚠️ No te queda energía.", ephemeral=True)
+            return await interaction.response.send_message(embed=mensaje_sin_energia(), ephemeral=True)
 
         db.gastar_energia(user_id, 1)
 
@@ -53,7 +56,6 @@ class ForageCommand(commands.Cog):
             await interaction.response.send_message(
                 "⚠️ Ocurrió un error durante la recolección.", ephemeral=True
             )
-
 
 async def setup(bot):
     await bot.add_cog(ForageCommand(bot))

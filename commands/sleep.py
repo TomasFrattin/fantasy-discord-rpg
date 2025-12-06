@@ -3,6 +3,7 @@ from discord.ext import commands
 from utils import db
 import random
 from data.texts import SLEEP_DESCS
+from utils.messages import mensaje_usuario_no_creado, mensaje_sin_energia
 
 class SleepCommand(commands.Cog):
     def __init__(self, bot):
@@ -11,20 +12,13 @@ class SleepCommand(commands.Cog):
     @app_commands.command(name="sleep", description="Recuperar 20% de tu vida máxima.")
     async def sleep(self, interaction: Interaction):
         user_id = str(interaction.user.id)
-        energia = db.obtener_energia(user_id)
 
         row = db.obtener_jugador(user_id)
         if not row:
-            return await interaction.response.send_message(
-                "⚠️ No tenés personaje. Usá **/start**.",
-                ephemeral=True
-            )
-
+            return await interaction.response.send_message(embed=mensaje_usuario_no_creado(), ephemeral=True)
+        energia = db.obtener_energia(user_id)
         if energia <= 0:
-            return await interaction.response.send_message(
-                "⚠️ No te queda energía.",
-                ephemeral=True
-            )
+            return await interaction.response.send_message(embed=mensaje_sin_energia(), ephemeral=True)
 
         if row["vida"] >= row["vida_max"]:
             embed = Embed(
