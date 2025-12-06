@@ -1,6 +1,5 @@
 # commands/loot.py
 import random
-import json
 import discord
 from discord import app_commands
 from discord.ext import commands
@@ -13,6 +12,13 @@ RARITY_COLORS = {
     "raro": 0x3A82F7,
     "epico": 0xA335EE,
     "legendario": 0xFF8000
+}
+
+RARITY_EMOJIS = {
+    "comun": "🔹",
+    "raro": "🔷",
+    "epico": "💜",
+    "legendario": "🔥"
 }
 
 EQUIPABLES_BY_RARITY = {}
@@ -53,12 +59,18 @@ class LootCommand(commands.Cog):
         if tipo not in ("arma", "armadura", "casco", "botas"):
             db.agregar_consumible(user_id, item["id"])
 
+            emoji = RARITY_EMOJIS.get(tier, "🔹")
+
             embed = discord.Embed(
-                title=item["nombre"],
-                description=f"Tipo: **{tipo}**\nRareza: **{tier.capitalize()}**",
+                title=f"{emoji} {item['nombre']} {emoji}",
+                description=(
+                    f"**Tipo:** {tipo.capitalize()}\n"
+                    f"**Rareza:** {emoji} **{tier.capitalize()}**"
+                ),
                 color=RARITY_COLORS[tier]
             )
-            embed.set_footer(text=f"Energía restante: {db.obtener_energia(user_id)}")
+
+            embed.set_footer(text=f"⚡ Energía restante: {db.obtener_energia(user_id)}")
 
             return await interaction.response.send_message(embed=embed)
 
@@ -75,30 +87,81 @@ class LootCommand(commands.Cog):
         nuevo_atk = item.get("stats", {}).get("ataque", 0)
         nuevo_hp  = item.get("stats", {}).get("vida", 0)
 
+        emoji = RARITY_EMOJIS.get(tier, "🔹")
+
         embed = discord.Embed(
-            title=item["nombre"],
+            title=f"{emoji} {item['nombre']} {emoji}",
             color=RARITY_COLORS[tier]
         )
-        embed.add_field(name="Rareza", value=tier.capitalize(), inline=False)
 
+        embed.add_field(
+            name="🔖 Rareza",
+            value=f"{emoji} **{tier.capitalize()}**",
+            inline=False
+        )
+
+        # --------------------------
+        # SIN nada equipado
+        # --------------------------
         if not equipada_id:
-            if nuevo_atk: embed.add_field(name="Daño (nuevo)", value=f"+{nuevo_atk}")
-            if nuevo_hp:  embed.add_field(name="Vida (nuevo)", value=f"+{nuevo_hp}")
             embed.set_footer(text="No tenés nada equipado de este tipo.")
+
+            if nuevo_atk:
+                embed.add_field(
+                    name="⚔️ Daño",
+                    value=(
+                        f"**Objeto Actual:** —\n"
+                        f"**Objeto Nuevo:** {item['nombre']} (+{nuevo_atk})"
+                    ),
+                    inline=False
+                )
+
+            if nuevo_hp:
+                embed.add_field(
+                    name="❤️ Vida",
+                    value=(
+                        f"**Objeto Actual:** —\n"
+                        f"**Objeto Nuevo:** {item['nombre']} (+{nuevo_hp})"
+                    ),
+                    inline=False
+                )
 
             view = EquiparOVender(user_id, item, slot_col=columna_equipo)
             return await interaction.response.send_message(embed=embed, view=view)
 
+
+        # --------------------------
+        # CON algo equipado
+        # --------------------------
         equipado = EQUIPABLES_BY_ID.get(equipada_id)
         actual_atk = equipado.get("stats", {}).get("ataque", 0)
         actual_hp  = equipado.get("stats", {}).get("vida", 0)
 
-        embed.add_field(name="Daño", value=f"Nuevo: {nuevo_atk} | Actual: {actual_atk}", inline=False)
-        embed.add_field(name="Vida", value=f"Nuevo: {nuevo_hp} | Actual: {actual_hp}", inline=False)
-        embed.add_field(name="Equipado actualmente", value=equipado["nombre"], inline=False)
+        # Daño (solo si aplica)
+        if nuevo_atk or actual_atk:
+            embed.add_field(
+                name="⚔️ Daño",
+                value=(
+                    f"**Objeto Actual:** {equipado['nombre']} (+{actual_atk})\n"
+                    f"**Objeto Nuevo:** {item['nombre']} (+{nuevo_atk})"
+                ),
+                inline=False
+            )
+
+        # Vida (solo si aplica)
+        if nuevo_hp or actual_hp:
+            embed.add_field(
+                name="❤️ Vida",
+                value=(
+                    f"**Objeto Actual:** {equipado['nombre']} (+{actual_hp})\n"
+                    f"**Objeto Nuevo:** {item['nombre']} (+{nuevo_hp})"
+                ),
+                inline=False
+            )
 
         view = EquiparOVender(user_id, item, slot_col=columna_equipo)
         await interaction.response.send_message(embed=embed, view=view)
+
 
 async def setup(bot):
     await bot.add_cog(LootCommand(bot))

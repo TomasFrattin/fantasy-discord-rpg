@@ -99,7 +99,7 @@ class InventoryCommand(commands.Cog):
         # -------------------------
 
         embed = discord.Embed(
-            title="🎒 Inventario de tu personaje",
+            title="🎒 Inventario",
             description=f"💰 **Oro:** {row['oro']}",
             color=0x4CAF50
         )
