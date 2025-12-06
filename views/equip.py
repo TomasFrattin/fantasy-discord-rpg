@@ -1,6 +1,11 @@
 import discord
 from discord.ui import View, Button
 from utils import db
+import logging
+
+# Configuración básica del logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 class EquiparOVender(View):
     """
@@ -18,24 +23,61 @@ class EquiparOVender(View):
         if str(interaction.user.id) != self.user_id:
             return await interaction.response.send_message("No podés usar este menú.", ephemeral=True)
 
-        tipo = self.item.get("tipo")
-        slot_map = {
-            "arma": "arma_equipada",
-            "armadura": "armadura_equipada",
-            "casco": "casco_equipado",
-            "botas": "botas_equipadas"
-        }
-        slot = self.slot_col or slot_map.get(tipo)
-        if not slot:
-            return await interaction.response.send_message("Tipo de ítem no reconocible.", ephemeral=True)
+        try:
+            tipo = self.item.get("tipo")
+            slot_map = {
+                "arma": "arma_equipada",
+                "armadura": "armadura_equipada",
+                "casco": "casco_equipado",
+                "botas": "botas_equipadas"
+            }
+            slot = self.slot_col or slot_map.get(tipo)
+            if not slot:
+                return await interaction.response.send_message("Tipo de ítem no reconocible.", ephemeral=True)
 
-        db.equipar(self.user_id, slot, self.item["id"])
-        await interaction.response.edit_message(content=f"⚔️ Equipaste **{self.item['nombre']}**.", view=None)
+            # Equipar item en DB
+            db.equipar(self.user_id, slot, self.item["id"])
+
+            # Obtener stats actuales del jugador
+            jugador = db.obtener_jugador(self.user_id)
+
+            # Preparar embed
+            slot_nombre = slot.replace('_equipada', '').capitalize()
+            embed = discord.Embed(title=f"⚔️ Equipaste {self.item['nombre']}", color=discord.Color.green())
+            embed.add_field(name="Slot", value=slot_nombre, inline=True)
+
+            # Mostrar stats según tipo de item
+            stats = self.item.get('stats', {})
+            if 'vida' in stats:
+                embed.add_field(name="Nueva Vida máxima", value=f"{jugador['vida_max']} HP", inline=True)
+
+            if 'ataque' in stats:
+                embed.add_field(name="Nuevo Daño", value=f"{jugador['damage']} DMG", inline=True)
+
+            embed.set_footer(text="¡Equipado con éxito!")
+            await interaction.response.edit_message(embed=embed, view=None)
+
+
+        except Exception as e:
+            logger.error(f"Error equipando item {self.item.get('id')} para {self.user_id}: {e}", exc_info=True)
+            await interaction.response.send_message("⚠️ Ocurrió un error al equipar el ítem.", ephemeral=True)
 
     @discord.ui.button(label="Vender", style=discord.ButtonStyle.danger)
     async def vender(self, interaction: discord.Interaction, button: Button):
         if str(interaction.user.id) != self.user_id:
-            return
-        oro = self.item.get("valor_oro", 0)
-        db.sumar_oro(self.user_id, oro)
-        await interaction.response.edit_message(content=f"💰 Vendiste **{self.item['nombre']}** por **{oro}** de oro.", view=None)
+            return await interaction.response.send_message("No podés usar este menú.", ephemeral=True)
+
+        try:
+            oro = self.item.get("valor_oro", 0)
+            db.sumar_oro(self.user_id, oro)
+
+            # Embed visual para vender
+            embed = discord.Embed(title=f"💰 Vendiste {self.item['nombre']}", color=discord.Color.gold())
+            embed.add_field(name="Precio", value=f"{oro} de oro", inline=False)
+            embed.set_footer(text="¡Transacción completada!")
+
+            await interaction.response.edit_message(embed=embed, view=None)
+
+        except Exception as e:
+            logger.error(f"Error vendiendo item {self.item.get('id')} para {self.user_id}: {e}", exc_info=True)
+            await interaction.response.send_message("⚠️ Ocurrió un error al vender el ítem.", ephemeral=True)

@@ -155,34 +155,6 @@
       "stats": { "vida": 10 },
       "valor_oro": 120,
       "descripcion": "Otorgan una velocidad sobrenatural."
-    },
-
-    {
-      "id": "acc_001",
-      "nombre": "Anillo de Cobre",
-      "tipo": "accesorio",
-      "rareza": "comun",
-      "stats": { "critico": 1 },
-      "valor_oro": 4,
-      "descripcion": "Un anillo sencillo."
-    },
-    {
-      "id": "acc_002",
-      "nombre": "Anillo del Vigía",
-      "tipo": "accesorio",
-      "rareza": "raro",
-      "stats": { "critico": 3, "vida": 5 },
-      "valor_oro": 20,
-      "descripcion": "Favorece la percepción y la precisión."
-    },
-    {
-      "id": "acc_003",
-      "nombre": "Amuleto del Alba",
-      "tipo": "accesorio",
-      "rareza": "legendario",
-      "stats": { "critico": 6, "vida": 15 },
-      "valor_oro": 140,
-      "descripcion": "Bendecido por antiguos guardianes."
     }
   ]
 }

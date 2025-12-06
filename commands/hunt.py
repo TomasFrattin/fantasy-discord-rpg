@@ -10,11 +10,23 @@ from data.texts import DEFEAT_DESCS
 
 # Pool simple inicial de mobs (expandible)
 MOBS = [
-    {"id": "slime", "nombre": "Slime", "vida_max": 20, "ataque": 30, "emoji": "🫧"},
-    {"id": "lobo", "nombre": "Lobo Salvaje", "vida_max": 35, "ataque": 50, "emoji": "🐺"},
-    {"id": "bandido", "nombre": "Bandido Errante", "vida_max": 40, "ataque": 60, "emoji": "🗡️"},
-    {"id": "espiritu", "nombre": "Espíritu Menor", "vida_max": 28, "ataque": 40, "emoji": "👻"},
+    {"id": "slime", "nombre": "Slime", "vida_max": 20, "ataque": 3, "emoji": "🫧"},
+    {"id": "lobo", "nombre": "Lobo Salvaje", "vida_max": 35, "ataque": 5, "emoji": "🐺"},
+    {"id": "bandido", "nombre": "Bandido Errante", "vida_max": 40, "ataque": 6, "emoji": "🗡️"},
+    {"id": "espiritu", "nombre": "Espíritu Menor", "vida_max": 28, "ataque": 4, "emoji": "👻"},
+    {"id": "goblin", "nombre": "Goblin Travieso", "vida_max": 22, "ataque": 4, "emoji": "👹"},
+    {"id": "troll", "nombre": "Troll de las Cavernas", "vida_max": 60, "ataque": 8, "emoji": "🪨"},
+    {"id": "vampiro", "nombre": "Vampiro Sombrío", "vida_max": 45, "ataque": 7, "emoji": "🧛"},
+    {"id": "espectro", "nombre": "Espectro Errante", "vida_max": 30, "ataque": 5, "emoji": "👻"},
+    {"id": "hiena", "nombre": "Hiena Hambrienta", "vida_max": 33, "ataque": 5, "emoji": "🦝"},
+    {"id": "gnomo", "nombre": "Gnomo Pícaro", "vida_max": 18, "ataque": 3, "emoji": "🧝‍♂️"},
+    {"id": "dragoncillo", "nombre": "Dragoncillo", "vida_max": 50, "ataque": 9, "emoji": "🐉"},
+    {"id": "momia", "nombre": "Momia Antiguo", "vida_max": 40, "ataque": 6, "emoji": "🪦"},
+    {"id": "serpiente", "nombre": "Serpiente Venenosa", "vida_max": 25, "ataque": 4, "emoji": "🐍"},
+    {"id": "minotauro", "nombre": "Minotauro", "vida_max": 55, "ataque": 8, "emoji": "🐂"},
+    {"id": "hechicero", "nombre": "Hechicero Errante", "vida_max": 38, "ataque": 7, "emoji": "🧙"},
 ]
+
 
 def elegir_mob() -> dict:
     """Elige un mob aleatorio (posible lugar para tier/probabilidades)."""
@@ -37,9 +49,11 @@ class HuntView(View):
 
         import random
         # --- Ataque del jugador ---
-        player_atk = random.randint(5, 15)  # Puedes personalizar usando stats reales
+        jugador = db.obtener_jugador(self.user_id)
+        player_atk = jugador["damage"]
+
         mob_def = int(combate["mob_hp_max"] * 0.02)
-        daño_jugador = max(player_atk - mob_def, 0)
+        daño_jugador = int(max(player_atk * random.uniform(0.95, 1.05) - mob_def, 0))
         fallo_jugador = random.random() < 0.1
         if fallo_jugador:
             daño_jugador = 0
@@ -54,7 +68,7 @@ class HuntView(View):
         if combate["mob_hp"] > 0:
             mob_atk = combate["mob_atk"]
             player_def = int(combate["player_hp_max"] * 0.02)
-            daño_mob = max(mob_atk - player_def, 0)
+            daño_mob = int(max(mob_atk * random.uniform(0.95, 1.05) - player_def, 0))
             fallo_mob = random.random() < 0.1
             if fallo_mob:
                 daño_mob = 0
@@ -169,7 +183,10 @@ class HuntCommand(commands.Cog):
         
         jugador = db.obtener_jugador(user_id)
         player_hp = int(jugador["vida"])  # vida actual
-        mob_hp = int(mob["vida_max"])
+
+        factor_vida = random.uniform(0.96, 1.04)
+
+        mob_hp = int(mob["vida_max"] * factor_vida)
 
         combat_payload = {
             "mob_id": mob["id"],
@@ -183,19 +200,24 @@ class HuntCommand(commands.Cog):
         }
         create_combat(user_id, combat_payload)
 
-        # Embed inicial
         embed = Embed(
             title=f"{mob.get('emoji','')} ¡Has encontrado un enemigo! {mob.get('emoji','')}",
             description=f"Se ha topado con **{mob['nombre']}**. ¿Qué harás?",
             color=0xA335EE
         )
+
+        # Subtítulo: Estadísticas del enemigo
+        embed.add_field(name=f"📊 Estadísticas de **{mob['nombre']}**", value="\n", inline=False)
         embed.add_field(name="🔴 Vida", value=f"**{mob_hp} / {mob_hp}**", inline=True)
         embed.add_field(name="⚔️ Ataque", value=f"**{mob['ataque']}**", inline=True)
-        embed.set_footer(text=f"⚡ Energía restante: {db.obtener_energia(user_id)}")
+
+        # Subtítulo: Estadísticas del jugador
+        embed.add_field(name=f"📊 Estadísticas de **{jugador['username']}**", value="\n", inline=False)
+        embed.add_field(name="🧍 Vida", value=f"**{jugador['vida']} / {jugador['vida_max']}**", inline=True)
+        embed.add_field(name="🗡️ Daño", value=f"**{jugador['damage']}**", inline=True)
 
         view = HuntView(user_id)
         await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
-
 
 async def setup(bot):
     await bot.add_cog(HuntCommand(bot))

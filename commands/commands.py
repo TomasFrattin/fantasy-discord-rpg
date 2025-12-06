@@ -57,7 +57,7 @@ class CommandsCommand(commands.Cog):
         )
 
         embed.add_field(
-            name="🧺 **/recolectar**",
+            name="🧺 **/forage**",
             value="Gastá energía para obtener materiales.",
             inline=False
         )

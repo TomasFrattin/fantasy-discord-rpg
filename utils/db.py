@@ -119,19 +119,20 @@ def actualizar_vida(user_id, nueva_vida):
     conn.commit()
     conn.close()
 # -------------------- INVENTARIO --------------------
-def agregar_consumible(id_usuario, item_id):
-    conn = conectar()
-    cursor = conn.cursor()
+# REFACTORIZAR
+# def agregar_consumible(id_usuario, item_id):
+#     conn = conectar()
+#     cursor = conn.cursor()
 
-    cursor.execute("SELECT inventario FROM jugadores WHERE id_usuario = ?", (id_usuario,))
-    fila = cursor.fetchone()
+#     cursor.execute("SELECT inventario FROM jugadores WHERE id_usuario = ?", (id_usuario,))
+#     fila = cursor.fetchone()
 
-    inv = json.loads(fila[0]) if fila else []
-    inv.append(item_id)
+#     inv = json.loads(fila[0]) if fila else []
+#     inv.append(item_id)
 
-    cursor.execute("UPDATE jugadores SET inventario = ? WHERE id_usuario = ?", (json.dumps(inv), id_usuario))
-    conn.commit()
-    conn.close()
+#     cursor.execute("UPDATE jugadores SET inventario = ? WHERE id_usuario = ?", (json.dumps(inv), id_usuario))
+#     conn.commit()
+#     conn.close()
 
 # --- inventario / items helpers ---
 

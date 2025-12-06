@@ -80,7 +80,7 @@ class LootCommand(commands.Cog):
             "armadura": "armadura_equipada",
             "casco": "casco_equipado",
             "botas": "botas_equipadas"
-        }
+            }
         columna_equipo = columnas[tipo]
         equipada_id = jugador[columna_equipo]
 
@@ -208,7 +208,7 @@ def generar_loot_para_usuario(user_id):
                 name="⚔️ Daño",
                 value=(
                     f"**Objeto Actual:** —\n"
-                    f"**Objeto Nuevo:** {item['nombre']} (+{nuevo_atk})"
+                    f"**Objeto Nuevo:** {item['nombre']} **(+{nuevo_atk})**"
                 ),
                 inline=False
             )
@@ -217,7 +217,7 @@ def generar_loot_para_usuario(user_id):
                 name="❤️ Vida",
                 value=(
                     f"**Objeto Actual:** —\n"
-                    f"**Objeto Nuevo:** {item['nombre']} (+{nuevo_hp})"
+                    f"**Objeto Nuevo:** {item['nombre']} **(+{nuevo_hp})**"
                 ),
                 inline=False
             )
@@ -230,20 +230,22 @@ def generar_loot_para_usuario(user_id):
             embed.add_field(
                 name="⚔️ Daño",
                 value=(
-                    f"**Objeto Actual:** {equipado['nombre']} (+{actual_atk})\n"
-                    f"**Objeto Nuevo:** {item['nombre']} (+{nuevo_atk})"
+                    f"**Objeto Actual:** {equipado['nombre']} **(+{actual_atk})**\n"
+                    f"**Objeto Nuevo:** {item['nombre']} **(+{nuevo_atk})**"
                 ),
                 inline=False
             )
+
         if nuevo_hp or actual_hp:
             embed.add_field(
                 name="❤️ Vida",
                 value=(
-                    f"**Objeto Actual:** {equipado['nombre']} (+{actual_hp})\n"
-                    f"**Objeto Nuevo:** {item['nombre']} (+{nuevo_hp})"
+                    f"**Objeto Actual:** {equipado['nombre']} **(+{actual_hp})**\n"
+                    f"**Objeto Nuevo:** {item['nombre']} **(+{nuevo_hp})**"
                 ),
                 inline=False
             )
+
     from views.equip import EquiparOVender
     view = EquiparOVender(user_id, item, slot_col=columna_equipo)
     db.agregar_item(user_id, item["id"], 1)

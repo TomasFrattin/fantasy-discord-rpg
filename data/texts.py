@@ -7,14 +7,14 @@ Comandos disponibles:
 - `/energy`: Mostrar tu energía actual.
 - `/inventory`: Mostrar tu inventario de personaje.
 - `/hunt`: Consume energía para combatir y conseguir items o morir en el intento.
-- `/menu`: Crea un menu con las acciones disponibles.
 - `/profile`: Mostrar tu perfil de personaje.
-- `/recolectar`: Gasta energía para recolectar materiales.
+- `/forage`: Gasta energía para recolectar materiales.
 - `/sleep`: Recupera energía descansando.
 
 
 🧙 Que la aventura comience!
 """
+# - `/menu`: Crea un menu con las acciones disponibles.
 
 
 WELCOME_MESSAGE = """

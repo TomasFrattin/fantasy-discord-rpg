@@ -5,12 +5,12 @@ from data.texts import RECOLECTAR_DESCRIPTIONS
 import random
 from discord import Embed
 
-class RecolectarCommand(commands.Cog):
+class ForageCommand(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @app_commands.command(name="recolectar", description="Gastas 1 energía y recolectás materiales.")
-    async def recolectar(self, interaction: Interaction):
+    @app_commands.command(name="forage", description="Gastas 1 energía y recolectás materiales.")
+    async def forage(self, interaction: Interaction):
         user_id = str(interaction.user.id)
         energia = db.obtener_energia(user_id)
         if energia is None:
@@ -49,11 +49,11 @@ class RecolectarCommand(commands.Cog):
             await interaction.response.send_message(embed=embed, ephemeral=True)
 
         except Exception as e:
-            print(f"[RECOLECTAR] ERROR: {e}")
+            print(f"[FORAGE] ERROR: {e}")
             await interaction.response.send_message(
                 "⚠️ Ocurrió un error durante la recolección.", ephemeral=True
             )
 
 
 async def setup(bot):
-    await bot.add_cog(RecolectarCommand(bot))
+    await bot.add_cog(ForageCommand(bot))

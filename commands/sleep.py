@@ -8,7 +8,7 @@ class SleepCommand(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @app_commands.command(name="sleep", description="Recuperar 10% de tu vida máxima.")
+    @app_commands.command(name="sleep", description="Recuperar 20% de tu vida máxima.")
     async def sleep(self, interaction: Interaction):
         user_id = str(interaction.user.id)
         energia = db.obtener_energia(user_id)

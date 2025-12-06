@@ -39,7 +39,7 @@ def crear_tabla_jugadores():
         armadura_equipada TEXT,
         casco_equipado TEXT,
         botas_equipadas TEXT,
-
+                
         oro INTEGER DEFAULT 0,
         last_reset TIMESTAMP
     )
