@@ -5,7 +5,7 @@ from discord.ui import View, Button
 from config import TOKEN, PREFIX, ENERGIA_MAX, WELCOME_CHANNEL_ID
 from views.affinity import ElegirAfinidad
 from utils import tablas
-from data.texts import STARTUP_MESSAGE
+from data.texts import STARTUP_COMMANDS
 from views.equip import EquiparOVender
 import asyncio
 from utils.locks import esta_ocupado
@@ -49,6 +49,7 @@ async def main():
         await bot.load_extension("commands.sleep")    # <- cog de descansar
         await bot.load_extension("commands.forage")
         await bot.load_extension("commands.hunt")     # <- cog de cacería
+        await bot.load_extension("commands.merchant") # <- cog de mercader
 
         # await bot.load_extension("commands.menu") PARA UNA PROX IMPLEMENTACION, ES MAS DIFICIL VER LOS PROBLEMAS
 
@@ -69,7 +70,14 @@ async def on_ready():
 
     channel = bot.get_channel(WELCOME_CHANNEL_ID)
     if channel:
-        await channel.send(STARTUP_MESSAGE)
+        description = "\n".join(f"- `{c['comando']}`: {c['descripcion']}" for c in STARTUP_COMMANDS)
+        embed = discord.Embed(
+            title="🌌 Arkanor Bot iniciado!",
+            description=f"Comandos disponibles:\n\n{description}",
+            color=discord.Color.blue()
+        )
+        embed.set_footer(text="🧙 Que la aventura comience!")
+        await channel.send(embed=embed)
 
     print(f"Bot iniciado como {bot.user}")
 

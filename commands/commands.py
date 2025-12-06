@@ -1,6 +1,6 @@
-from discord import app_commands, Interaction
+from discord import app_commands, Interaction, Embed
 from discord.ext import commands
-from discord import Embed
+from data.texts import STARTUP_COMMANDS
 
 class CommandsCommand(commands.Cog):
     def __init__(self, bot):
@@ -14,53 +14,12 @@ class CommandsCommand(commands.Cog):
             color=0x1ABC9C
         )
 
-        embed.add_field(
-            name="🧙‍♂️ **/start**",
-            value="Creá tu personaje y elegí tu afinidad.",
-            inline=False
-        )
-
-        embed.add_field(
-            name="📚 **/commands**",
-            value="Mostrá todos los comandos disponibles.",
-            inline=False
-        )
-
-        embed.add_field(
-            name="🧾 **/perfil**",
-            value="Mostrá tu perfil completo.",
-            inline=False
-        )
-
-        embed.add_field(
-            name="🎒 **/inventario**",
-            value="Revisá tu inventario y equipamiento.",
-            inline=False
-        )
-
-        embed.add_field(
-            name="⚡ **/energia**",
-            value="Consultá tu energía actual.",
-            inline=False
-        )
-
-        embed.add_field(
-            name="🐺 **/hunt**",
-            value="Buscá tesoros y objetos valiosos.",
-            inline=False
-        )
-
-        embed.add_field(
-            name="😴 **/sleep**",
-            value="Descansá y recuperá energía.",
-            inline=False
-        )
-
-        embed.add_field(
-            name="🧺 **/forage**",
-            value="Gastá energía para obtener materiales.",
-            inline=False
-        )
+        for cmd in STARTUP_COMMANDS:
+            embed.add_field(
+                name=f"**{cmd['comando']}**",
+                value=cmd['descripcion'],
+                inline=False
+            )
 
         await interaction.response.send_message(embed=embed, ephemeral=True)
 

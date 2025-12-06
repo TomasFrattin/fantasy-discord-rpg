@@ -1,19 +1,13 @@
-STARTUP_MESSAGE = """
-🌌 **Arkanor Bot iniciado!**
-Comandos disponibles:
-
-- `/start`: Crear tu personaje y elegir tu afinidad.
-- `/commands`: Mostrar todos los comandos disponibles.
-- `/energy`: Mostrar tu energía actual.
-- `/inventory`: Mostrar tu inventario de personaje.
-- `/hunt`: Consume energía para combatir y conseguir items o morir en el intento.
-- `/profile`: Mostrar tu perfil de personaje.
-- `/forage`: Gasta energía para recolectar materiales.
-- `/sleep`: Recupera energía descansando.
-
-
-🧙 Que la aventura comience!
-"""
+STARTUP_COMMANDS = [
+    {"comando": "/start", "descripcion": "Crear tu personaje y elegir tu afinidad."},
+    {"comando": "/commands", "descripcion": "Mostrar todos los comandos disponibles."},
+    {"comando": "/energy", "descripcion": "Mostrar tu energía actual."},
+    {"comando": "/inventory", "descripcion": "Mostrar tu inventario de personaje."},
+    {"comando": "/hunt", "descripcion": "Consume energía para combatir y conseguir items o morir en el intento."},
+    {"comando": "/profile", "descripcion": "Mostrar tu perfil de personaje."},
+    {"comando": "/forage", "descripcion": "Gasta energía para recolectar materiales."},
+    {"comando": "/sleep", "descripcion": "Recupera energía descansando."},
+]
 # - `/menu`: Crea un menu con las acciones disponibles.
 
 
