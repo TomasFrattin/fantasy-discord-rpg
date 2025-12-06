@@ -103,3 +103,19 @@ DEFEAT_DESCS = [
     "🌌 Una energía ancestral te envuelve y renace tu espíritu, listo para continuar la aventura.",
     "🔥 Espíritus antiguos susurran y tu esencia regresa, fortalecida y renovada."
 ]
+
+ESCAPE_CONFIG = {
+    "probabilidad": 0.75, 
+    "mensajes_exito": [
+        "🌀 Esquivaste el ataque de la criatura y desapareciste entre las sombras.",
+        "🔥 Saltaste sobre un tronco caído y lograste poner distancia entre vos y tu enemigo.",
+        "🌪️ Una ráfaga de viento te impulsó fuera del alcance del monstruo, escapaste con vida.",
+        "💨 Te deslizaste entre las garras del enemigo y finalmente lograste escapar."
+    ],
+    "mensajes_fallo": [
+        "😣 Tropezaste con una raíz mientras corrías y el monstruo te alcanzó.",
+        "💥 Saltaste torpemente y apenas lograste esquivar un ataque, pero no lograste escapar.",
+        "🌲 Tu intento de huida fue frustrado por un obstáculo inesperado, el enemigo sigue cerca.",
+        "🕳️ Caíste en un pequeño agujero mientras corrías, perdiendo tiempo y permitiendo que la criatura te acorralara."
+    ]
+}

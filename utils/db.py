@@ -237,9 +237,22 @@ def gastar_energia(id_usuario, cantidad=1):
 def resetear_todos():
     conn = conectar()
     cursor = conn.cursor()
-    cursor.execute("""
-        UPDATE jugadores
-        SET energia = ?, last_reset = ?
-    """, (ENERGIA_MAX, datetime.now()))
+
+    cursor.execute("SELECT id_usuario, vida, vida_max FROM jugadores")
+    jugadores = cursor.fetchall()
+
+    for jugador in jugadores:
+        user_id = jugador["id_usuario"]
+        vida_actual = jugador["vida"]
+        vida_max = jugador["vida_max"]
+
+        # Recuperar energía al máximo
+        cursor.execute("UPDATE jugadores SET energia = ? WHERE id_usuario = ?", (ENERGIA_MAX, user_id))
+
+        # Recuperar 10% de la vida máxima (igual que sleep)
+        recuperar = max(1, int(vida_max * 0.10))
+        nueva_vida = min(vida_actual + recuperar, vida_max)
+        cursor.execute("UPDATE jugadores SET vida = ? WHERE id_usuario = ?", (nueva_vida, user_id))
+
     conn.commit()
     conn.close()

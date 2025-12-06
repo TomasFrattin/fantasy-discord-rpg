@@ -26,11 +26,23 @@ for item in EQUIPABLES:
     r = item.get("rareza", "comun")
     EQUIPABLES_BY_RARITY.setdefault(r, []).append(item)
 
+# def obtener_tier(dificultad=1.0):
+#     # dificultad >1 aumenta chance de raros/épicos/legendarios
+#     prob = random.random()
+#     if prob < 0.50/dificultad:
+#         return "comun"
+#     elif prob < 0.80/dificultad:
+#         return "raro"
+#     elif prob < 0.95/dificultad:
+#         return "epico"
+#     else:
+#         return "legendario"
+    
 def obtener_tier():
     prob = random.random()
-    if prob < 0.60: return "comun"
-    if prob < 0.85: return "raro"
-    if prob < 0.97: return "epico"
+    if prob < 0.65: return "comun"
+    if prob < 0.91: return "raro"
+    if prob < 0.99: return "epico"
     return "legendario"
 
 

@@ -155,6 +155,135 @@
       "stats": { "vida": 10 },
       "valor_oro": 120,
       "descripcion": "Otorgan una velocidad sobrenatural."
+    },
+    {
+      "id": "weapon_007",
+      "nombre": "Espada de Acero",
+      "tipo": "arma",
+      "rareza": "raro",
+      "stats": { "ataque": 14 },
+      "valor_oro": 35,
+      "descripcion": "Una espada confiable, equilibrada y duradera."
+    },
+    {
+      "id": "weapon_008",
+      "nombre": "Hacha Crepuscular",
+      "tipo": "arma",
+      "rareza": "epico",
+      "stats": { "ataque": 22 },
+      "valor_oro": 85,
+      "descripcion": "Sus golpes llevan la fuerza de la noche."
+    },
+    {
+      "id": "weapon_009",
+      "nombre": "Lanza de Fuego",
+      "tipo": "arma",
+      "rareza": "epico",
+      "stats": { "ataque": 26 },
+      "valor_oro": 110,
+      "descripcion": "Una lanza que emite llamas al impactar."
+    },
+    {
+      "id": "weapon_010",
+      "nombre": "Espada del Vacío",
+      "tipo": "arma",
+      "rareza": "legendario",
+      "stats": { "ataque": 38 },
+      "valor_oro": 200,
+      "descripcion": "Una espada que parece absorber la luz a su alrededor."
+    },
+
+    {
+      "id": "helmet_005",
+      "nombre": "Casco de Acero Ligero",
+      "tipo": "casco",
+      "rareza": "raro",
+      "stats": { "vida": 12 },
+      "valor_oro": 25,
+      "descripcion": "Protección eficaz sin sacrificar movilidad."
+    },
+    {
+      "id": "helmet_006",
+      "nombre": "Casco del Dragón",
+      "tipo": "casco",
+      "rareza": "epico",
+      "stats": { "vida": 20 },
+      "valor_oro": 60,
+      "descripcion": "Forjado con escamas de dragón, resistente al fuego."
+    },
+    {
+      "id": "helmet_007",
+      "nombre": "Diadema del Sumo Mago",
+      "tipo": "casco",
+      "rareza": "legendario",
+      "stats": { "vida": 35 },
+      "valor_oro": 150,
+      "descripcion": "Un artefacto antiguo que protege cuerpo y mente."
+    },
+
+    {
+      "id": "armor_005",
+      "nombre": "Túnica del Viajero",
+      "tipo": "armadura",
+      "rareza": "comun",
+      "stats": { "vida": 12 },
+      "valor_oro": 12,
+      "descripcion": "Ligera, pero con una protección básica aceptable."
+    },
+    {
+      "id": "armor_006",
+      "nombre": "Cota de Placas Ligera",
+      "tipo": "armadura",
+      "rareza": "raro",
+      "stats": { "vida": 22 },
+      "valor_oro": 40,
+      "descripcion": "Placas sólidas pero con buena movilidad."
+    },
+    {
+      "id": "armor_007",
+      "nombre": "Armadura del Centinela",
+      "tipo": "armadura",
+      "rareza": "epico",
+      "stats": { "vida": 35 },
+      "valor_oro": 90,
+      "descripcion": "Ideal para proteger zonas vitales sin limitar la agilidad."
+    },
+    {
+      "id": "armor_008",
+      "nombre": "Coraza del Invencible",
+      "tipo": "armadura",
+      "rareza": "legendario",
+      "stats": { "vida": 60 },
+      "valor_oro": 210,
+      "descripcion": "Una armadura que inspira respeto y temor en batalla."
+    },
+
+    {
+      "id": "boots_004",
+      "nombre": "Botas de Sigilo",
+      "tipo": "botas",
+      "rareza": "raro",
+      "stats": { "vida": 4 },
+      "valor_oro": 16,
+      "descripcion": "Permiten moverse silenciosamente en cualquier terreno."
+    },
+    {
+      "id": "boots_005",
+      "nombre": "Botas de Furia",
+      "tipo": "botas",
+      "rareza": "epico",
+      "stats": { "vida": 8 },
+      "valor_oro": 70,
+      "descripcion": "Aumenta velocidad y agresividad en combate."
+    },
+    {
+      "id": "boots_006",
+      "nombre": "Botas del Viento",
+      "tipo": "botas",
+      "rareza": "legendario",
+      "stats": { "vida": 15 },
+      "valor_oro": 140,
+      "descripcion": "Otorgan velocidad sobrenatural y agilidad inhumana."
     }
   ]
 }

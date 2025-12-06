@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 from tasks.tasks import start_all
 from discord.ui import View, Button
-from config import TOKEN, PREFIX, ENERGIA_MAX, WELCOME_CHANNEL_ID
+from config import TOKEN, PREFIX, WELCOME_CHANNELS
 from views.affinity import ElegirAfinidad
 from utils import tablas
 from data.texts import STARTUP_COMMANDS
@@ -68,16 +68,20 @@ async def on_ready():
     except Exception as e:
         print(f"Error al sincronizar comandos slash: {e}")
 
-    channel = bot.get_channel(WELCOME_CHANNEL_ID)
-    if channel:
-        description = "\n".join(f"- `{c['comando']}`: {c['descripcion']}" for c in STARTUP_COMMANDS)
-        embed = discord.Embed(
-            title="🌌 Arkanor Bot iniciado!",
-            description=f"Comandos disponibles:\n\n{description}",
-            color=discord.Color.blue()
-        )
-        embed.set_footer(text="🧙 Que la aventura comience!")
-        await channel.send(embed=embed)
+    WELCOME_CHANNELS = [1422721307455524916, 1446937772781863124]
+
+    description = "\n".join(f"- `{c['comando']}`: {c['descripcion']}" for c in STARTUP_COMMANDS)
+    embed = discord.Embed(
+        title="🌌 Arkanor Bot iniciado!",
+        description=f"Comandos disponibles:\n\n{description}",
+        color=discord.Color.blue()
+    )
+    embed.set_footer(text="🧙 Que la aventura comience!")
+
+    for channel_id in WELCOME_CHANNELS:
+        channel = bot.get_channel(channel_id)
+        if channel:
+            await channel.send(embed=embed)
 
     print(f"Bot iniciado como {bot.user}")
 

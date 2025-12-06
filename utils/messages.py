@@ -24,3 +24,10 @@ def mensaje_sin_energia():
     )
     return embed
 
+def mensaje_accion_en_progreso():
+    embed = Embed(
+        title="⏳ Acción en progreso",
+        description="Ya estás realizando otra acción. Por favor, finaliza la actual antes de iniciar una nueva.",
+        color=Color.red()
+    )
+    return embed

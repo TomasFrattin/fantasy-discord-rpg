@@ -6,8 +6,8 @@ from discord.ui import View, button, Button
 from utils import db
 from utils.combat_manager import create_combat, get_combat, delete_combat, has_combat
 import logging
-from data.texts import DEFEAT_DESCS
-from utils.messages import mensaje_usuario_no_creado, mensaje_sin_energia
+from data.texts import DEFEAT_DESCS, ESCAPE_CONFIG
+from utils.messages import mensaje_usuario_no_creado, mensaje_sin_energia, mensaje_accion_en_progreso
 
 # Pool simple inicial de mobs (expandible)
 MOBS = [
@@ -117,6 +117,11 @@ class HuntView(View):
             jugador = db.obtener_jugador(self.user_id)
             vida_max = jugador["vida_max"]
             db.actualizar_vida(self.user_id, max(1, vida_max // 2))  # Deja la vida a la mitad, mínimo 1
+
+            # Poner energía a 0 al morir
+            energia_actual = jugador["energia"]
+            db.gastar_energia(self.user_id, energia_actual)
+
             delete_combat(self.user_id)
             desc = random.choice(DEFEAT_DESCS)
             embed.add_field(
@@ -143,14 +148,84 @@ class HuntView(View):
         create_combat(self.user_id, combate)
         await interaction.response.edit_message(embed=embed, view=self)
 
+
+    async def intentar_huir(self, interaction: Interaction):
+        combate = get_combat(self.user_id)
+        if not combate:
+            return await interaction.response.send_message("El combate ya no está activo.", ephemeral=True)
+
+        exito = random.random() <= ESCAPE_CONFIG["probabilidad"]
+        if exito:
+            mensaje = random.choice(ESCAPE_CONFIG["mensajes_exito"])
+            delete_combat(self.user_id)
+            embed = Embed(
+                title="🏃‍♂️ ¡Has escapado!",
+                description=mensaje,
+                color=0x00FF00
+            )
+            embed.add_field(
+                name=f"💀 {combate['mob_nombre']}",
+                value=f"HP: **{combate['mob_hp']}/{combate['mob_hp_max']}**",
+                inline=False
+            )
+            embed.add_field(
+                name=f"🧍 Jugador",
+                value=f"HP: **{combate['player_hp']}/{combate['player_hp_max']}**",
+                inline=False
+            )
+            await interaction.response.edit_message(embed=embed, view=None)
+            return
+
+        # Falló el escape: el mob ataca automáticamente
+        mob_atk = combate["mob_atk"]
+        player_def = int(combate["player_hp_max"] * 0.02)
+        daño_mob = int(max(mob_atk * random.uniform(0.95, 1.05) - player_def, 0))
+        fallo_mob = random.random() < 0.1
+        if fallo_mob:
+            daño_mob = 0
+
+        combate["player_hp"] -= daño_mob
+        if combate["player_hp"] < 0:
+            combate["player_hp"] = 0
+        db.actualizar_vida(self.user_id, combate["player_hp"])
+
+        # Embed de fallo con estilo de combate
+        mensaje = random.choice(ESCAPE_CONFIG["mensajes_fallo"])
+        embed = Embed(
+            title="❌ ¡No pudiste huir!",
+            description=f"{mensaje}\n💥 {combate['mob_nombre']} te hizo **{daño_mob}** de daño.",
+            color=0xFF4500
+        )
+        embed.add_field(
+            name=f"💀 {combate['mob_nombre']}",
+            value=f"HP: **{combate['mob_hp']}/{combate['mob_hp_max']}**",
+            inline=False
+        )
+        embed.add_field(
+            name=f"🧍 Jugador",
+            value=f"HP: **{combate['player_hp']}/{combate['player_hp_max']}**",
+            inline=False
+        )
+
+        # Guardar estado y mantener vista
+        create_combat(self.user_id, combate)
+        await interaction.response.edit_message(embed=embed, view=self)
+
+
+
     @button(label="Huir", style=ButtonStyle.danger)
     async def huir(self, interaction: Interaction, button: Button):
         if str(interaction.user.id) != self.user_id:
             return await interaction.response.send_message("No podés usar este menú.", ephemeral=True)
 
-        # Borrar combate y notificar
-        delete_combat(self.user_id)
-        await interaction.response.edit_message(content="🏃‍♂️ Huiste del combate. Volvés a un lugar seguro.", embed=None, view=None)
+        await self.intentar_huir(interaction)
+
+    @button(label="Items WIP", style=ButtonStyle.secondary, disabled=True)
+    async def items_combate(self, interaction: Interaction, button: Button):
+        if str(interaction.user.id) != self.user_id:
+            return await interaction.response.send_message("No podés usar este menú.", ephemeral=True)
+
+        await self.intentar_huir(interaction)
 
 
 class HuntCommand(commands.Cog):
@@ -171,10 +246,8 @@ class HuntCommand(commands.Cog):
 
         # Si ya tiene un combate activo, avisar
         if has_combat(user_id):
-            return await interaction.response.send_message(
-                "⚠️ Ya tenés un combate activo. Usá los botones o huí antes de buscar otro.",
-                ephemeral=True
-            )
+            return await interaction.response.send_message(embed=mensaje_accion_en_progreso(), ephemeral=True)
+
 
         # Gastar energía
         db.gastar_energia(user_id, 1)
