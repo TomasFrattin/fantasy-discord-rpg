@@ -3,8 +3,6 @@ import sqlite3
 from config import DB_FILE, ENERGIA_MAX
 from datetime import datetime
 import random
-from data.texts import RECOLECTAR_DESCRIPTIONS
-from data_loader import MATERIALES
 from config import DB_FILE
 
 # -------------------- CONEXIÓN --------------------
@@ -163,12 +161,23 @@ def obtener_inventario(user_id: str):
 
 import random
 
-from data_loader import MATERIALES
 
 def recolectar_materiales(user_id: str):
-    pool = []
-    for item in MATERIALES:
-        rareza = item.get("rareza", "comun")
+    conn = conectar()
+    cursor = conn.cursor()
+
+    # Traer todos los materiales de la DB
+    cursor.execute("SELECT * FROM items WHERE tipo = 'material'")
+    materiales = cursor.fetchall()
+
+    if not materiales:
+        conn.close()
+        return []
+
+    # Preparar pool con peso y cantidad máxima
+    pool = {}
+    for item in materiales:
+        rareza = item["rareza"] or "comun"
         if rareza == "comun":
             peso, max_q = 50, 3
         elif rareza == "raro":
@@ -177,27 +186,31 @@ def recolectar_materiales(user_id: str):
             peso, max_q = 5, 1
         else:
             peso, max_q = 1, 1
-        pool.append((item["id"], peso, max_q))
+        pool[item["id"]] = {"peso": peso, "max_q": max_q, "nombre": item["nombre"]}
 
     # Elegir entre 1 y 5 materiales distintos
-    n_types = random.choices([1,2,3,4,5], weights=[40,30,15,10,5])[0]
+    n_types = random.choices([1, 2, 3, 4, 5], weights=[40, 30, 15, 10, 5])[0]
+
     # Selección ponderada sin repetición
-    ids, pesos = zip(*[(p[0], p[1]) for p in pool])
+    ids, pesos = zip(*[(k, v["peso"]) for k, v in pool.items()])
     chosen_ids = []
     while len(chosen_ids) < n_types and ids:
         selected = random.choices(ids, weights=pesos)[0]
         if selected not in chosen_ids:
             chosen_ids.append(selected)
 
+    # Asignar cantidad aleatoria y agregar al inventario
     resultados = []
     for item_id in chosen_ids:
-        max_q = next(p[2] for p in pool if p[0] == item_id)
+        max_q = pool[item_id]["max_q"]
+        nombre = pool[item_id]["nombre"]
         cantidad = random.randint(1, max_q)
         agregar_item(user_id, item_id, cantidad)
-        resultados.append((item_id, cantidad))
+        resultados.append((item_id, nombre, cantidad))
 
-    mapping = {item["id"]: item["nombre"] for item in MATERIALES}
-    return [(item_id, mapping.get(item_id, item_id), cantidad) for item_id, cantidad in resultados]
+    conn.close()
+    return resultados
+
 # -------------------- EQUIPAMIENTO --------------------
 def equipar(id_usuario, slot, item_id):
     conn = conectar()
@@ -272,3 +285,28 @@ def eliminar_jugador(user_id: str):
     cursor.execute("DELETE FROM jugadores WHERE id_usuario = ?", (user_id,))
     conn.commit()
     conn.close()
+
+
+def obtener_materiales():
+    conn = conectar()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM items WHERE tipo='material'")
+    items = cursor.fetchall()
+    conn.close()
+    return items
+
+def obtener_consumibles():
+    conn = conectar()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM items WHERE tipo='consumible'")
+    items = cursor.fetchall()
+    conn.close()
+    return items
+
+def obtener_equipables():
+    conn = conectar()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM items WHERE tipo IN ('arma','armadura','casco','botas')")
+    items = cursor.fetchall()
+    conn.close()
+    return items

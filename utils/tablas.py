@@ -48,7 +48,7 @@ def crear_tabla_jugadores():
     conn.commit()
     conn.close()
 
-def crear_tabla_items_consumibles():
+def crear_tabla_items():
     conn = conectar()
     cursor = conn.cursor()
     
@@ -58,7 +58,8 @@ def crear_tabla_items_consumibles():
             nombre TEXT NOT NULL,
             tipo TEXT,
             descripcion TEXT,
-            rareza TEXT
+            rareza TEXT,
+            url TEXT
         )
     """)
 
@@ -69,10 +70,10 @@ def crear_tabla_items_consumibles():
     for item in data["materiales"]:
         cursor.execute(
             """
-            INSERT OR IGNORE INTO items (id, nombre, tipo, descripcion, rareza)
-            VALUES (?, ?, ?, ?, ?)
+            INSERT OR IGNORE INTO items (id, nombre, tipo, descripcion, rareza, url)
+            VALUES (?, ?, ?, ?, ?, ?)
             """,
-            (item["id"], item["nombre"], item["tipo"], item["descripcion"], item["rareza"])
+            (item["id"], item["nombre"], item["tipo"], item["descripcion"], item["rareza"], item.get("url"))
         )
 
     conn.commit()
