@@ -13,6 +13,13 @@ RARITY_STYLE = {
     "legendario":  {"emoji": "🟡", "color": 0xF1C40F},
 }
 
+RAREZA_ORDEN = {
+    "legendario": 4,
+    "epico": 3,
+    "raro": 2,
+    "comun": 1
+}
+
 class InventoryCommand(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -81,6 +88,14 @@ class InventoryCommand(commands.Cog):
         inventario = db.obtener_inventario(user_id)
 
         if inventario:
+            # ORDENAR INVENTARIO POR RAREZA (DESC) Y NOMBRE (ASC)
+            inventario.sort(
+                key=lambda o: (
+                    -RAREZA_ORDEN.get(o["rareza"], 0),
+                    o["nombre"].lower()
+                )
+            )
+
             inv_lindo = []
             for obj in inventario:
                 rareza = obj["rareza"]
@@ -93,6 +108,7 @@ class InventoryCommand(commands.Cog):
             inventario_texto = "\n".join(inv_lindo)
         else:
             inventario_texto = "Vacío"
+
 
         # -------------------------
         # EMBED FINAL
