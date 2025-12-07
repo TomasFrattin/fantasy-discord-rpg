@@ -34,13 +34,13 @@ async def evitar_acciones_simultaneas(ctx):
 
 tablas.crear_tabla_jugadores()
 tablas.crear_tabla_inventario()
-tablas.crear_tabla_items_consumibles()
+tablas.crear_tabla_items()
 print("Base de datos borrada y tabla recreada al iniciar el bot.")
 
 db.resetear_todos()
 
-mi_id = "366690600709521419"
-db.eliminar_jugador(mi_id)
+# mi_id = "366690600709521419"
+# db.eliminar_jugador(mi_id)
 # mi_id_2 = "323250219796135937"
 # db.eliminar_jugador(mi_id_2)
 print("Jugador eliminado de la base de datos.")
@@ -57,8 +57,8 @@ async def main():
         await bot.load_extension("commands.hunt")     # <- cog de cacería
         await bot.load_extension("commands.merchant") # <- cog de mercader
         await bot.load_extension("commands.fish")     # <- cog de pesca
-
-        # await bot.load_extension("commands.menu") PARA UNA PROX IMPLEMENTACION, ES MAS DIFICIL VER LOS PROBLEMAS
+        await bot.load_extension("commands.menu")
+        await bot.load_extension("commands.craft")    # <- cog de crafting
 
         await bot.start(TOKEN)
 

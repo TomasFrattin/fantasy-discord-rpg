@@ -310,3 +310,33 @@ def obtener_equipables():
     items = cursor.fetchall()
     conn.close()
     return items
+
+
+
+def actualizar_accion(id_usuario: str, accion: str | None):
+    """Actualiza la acción actual del jugador (pescando, etc.)"""
+    conn = conectar()
+    cursor = conn.cursor()
+    cursor.execute("UPDATE jugadores SET accion_actual = ? WHERE id_usuario = ?", (accion, id_usuario))
+    conn.commit()
+    conn.close()
+
+
+
+def agregar_columna_accion_actual():
+    """Agrega la columna 'accion_actual' a la tabla jugadores si no existe."""
+    conn = conectar()
+    cursor = conn.cursor()
+
+    # Revisar columnas existentes
+    cursor.execute("PRAGMA table_info(jugadores)")
+    columnas = [col[1] for col in cursor.fetchall()]
+
+    if "accion_actual" not in columnas:
+        cursor.execute("ALTER TABLE jugadores ADD COLUMN accion_actual TEXT DEFAULT NULL")
+        print("Columna 'accion_actual' agregada correctamente.")
+    else:
+        print("La columna 'accion_actual' ya existe.")
+
+    conn.commit()
+    conn.close()

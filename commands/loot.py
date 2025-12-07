@@ -69,24 +69,24 @@ class LootCommand(commands.Cog):
         tipo = item.get("tipo", "otro")
         jugador = db.obtener_jugador(user_id)
 
-        # Consumible → no equipable
-        if tipo not in ("arma", "armadura", "casco", "botas"):
-            db.agregar_consumible(user_id, item["id"])
+        # Consumible → no equipable -> Refactorizar completo luego
+        # if tipo not in ("arma", "armadura", "casco", "botas"):
+        #     db.agregar_consumible(user_id, item["id"])
 
-            emoji = RARITY_EMOJIS.get(tier, "🔹")
+        #     emoji = RARITY_EMOJIS.get(tier, "🔹")
 
-            embed = discord.Embed(
-                title=f"{emoji} {item['nombre']} {emoji}",
-                description=(
-                    f"**Tipo:** {tipo.capitalize()}\n"
-                    f"**Rareza:** {emoji} **{tier.capitalize()}**"
-                ),
-                color=RARITY_COLORS[tier]
-            )
+        #     embed = discord.Embed(
+        #         title=f"{emoji} {item['nombre']} {emoji}",
+        #         description=(
+        #             f"**Tipo:** {tipo.capitalize()}\n"
+        #             f"**Rareza:** {emoji} **{tier.capitalize()}**"
+        #         ),
+        #         color=RARITY_COLORS[tier]
+        #     )
 
-            embed.set_footer(text=f"⚡ Energía restante: {db.obtener_energia(user_id)}")
+        #     embed.set_footer(text=f"⚡ Energía restante: {db.obtener_energia(user_id)}")
 
-            return await interaction.response.send_message(embed=embed)
+        #     return await interaction.response.send_message(embed=embed)
 
         # Equipable
         columnas = {
