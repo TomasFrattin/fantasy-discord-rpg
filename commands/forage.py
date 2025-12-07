@@ -31,7 +31,7 @@ def crear_collage(rutas, tamaño_celda=(128, 128), gap=10):
         y = (idx // cols) * (tamaño_celda[1] + gap)
         collage.paste(img, (x, y), img)
 
-    output_path = "data/temp_collage.png"
+    output_path = "data/temp/temp_collage.png"
     collage.save(output_path)
     return output_path
 

@@ -1,5 +1,6 @@
 # commands/hunt.py
 import random
+import discord
 from discord import app_commands, Interaction, Embed, ButtonStyle
 from discord.ext import commands
 from discord.ui import View, button, Button
@@ -8,6 +9,8 @@ from utils.combat_manager import create_combat, get_combat, delete_combat, has_c
 import logging
 from data.texts import DEFEAT_DESCS, ESCAPE_CONFIG
 from utils.messages import mensaje_usuario_no_creado, mensaje_sin_energia, mensaje_accion_en_progreso
+from PIL import Image
+import os
 
 # Pool simple inicial de mobs (expandible)
 MOBS = MOBS = [
@@ -43,7 +46,21 @@ MOBS = MOBS = [
      "url": "C:\\Users\\Tomas\\Downloads\\mobs\\hechicero.png"},
 ]
 
+def preparar_imagen_mob(ruta, size=(300, 300)):
+    img = Image.open(ruta).convert("RGBA")
+    img.thumbnail(size, Image.LANCZOS)
 
+    # cuadro blanco o transparente
+    fondo = Image.new("RGBA", size, (0, 0, 0, 0))
+
+    # centrar imagen
+    offset = ((size[0] - img.width)//2, (size[1] - img.height)//2)
+    fondo.paste(img, offset, img)
+
+    output_path = f"data/temp/temp_mob_{os.path.basename(ruta)}"
+    fondo.save(output_path)
+
+    return output_path
 
 def elegir_mob() -> dict:
     """Elige un mob aleatorio (posible lugar para tier/probabilidades)."""
@@ -99,6 +116,11 @@ class HuntView(View):
             title=f"⚔️ Combate vs {combate['mob_emoji']} {combate['mob_nombre']}",
             color=0xFF4500
         )
+
+        # No mostrar imagen más veces
+        # Si no querés que se muestre nunca más, simplemente no hacemos nada aquí.
+        combate["image_shown"] = True
+
         embed.add_field(
             name=f"💀 {combate['mob_nombre']}",
             value=f"HP: **{combate['mob_hp']}/{combate['mob_hp_max']}**",
@@ -145,7 +167,7 @@ class HuntView(View):
                 value=f"{desc}\n\nAl incorporarte, notas que perdiste todo tu oro 💰 y sientes un gran cansancio. 😓",
                 inline=False
             )       
-            await interaction.response.edit_message(embed=embed, view=None)
+            await interaction.response.edit_message(embed=embed, view=None, attachments=[])
             return
 
         if combate["mob_hp"] <= 0:
@@ -155,14 +177,14 @@ class HuntView(View):
             # Llamar función de loot y mostrar resultado
             from commands.loot import generar_loot_para_usuario
             loot_embed, loot_view = generar_loot_para_usuario(self.user_id)
-            await interaction.response.edit_message(embed=embed, view=None)
+            await interaction.response.edit_message(embed=embed, view=None, attachments=[])
             # Enviar loot como nuevo mensaje (no ephemeral, para que pueda interactuar)
             await interaction.followup.send(embed=loot_embed, view=loot_view, ephemeral=True)
             return
 
         # Si sigue el combate, actualiza el mensaje y guarda el estado
         create_combat(self.user_id, combate)
-        await interaction.response.edit_message(embed=embed, view=self)
+        await interaction.response.edit_message(embed=embed, view=self, attachments=[])
 
 
     async def intentar_huir(self, interaction: Interaction):
@@ -189,7 +211,7 @@ class HuntView(View):
                 value=f"HP: **{combate['player_hp']}/{combate['player_hp_max']}**",
                 inline=False
             )
-            await interaction.response.edit_message(embed=embed, view=None)
+            await interaction.response.edit_message(embed=embed, view=None, attachments=[])
             return
 
         # Falló el escape: el mob ataca automáticamente
@@ -212,6 +234,10 @@ class HuntView(View):
             description=f"{mensaje}\n💥 {combate['mob_nombre']} te hizo **{daño_mob}** de daño.",
             color=0xFF4500
         )
+
+        # Nunca se debe mostrar de nuevo
+        combate["image_shown"] = True
+
         embed.add_field(
             name=f"💀 {combate['mob_nombre']}",
             value=f"HP: **{combate['mob_hp']}/{combate['mob_hp_max']}**",
@@ -286,6 +312,7 @@ class HuntCommand(commands.Cog):
             "mob_atk": mob["ataque"],
             "player_hp": player_hp,
             "player_hp_max": int(jugador["vida_max"]),
+            "image_shown": False,
         }
         create_combat(user_id, combat_payload)
 
@@ -306,7 +333,23 @@ class HuntCommand(commands.Cog):
         embed.add_field(name="🗡️ Daño", value=f"**{jugador['damage']}**", inline=True)
 
         view = HuntView(user_id)
-        await interaction.response.send_message(embed=embed, view=view)
+        mob_img_path = preparar_imagen_mob(mob["url"], size=(280, 280))
+
+        if mob_img_path:
+            file = discord.File(mob_img_path, filename=os.path.basename(mob_img_path))
+            embed.set_image(url=f"attachment://{os.path.basename(mob_img_path)}")
+
+            await interaction.response.send_message(embed=embed, view=view, file=file)
+
+            # eliminar archivo temporal
+            try:
+                os.remove(mob_img_path)
+            except:
+                pass
+
+        else:
+            await interaction.response.send_message(embed=embed, view=view)
+
 
 async def setup(bot):
     await bot.add_cog(HuntCommand(bot))
