@@ -280,10 +280,15 @@ class HuntCommand(commands.Cog):
         row = db.obtener_jugador(user_id)
         if not row:
             return await interaction.response.send_message(embed=mensaje_usuario_no_creado(), ephemeral=True)
+        
         energia = db.obtener_energia(user_id)
         if energia <= 0:
             return await interaction.response.send_message(embed=mensaje_sin_energia(), ephemeral=True)
 
+        accion = db.obtener_accion_actual(user_id)
+        if accion:
+            return await interaction.response.send_message(embed=mensaje_accion_en_progreso(user_id), ephemeral=True)
+        
         # Si ya tiene un combate activo, avisar
         if has_combat(user_id):
             return await interaction.response.send_message(embed=mensaje_accion_en_progreso(), ephemeral=True)

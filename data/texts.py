@@ -107,6 +107,26 @@ DEFEAT_DESCS = [
     "🔥 Espíritus antiguos susurran y tu esencia regresa, fortalecida y renovada."
 ]
 
+
+import random
+
+MENSAJES_PESCA = [
+    "Te adentras en las aguas tranquilas durante **{minutos}** minutos 🎣. Que la suerte te acompañe en tu pesca.",
+    "El sol brilla sobre el lago 🌊 y el viento susurra entre los árboles. Pescarás durante **{minutos}** minutos. ¡Buena suerte!",
+    "Encuentras un árbol bajo el que descansar 🍃 mientras lanzas la caña. Tu sesión de pesca durará **{minutos}** minutos. ¡Que salga algo grande!",
+    "Te sientas en una vieja roca 🪵, tiras la caña y esperas. Pasarán **{minutos}** minutos de pura aventura piscatoria.",
+    "Las aguas parecen misteriosas hoy 🐟. Estás listo para pescar durante **{minutos}** minutos. ¡Que los peces estén de tu lado!",
+    "El río refleja los colores del atardecer 🌅. Tu cacería de peces durará **{minutos}** minutos. ¡A por ellos!",
+    "Aventurero 🧭, tus pasos te traen a este lago sereno. Tirarás la caña durante **{minutos}** minutos, atentos a los movimientos en el agua.",
+    "Hojas caen suavemente a tu alrededor 🍂 mientras pescas durante **{minutos}** minutos. Mantén los ojos abiertos y la paciencia.",
+    "El sonido de las olas acompaña tu espera ⚓. Pescarás durante **{minutos}** minutos, que el mar sea generoso contigo.",
+    "Entre árboles y brisa fresca 🌲, lanzas la caña. Tu pesca durará **{minutos}** minutos. ¡Que encuentres algo especial!"
+]
+
+
+def mensaje_inicio_pesca(minutos: int) -> str:
+    return random.choice(MENSAJES_PESCA).format(minutos=minutos)
+
 ESCAPE_CONFIG = {
     "probabilidad": 0.75, 
     "mensajes_exito": [

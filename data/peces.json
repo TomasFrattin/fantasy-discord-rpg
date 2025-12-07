@@ -1,0 +1,84 @@
+{
+  "peces": [
+    {
+      "id": "pez_comun",
+      "nombre": "Pez Común",
+      "tipo": "material",
+      "rareza": "comun",
+      "descripcion": "Un pez común, fácil de pescar. Ideal para recetas básicas o vender por unas monedas.",
+      "valor_oro": 5,
+      "url": "assets/materiales/pez_comun.png",
+      "peso": 50
+    },
+    {
+      "id": "pez_raro",
+      "nombre": "Pez Raro",
+      "tipo": "material",
+      "rareza": "raro",
+      "descripcion": "Un pez poco común, algo más difícil de capturar. Usado en pociones y recetas especiales.",
+      "valor_oro": 15,
+      "url": "assets/materiales/pez_raro.png",
+      "peso": 20
+    },
+    {
+      "id": "pez_epico",
+      "nombre": "Pez Épico",
+      "tipo": "material",
+      "rareza": "epico",
+      "descripcion": "Un pez épico y muy difícil de pescar. Ideal para recetas avanzadas y comercio de alto valor.",
+      "valor_oro": 50,
+      "url": "assets/materiales/pez_epico.png",
+      "peso": 5
+    },
+    {
+      "id": "pez_legendario",
+      "nombre": "Pez Legendario",
+      "tipo": "material",
+      "rareza": "legendario",
+      "descripcion": "Un pez mítico, extremadamente raro y codiciado. Su captura es un verdadero logro.",
+      "valor_oro": 200,
+      "url": "assets/materiales/pez_legendario.png",
+      "peso": 1
+    },
+    {
+      "id": "pez_dragon",
+      "nombre": "Pez Dragón",
+      "tipo": "material",
+      "rareza": "legendario",
+      "descripcion": "Un pez con escamas de colores vivos y resistente como un dragón. Su carne y escamas son altamente valoradas.",
+      "valor_oro": 350,
+      "url": "assets/materiales/pez_dragon.png",
+      "peso": 1
+    },
+    {
+      "id": "pez_fantasma",
+      "nombre": "Pez Fantasma",
+      "tipo": "material",
+      "rareza": "epico",
+      "descripcion": "Un pez casi invisible que se mueve sigilosamente en las profundidades. Muy difícil de atrapar.",
+      "valor_oro": 75,
+      "url": "assets/materiales/pez_fantasma.png",
+      "peso": 2
+    },
+    {
+      "id": "pez_solar",
+      "nombre": "Pez Solar",
+      "tipo": "material",
+      "rareza": "raro",
+      "descripcion": "Un pez que brilla con luz cálida. Usado en pociones y comidas que otorgan energías especiales.",
+      "valor_oro": 25,
+      "url": "assets/materiales/pez_solar.png",
+      "peso": 10
+    },
+    {
+      "id": "alga_magica",
+      "nombre": "Alga Mágica",
+      "tipo": "material",
+      "rareza": "raro",
+      "descripcion": "Una alga que se encuentra en aguas profundas y tiene propiedades curativas. Utilizada en pociones y recetas.",
+      "valor_oro": 20,
+      "url": "assets/materiales/alga_magica.png",
+      "peso": 15
+    }
+  ]
+}

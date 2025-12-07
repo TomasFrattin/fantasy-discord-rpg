@@ -6,6 +6,9 @@ from pathlib import Path
 p = Path(__file__).parent / "data" / "materiales.json"
 MATERIALES = json.loads(p.read_text(encoding="utf-8"))["materiales"]
 
+p = Path(__file__).parent / "data" / "peces.json"
+PECES = json.loads(p.read_text(encoding="utf-8"))["peces"]
+
 # PARA LAS POCIONES
 # p = Path(__file__).parent / "data" / "consumibles.json"
 # CONSUMIBLES = json.loads(p.read_text(encoding="utf-8"))["consumibles"]

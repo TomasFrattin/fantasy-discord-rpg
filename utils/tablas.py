@@ -15,35 +15,38 @@ def crear_tabla_jugadores():
     conn = conectar()
     cursor = conn.cursor()
     cursor.execute("""
-    CREATE TABLE IF NOT EXISTS jugadores (
-        id_usuario TEXT PRIMARY KEY,
-        username TEXT,
-        afinidad TEXT,
-        
-        -- stats base
-        vida_base INTEGER DEFAULT 100,
-        base_damage INTEGER DEFAULT 10,
+        CREATE TABLE IF NOT EXISTS jugadores (
+            id_usuario TEXT PRIMARY KEY,
+            username TEXT,
+            afinidad TEXT,
+            
+            -- stats base
+            vida_base INTEGER DEFAULT 100,
+            base_damage INTEGER DEFAULT 10,
 
-        -- stats actuales
-        vida INTEGER DEFAULT 100,
-        damage INTEGER DEFAULT 10,
-        energia INTEGER DEFAULT 30,
+            -- stats actuales
+            vida INTEGER DEFAULT 100,
+            damage INTEGER DEFAULT 10,
+            energia INTEGER DEFAULT 30,
 
-        -- stats máximos
-        vida_max INTEGER DEFAULT 100,
+            -- stats máximos
+            vida_max INTEGER DEFAULT 100,
 
-        exploracion INTEGER DEFAULT 0,
-        combate INTEGER DEFAULT 0,
-        caceria INTEGER DEFAULT 0,
+            exploracion INTEGER DEFAULT 0,
+            combate INTEGER DEFAULT 0,
+            caceria INTEGER DEFAULT 0,
 
-        arma_equipada TEXT,
-        armadura_equipada TEXT,
-        casco_equipado TEXT,
-        botas_equipadas TEXT,
-                
-        oro INTEGER DEFAULT 0,
-        last_reset TIMESTAMP
-    )
+            arma_equipada TEXT,
+            armadura_equipada TEXT,
+            casco_equipado TEXT,
+            botas_equipadas TEXT,
+                    
+            oro INTEGER DEFAULT 0,
+            last_reset TEXT,
+
+            accion_actual TEXT DEFAULT NULL,
+            accion_fin TEXT DEFAULT NULL
+        )
     """)
     conn.commit()
     conn.close()

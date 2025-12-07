@@ -31,11 +31,11 @@ async def evitar_acciones_simultaneas(ctx):
 
 # ---------- INICIALIZACIÓN DE BASE DE DATOS ----------
 # tablas.borrar_tabla_jugadores()
-
-tablas.crear_tabla_jugadores()
 tablas.crear_tabla_inventario()
 tablas.crear_tabla_items()
 print("Base de datos borrada y tabla recreada al iniciar el bot.")
+
+tablas.crear_tabla_jugadores()
 
 db.resetear_todos()
 

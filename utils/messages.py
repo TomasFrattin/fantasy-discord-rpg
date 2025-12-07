@@ -1,4 +1,5 @@
 from discord import Embed, Color
+from utils import db
 
 def mensaje_usuario_ya_existente():
     embed = Embed(
@@ -24,10 +25,14 @@ def mensaje_sin_energia():
     )
     return embed
 
-def mensaje_accion_en_progreso():
+
+def mensaje_accion_en_progreso(id_usuario: str):
+    accion = db.obtener_accion_actual(id_usuario)
+    accion_texto = accion if accion else "desconocida"
+    
     embed = Embed(
         title="⏳ Acción en progreso",
-        description="Ya estás realizando otra acción. Por favor, finaliza la actual antes de iniciar una nueva.",
+        description=f"Ya estás realizando la acción `{accion_texto}`. Por favor, finaliza la actual antes de iniciar una nueva.",
         color=Color.red()
     )
     return embed

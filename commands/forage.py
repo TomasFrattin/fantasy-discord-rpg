@@ -5,7 +5,7 @@ from data.texts import RECOLECTAR_DESCRIPTIONS
 import random
 import os
 from PIL import Image
-from utils.messages import mensaje_usuario_no_creado, mensaje_sin_energia
+from utils.messages import mensaje_usuario_no_creado, mensaje_sin_energia, mensaje_accion_en_progreso
 
 def crear_collage(rutas, tamaño_celda=(128, 128), gap=10):
     if not rutas:
@@ -46,6 +46,10 @@ class ForageCommand(commands.Cog):
         if energia <= 0:
             return await interaction.response.send_message(embed=mensaje_sin_energia(), ephemeral=True)
 
+        accion = db.obtener_accion_actual(user_id)
+        if accion:
+            return await interaction.response.send_message(embed=mensaje_accion_en_progreso(user_id), ephemeral=True)
+        
         db.gastar_energia(user_id, 1)
 
         try:

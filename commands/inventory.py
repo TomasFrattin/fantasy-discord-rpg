@@ -4,6 +4,7 @@ from discord import app_commands
 from discord.ext import commands
 from utils import db
 from data_loader import EQUIPABLES_BY_ID
+from utils.messages import mensaje_usuario_no_creado
 
 # Rareza → emoji + color sugerido
 RARITY_STYLE = {
@@ -27,13 +28,10 @@ class InventoryCommand(commands.Cog):
     @app_commands.command(name="inventory", description="Muestra tu inventario de personaje.")
     async def inventory(self, interaction: discord.Interaction):
         user_id = str(interaction.user.id)
+        
         row = db.obtener_jugador(user_id)
-
         if not row:
-            return await interaction.response.send_message(
-                "⚠️ No tenés personaje. Usá **/start**.",
-                ephemeral=True
-            )
+            return await interaction.response.send_message(embed=mensaje_usuario_no_creado(), ephemeral=True)
 
         # -------------------------
         # FUNCIONES AUXILIARES

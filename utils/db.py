@@ -94,11 +94,12 @@ def sleep(user_id: str):
 def registrar_jugador(id_usuario, username, afinidad):
     conn = conectar()
     cursor = conn.cursor()
+    now_iso = datetime.now().replace(microsecond=0).isoformat(sep=' ')
     cursor.execute("""
         INSERT OR IGNORE INTO jugadores 
         (id_usuario, username, afinidad, energia, last_reset)
         VALUES (?, ?, ?, ?, ?)
-    """, (id_usuario, username, afinidad, ENERGIA_MAX, datetime.now()))
+    """, (id_usuario, username, afinidad, ENERGIA_MAX, now_iso))
     conn.commit()
     conn.close()
 
@@ -262,22 +263,29 @@ def resetear_todos():
     cursor.execute("SELECT id_usuario, vida, vida_max FROM jugadores")
     jugadores = cursor.fetchall()
 
+    now_iso = datetime.now().replace(microsecond=0).isoformat(sep=' ')
+
     for jugador in jugadores:
         user_id = jugador["id_usuario"]
         vida_actual = jugador["vida"]
         vida_max = jugador["vida_max"]
 
-        # Recuperar energía al máximo
-        cursor.execute("UPDATE jugadores SET energia = ? WHERE id_usuario = ?", (ENERGIA_MAX, user_id))
+        # Recuperar energía al máximo y actualizar last_reset
+        cursor.execute(
+            "UPDATE jugadores SET energia = ?, last_reset = ? WHERE id_usuario = ?",
+            (ENERGIA_MAX, now_iso, user_id)
+        )
 
         # Recuperar 10% de la vida máxima (igual que sleep)
         recuperar = max(1, int(vida_max * 0.10))
         nueva_vida = min(vida_actual + recuperar, vida_max)
-        cursor.execute("UPDATE jugadores SET vida = ? WHERE id_usuario = ?", (nueva_vida, user_id))
+        cursor.execute(
+            "UPDATE jugadores SET vida = ? WHERE id_usuario = ?",
+            (nueva_vida, user_id)
+        )
 
     conn.commit()
     conn.close()
-
 
 def eliminar_jugador(user_id: str):
     conn = sqlite3.connect(DB_FILE)
@@ -312,7 +320,6 @@ def obtener_equipables():
     return items
 
 
-
 def actualizar_accion(id_usuario: str, accion: str | None):
     """Actualiza la acción actual del jugador (pescando, etc.)"""
     conn = conectar()
@@ -321,10 +328,42 @@ def actualizar_accion(id_usuario: str, accion: str | None):
     conn.commit()
     conn.close()
 
+def obtener_accion_actual(id_usuario: str) -> str | None:
+    """Obtiene la acción actual del jugador (pescando, etc.)"""
+    conn = conectar()
+    cursor = conn.cursor()
+    cursor.execute("SELECT accion_actual FROM jugadores WHERE id_usuario = ?", (id_usuario,))
+    fila = cursor.fetchone()
+    conn.close()
+    return fila["accion_actual"] if fila else None
+
+def actualizar_accion_fin(id_usuario: str, accion_fin: str | None):
+    """Actualiza la fecha/hora de finalización de la acción actual del jugador."""
+    conn = conectar()
+    cursor = conn.cursor()
+    cursor.execute(
+        "UPDATE jugadores SET accion_fin = ? WHERE id_usuario = ?",
+        (accion_fin, id_usuario)
+    )
+    conn.commit()
+    conn.close()
+
+def obtener_accion_fin(id_usuario: str) -> str | None:
+    """Obtiene la fecha/hora de finalización de la acción actual del jugador."""
+    conn = conectar()
+    cursor = conn.cursor()
+    cursor.execute(
+        "SELECT accion_fin FROM jugadores WHERE id_usuario = ?",
+        (id_usuario,)
+    )
+    fila = cursor.fetchone()
+    conn.close()
+    return fila["accion_fin"] if fila else None
 
 
-def agregar_columna_accion_actual():
-    """Agrega la columna 'accion_actual' a la tabla jugadores si no existe."""
+
+def agregar_columna_accion_fin():
+    """Agrega la columna 'accion_fin' a la tabla jugadores si no existe."""
     conn = conectar()
     cursor = conn.cursor()
 
@@ -332,11 +371,11 @@ def agregar_columna_accion_actual():
     cursor.execute("PRAGMA table_info(jugadores)")
     columnas = [col[1] for col in cursor.fetchall()]
 
-    if "accion_actual" not in columnas:
-        cursor.execute("ALTER TABLE jugadores ADD COLUMN accion_actual TEXT DEFAULT NULL")
-        print("Columna 'accion_actual' agregada correctamente.")
+    if "accion_fin" not in columnas:
+        cursor.execute("ALTER TABLE jugadores ADD COLUMN accion_fin TEXT DEFAULT NULL")
+        print("Columna 'accion_fin' agregada correctamente.")
     else:
-        print("La columna 'accion_actual' ya existe.")
+        print("La columna 'accion_fin' ya existe.")
 
     conn.commit()
     conn.close()
