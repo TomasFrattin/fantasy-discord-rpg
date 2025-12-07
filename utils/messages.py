@@ -31,3 +31,19 @@ def mensaje_accion_en_progreso():
         color=Color.red()
     )
     return embed
+
+def mensaje_funcionalidad_en_progreso():
+    embed = Embed(
+        title="⚠️ Funcionalidad en progreso",
+        description="Esta funcionalidad está en desarrollo. Próximamente estará disponible.",
+        color=Color.orange()
+    )
+    return embed
+
+def mensaje_accion_caducada():
+    embed = Embed(
+        title="⌛ Acción caducada",
+        description="El tiempo para interactuar con esta acción ha expirado.",
+        color=Color.red()
+    )
+    return embed

@@ -3,3 +3,5 @@ __pycache__/
 env/
 config/
 temp_*.png
+data/equipables_ordenado.json
+ordenar_json.py

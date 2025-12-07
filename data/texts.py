@@ -1,6 +1,7 @@
 STARTUP_COMMANDS = [
     {"comando": "🧙 /start", "descripcion": "Crear tu personaje y elegir tu afinidad."},
     {"comando": "📜 /commands", "descripcion": "Mostrar todos los comandos disponibles."},
+    {"comando": "📌 /u", "descripcion": "Abrir el menú de acciones."},
     {"comando": "⚡ /energy", "descripcion": "Mostrar tu energía actual."},
     {"comando": "🎒 /inventory", "descripcion": "Mostrar tu inventario de personaje."},
     {"comando": "🐺 /hunt (⚡)", "descripcion": "Combatir y conseguir items o morir en el intento."},
