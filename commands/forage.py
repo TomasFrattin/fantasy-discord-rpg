@@ -1,19 +1,53 @@
-from discord import app_commands, Interaction
+from discord import File, app_commands, Interaction, Embed
 from discord.ext import commands
 from utils import db
 from data.texts import RECOLECTAR_DESCRIPTIONS
 import random
-from discord import Embed
 from utils.messages import mensaje_usuario_no_creado, mensaje_sin_energia
+import json
+import os
+from PIL import Image
+
+# Cargar materiales
+with open("data/materiales.json", "r", encoding="utf-8") as f:
+    data = json.load(f)
+MATERIALES = {m["id"]: m for m in data["materiales"]}
+
+
+def crear_collage(rutas, tamaño_celda=(128, 128), gap=10):
+    if not rutas:
+        return None
+
+    cols = min(3, len(rutas))
+    filas = (len(rutas) + cols - 1) // cols
+
+    ancho = cols * tamaño_celda[0] + (cols - 1) * gap
+    alto = filas * tamaño_celda[1] + (filas - 1) * gap
+    collage = Image.new("RGBA", (ancho, alto), (255, 255, 255, 0))  # fondo transparente
+
+    for idx, ruta in enumerate(rutas):
+        img = Image.open(ruta).convert("RGBA").resize(tamaño_celda)
+        x = (idx % cols) * (tamaño_celda[0] + gap)
+        y = (idx // cols) * (tamaño_celda[1] + gap)
+        collage.paste(img, (x, y), img)
+
+    output_path = "data/temp_collage.png"
+    collage.save(output_path)
+    return output_path
+
 
 class ForageCommand(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @app_commands.command(name="forage", description="Gastas 1 energía y recolectás materiales.")
+    @app_commands.command(
+        name="forage",
+        description="Gastas 1 energía y recolectás materiales."
+    )
     async def forage(self, interaction: Interaction):
         user_id = str(interaction.user.id)
 
+        # Verificar jugador y energía
         row = db.obtener_jugador(user_id)
         if not row:
             return await interaction.response.send_message(embed=mensaje_usuario_no_creado(), ephemeral=True)
@@ -24,38 +58,55 @@ class ForageCommand(commands.Cog):
         db.gastar_energia(user_id, 1)
 
         try:
+            # Obtener resultados de recolección
             resultados = db.recolectar_materiales(user_id)
+            if not resultados:
+                return await interaction.response.send_message("No conseguiste ningún material esta vez.", ephemeral=True)
+
             texto_flavor = random.choice(RECOLECTAR_DESCRIPTIONS)
 
-            # --- Agrupar duplicados ---
+            # Agrupar duplicados
             agrupados = {}
             for item_id, nombre, cantidad in resultados:
                 if item_id not in agrupados:
                     agrupados[item_id] = {"nombre": nombre, "cantidad": 0}
                 agrupados[item_id]["cantidad"] += cantidad
 
-            # Crear embed
+            # Preparar embed
             embed = Embed(
                 title="🧺 Recolección completada",
                 description=texto_flavor,
                 color=0x00ff00
             )
 
-            # Agregar items finales ya sumados
-            for info in agrupados.values():
+            for item_id, info in agrupados.items():
                 embed.add_field(
                     name=info["nombre"],
                     value=f"Cantidad: × {info['cantidad']}",
                     inline=True
                 )
 
-            await interaction.response.send_message(embed=embed, ephemeral=True)
+            # Crear collage de todas las imágenes existentes
+            rutas_imagenes = [
+                MATERIALES[item_id]["url"] for item_id in agrupados
+                if item_id in MATERIALES and "url" in MATERIALES[item_id] and os.path.isfile(MATERIALES[item_id]["url"])
+            ]
+            collage_path = crear_collage(rutas_imagenes)
+
+            files = []
+            if collage_path:
+                files.append(File(collage_path))
+                embed.set_image(url=f"attachment://{os.path.basename(collage_path)}")
+
+            # Enviar embed con archivo
+            await interaction.response.send_message(embed=embed, files=files)
 
         except Exception as e:
             print(f"[FORAGE] ERROR: {e}")
             await interaction.response.send_message(
                 "⚠️ Ocurrió un error durante la recolección.", ephemeral=True
             )
+
 
 async def setup(bot):
     await bot.add_cog(ForageCommand(bot))

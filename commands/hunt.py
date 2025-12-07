@@ -10,23 +10,39 @@ from data.texts import DEFEAT_DESCS, ESCAPE_CONFIG
 from utils.messages import mensaje_usuario_no_creado, mensaje_sin_energia, mensaje_accion_en_progreso
 
 # Pool simple inicial de mobs (expandible)
-MOBS = [
-    {"id": "slime", "nombre": "Slime", "vida_max": 20, "ataque": 3, "emoji": "🫧"},
-    {"id": "lobo", "nombre": "Lobo Salvaje", "vida_max": 35, "ataque": 5, "emoji": "🐺"},
-    {"id": "bandido", "nombre": "Bandido Errante", "vida_max": 40, "ataque": 6, "emoji": "🗡️"},
-    {"id": "espiritu", "nombre": "Espíritu Menor", "vida_max": 28, "ataque": 4, "emoji": "👻"},
-    {"id": "goblin", "nombre": "Goblin Travieso", "vida_max": 22, "ataque": 4, "emoji": "👹"},
-    {"id": "troll", "nombre": "Troll de las Cavernas", "vida_max": 60, "ataque": 8, "emoji": "🪨"},
-    {"id": "vampiro", "nombre": "Vampiro Sombrío", "vida_max": 45, "ataque": 7, "emoji": "🧛"},
-    {"id": "espectro", "nombre": "Espectro Errante", "vida_max": 30, "ataque": 5, "emoji": "👻"},
-    {"id": "hiena", "nombre": "Hiena Hambrienta", "vida_max": 33, "ataque": 5, "emoji": "🦝"},
-    {"id": "gnomo", "nombre": "Gnomo Pícaro", "vida_max": 18, "ataque": 3, "emoji": "🧝‍♂️"},
-    {"id": "dragoncillo", "nombre": "Dragoncillo", "vida_max": 50, "ataque": 9, "emoji": "🐉"},
-    {"id": "momia", "nombre": "Momia Antiguo", "vida_max": 40, "ataque": 6, "emoji": "🪦"},
-    {"id": "serpiente", "nombre": "Serpiente Venenosa", "vida_max": 25, "ataque": 4, "emoji": "🐍"},
-    {"id": "minotauro", "nombre": "Minotauro", "vida_max": 55, "ataque": 8, "emoji": "🐂"},
-    {"id": "hechicero", "nombre": "Hechicero Errante", "vida_max": 38, "ataque": 7, "emoji": "🧙"},
+MOBS = MOBS = [
+    {"id": "slime", "nombre": "Slime", "vida_max": 20, "ataque": 3, "emoji": "🫧",
+     "url": "C:\\Users\\Tomas\\Downloads\\mobs\\slime.png"},
+    {"id": "lobo", "nombre": "Lobo Salvaje", "vida_max": 35, "ataque": 5, "emoji": "🐺",
+     "url": "C:\\Users\\Tomas\\Downloads\\mobs\\lobo.png"},
+    {"id": "bandido", "nombre": "Bandido Errante", "vida_max": 40, "ataque": 6, "emoji": "🗡️",
+     "url": "C:\\Users\\Tomas\\Downloads\\mobs\\bandido.png"},
+    {"id": "espiritu", "nombre": "Espíritu Menor", "vida_max": 28, "ataque": 4, "emoji": "👻",
+     "url": "C:\\Users\\Tomas\\Downloads\\mobs\\espiritu.png"},
+    {"id": "goblin", "nombre": "Goblin Travieso", "vida_max": 22, "ataque": 4, "emoji": "👹",
+     "url": "C:\\Users\\Tomas\\Downloads\\mobs\\goblin.png"},
+    {"id": "troll", "nombre": "Troll de las Cavernas", "vida_max": 60, "ataque": 8, "emoji": "🪨",
+     "url": "C:\\Users\\Tomas\\Downloads\\mobs\\troll.png"},
+    {"id": "vampiro", "nombre": "Vampiro Sombrío", "vida_max": 45, "ataque": 7, "emoji": "🧛",
+     "url": "C:\\Users\\Tomas\\Downloads\\mobs\\vampiro.png"},
+    {"id": "espectro", "nombre": "Espectro Errante", "vida_max": 30, "ataque": 5, "emoji": "👻",
+     "url": "C:\\Users\\Tomas\\Downloads\\mobs\\espectro.png"},
+    {"id": "hiena", "nombre": "Hiena Hambrienta", "vida_max": 33, "ataque": 5, "emoji": "🦝",
+     "url": "C:\\Users\\Tomas\\Downloads\\mobs\\hiena.png"},
+    {"id": "gnomo", "nombre": "Gnomo Pícaro", "vida_max": 18, "ataque": 3, "emoji": "🧝‍♂️",
+     "url": "C:\\Users\\Tomas\\Downloads\\mobs\\gnomo.png"},
+    {"id": "dragoncillo", "nombre": "Dragoncillo", "vida_max": 50, "ataque": 9, "emoji": "🐉",
+     "url": "C:\\Users\\Tomas\\Downloads\\mobs\\dragoncillo.png"},
+    {"id": "momia", "nombre": "Momia Antiguo", "vida_max": 40, "ataque": 6, "emoji": "🪦",
+     "url": "C:\\Users\\Tomas\\Downloads\\mobs\\momia.png"},
+    {"id": "serpiente", "nombre": "Serpiente Venenosa", "vida_max": 25, "ataque": 4, "emoji": "🐍",
+     "url": "C:\\Users\\Tomas\\Downloads\\mobs\\serpiente.png"},
+    {"id": "minotauro", "nombre": "Minotauro", "vida_max": 55, "ataque": 8, "emoji": "🐂",
+     "url": "C:\\Users\\Tomas\\Downloads\\mobs\\minotauro.png"},
+    {"id": "hechicero", "nombre": "Hechicero Errante", "vida_max": 38, "ataque": 7, "emoji": "🧙",
+     "url": "C:\\Users\\Tomas\\Downloads\\mobs\\hechicero.png"},
 ]
+
 
 
 def elegir_mob() -> dict:

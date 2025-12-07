@@ -1,5 +1,6 @@
 # tablas.py
 from .db import conectar
+import json
 
 # -------------------- TABLAS --------------------
 
@@ -50,6 +51,7 @@ def crear_tabla_jugadores():
 def crear_tabla_items_consumibles():
     conn = conectar()
     cursor = conn.cursor()
+    
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS items (
             id TEXT PRIMARY KEY,
@@ -59,17 +61,20 @@ def crear_tabla_items_consumibles():
             rareza TEXT
         )
     """)
-    cursor.executemany("""
-        INSERT OR IGNORE INTO items (id, nombre, tipo, descripcion, rareza) VALUES 
-        (?, ?, ?, ?, ?)
-    """, [
-        ('hierba_verde', 'Hierba Verde', 'material', 'Hierba común, usada en pociones básicas.', 'comun'),
-        ('ramita_seca', 'Ramita Seca', 'material', 'Madera ligera, útil para antorchas y reparaciones simples.', 'comun'),
-        ('mineral_rugoso', 'Mineral Rugoso', 'material', 'Mineral de baja calidad para forja inicial.', 'comun'),
-        ('petalo_blanco', 'Pétalo Blanco', 'material', 'Pétalo frágil para ungüentos.', 'poco_comun'),
-        ('fragmento_cristal', 'Fragmento de Cristal', 'material', 'Brilla con magia leve; sirve para cristalería.', 'raro'),
-        ('esencia_arcana', 'Esencia Arcana', 'material', 'Residuos de magia pura. Muy valioso.', 'epico')
-    ])
+
+    # Cargar materiales desde JSON
+    with open("data/materiales.json", "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    for item in data["materiales"]:
+        cursor.execute(
+            """
+            INSERT OR IGNORE INTO items (id, nombre, tipo, descripcion, rareza)
+            VALUES (?, ?, ?, ?, ?)
+            """,
+            (item["id"], item["nombre"], item["tipo"], item["descripcion"], item["rareza"])
+        )
+
     conn.commit()
     conn.close()
 

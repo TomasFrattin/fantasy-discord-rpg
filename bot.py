@@ -56,6 +56,7 @@ async def main():
         await bot.load_extension("commands.forage")
         await bot.load_extension("commands.hunt")     # <- cog de cacería
         await bot.load_extension("commands.merchant") # <- cog de mercader
+        await bot.load_extension("commands.fish")     # <- cog de pesca
 
         # await bot.load_extension("commands.menu") PARA UNA PROX IMPLEMENTACION, ES MAS DIFICIL VER LOS PROBLEMAS
 

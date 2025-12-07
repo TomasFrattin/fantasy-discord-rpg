@@ -44,7 +44,6 @@ class EquiparOVender(View):
             # Preparar embed
             slot_nombre = slot.replace('_equipada', '').capitalize()
             embed = discord.Embed(title=f"⚔️ Equipaste {self.item['nombre']}", color=discord.Color.green())
-            embed.add_field(name="Slot", value=slot_nombre, inline=True)
 
             # Mostrar stats según tipo de item
             stats = self.item.get('stats', {})

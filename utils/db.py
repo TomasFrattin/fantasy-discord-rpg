@@ -166,31 +166,38 @@ import random
 from data_loader import MATERIALES
 
 def recolectar_materiales(user_id: str):
-    """Lógica de recolección: selecciona items y devuelve resultados."""
-    import random
     pool = []
     for item in MATERIALES:
         rareza = item.get("rareza", "comun")
         if rareza == "comun":
-            max_q, peso = 3, 50
+            peso, max_q = 50, 3
         elif rareza == "raro":
-            max_q, peso = 2, 20
+            peso, max_q = 20, 2
+        elif rareza == "epico":
+            peso, max_q = 5, 1
         else:
-            max_q, peso = 1, 5
+            peso, max_q = 1, 1
         pool.append((item["id"], peso, max_q))
 
-    n_types = random.choices([1, 2, 3], weights=[60,30,10])[0]
-    chosen = random.choices(pool, weights=[p[1] for p in pool], k=n_types)
+    # Elegir entre 1 y 5 materiales distintos
+    n_types = random.choices([1,2,3,4,5], weights=[40,30,15,10,5])[0]
+    # Selección ponderada sin repetición
+    ids, pesos = zip(*[(p[0], p[1]) for p in pool])
+    chosen_ids = []
+    while len(chosen_ids) < n_types and ids:
+        selected = random.choices(ids, weights=pesos)[0]
+        if selected not in chosen_ids:
+            chosen_ids.append(selected)
 
     resultados = []
-    for item_id, _, max_q in chosen:
+    for item_id in chosen_ids:
+        max_q = next(p[2] for p in pool if p[0] == item_id)
         cantidad = random.randint(1, max_q)
         agregar_item(user_id, item_id, cantidad)
         resultados.append((item_id, cantidad))
 
     mapping = {item["id"]: item["nombre"] for item in MATERIALES}
     return [(item_id, mapping.get(item_id, item_id), cantidad) for item_id, cantidad in resultados]
-
 # -------------------- EQUIPAMIENTO --------------------
 def equipar(id_usuario, slot, item_id):
     conn = conectar()

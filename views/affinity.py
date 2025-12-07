@@ -52,12 +52,17 @@ class RandomAfinidadButton(Button):
         terminar_accion(self.view_obj.user_id)
 
         await interaction.response.edit_message(
-            content=(
-                f"{emoji} **{interaction.user.name}**, tu afinidad ha sido elegida automáticamente como **{afinidad_random}**.\n\n"
-                f"{description}\n\n"
-                "⚔️ Que tu viaje en **Arkanor** comience, y que los elementos te acompañen."
-            ),
+            content=f"🎲 Afinidad seleccionada automáticamente: **{afinidad_random}**.",
             view=None
+        )
+
+        await interaction.followup.send(
+            content=(
+                f"🧙‍♂️ **{interaction.user.name}** ha sido marcado por el elemento **{afinidad_random}**.\n\n"
+                f"{description}\n\n"
+                "⚔️ Que su viaje en **Arkanor** comience, y que los elementos lo acompañen."
+            ),
+            ephemeral=False  # Mensaje público
         )
 
 class AfinidadButton(Button):
@@ -105,12 +110,17 @@ class ConfirmarAfinidad(View):
         terminar_accion(self.user_id)
 
         await interaction.response.edit_message(
-            content=(
-                f"🧙‍♂️ **{interaction.user.name}**, tu destino está sellado.\n\n"
-                f"{description}\n\n"
-                "⚔️ Que tu viaje en **Arkanor** comience, y que los elementos te acompañen."
-            ),
+            content="✅ Afinidad confirmada.",
             view=None
+        )
+
+        await interaction.followup.send(
+            content=(
+                f"🧙‍♂️ **{interaction.user.name}** ha sellado su destino con la afinidad **{self.afinidad}**.\n\n"
+                f"{description}\n\n"
+                "⚔️ Que su viaje en **Arkanor** comience, y que los elementos lo acompañen."
+            ),
+            ephemeral=False  # Público
         )
 
     @discord.ui.button(label="Cancelar", style=discord.ButtonStyle.danger)
