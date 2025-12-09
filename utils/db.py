@@ -1,6 +1,6 @@
 import json
 import sqlite3
-from config import DB_FILE, ENERGIA_MAX
+from config import DB_FILE
 from datetime import datetime
 import random
 from config import DB_FILE
@@ -75,8 +75,7 @@ def sleep(user_id: str):
 
     vida_actual, vida_max = row["vida"], row["vida_max"]
 
-    # Recupera el 10% de la vida máxima (mínimo 1)
-    recuperar = max(1, int(vida_max * 0.10))
+    recuperar = max(1, int(vida_max * 0.20))
     nueva_vida = min(vida_actual + recuperar, vida_max)
 
     cursor.execute(
@@ -92,14 +91,16 @@ def sleep(user_id: str):
 
 # -------------------- JUGADOR --------------------
 def registrar_jugador(id_usuario, username, afinidad):
+    energia_inicial = energia_max_por_afinidad(afinidad)
+
     conn = conectar()
     cursor = conn.cursor()
     now_iso = datetime.now().replace(microsecond=0).isoformat(sep=' ')
     cursor.execute("""
         INSERT OR IGNORE INTO jugadores 
-        (id_usuario, username, afinidad, energia, last_reset)
-        VALUES (?, ?, ?, ?, ?)
-    """, (id_usuario, username, afinidad, ENERGIA_MAX, now_iso))
+        (id_usuario, username, afinidad, energia, energia_max, last_reset)
+        VALUES (?, ?, ?, ?, ?, ?)
+    """, (id_usuario, username, afinidad, energia_inicial, energia_inicial, now_iso))
     conn.commit()
     conn.close()
 
@@ -255,37 +256,90 @@ def gastar_energia(id_usuario, cantidad=1):
 
     conn.close()
 
+def energia_max_por_afinidad(afinidad: str) -> int:
+    base = 3
+    if afinidad.lower() == "arcano":
+        return base + 1
+    return base
 
 def resetear_todos():
     conn = conectar()
     cursor = conn.cursor()
 
-    cursor.execute("SELECT id_usuario, vida, vida_max FROM jugadores")
+    cursor.execute("SELECT id_usuario, vida, vida_max, afinidad FROM jugadores")
     jugadores = cursor.fetchall()
-
-    now_iso = datetime.now().replace(microsecond=0).isoformat(sep=' ')
 
     for jugador in jugadores:
         user_id = jugador["id_usuario"]
         vida_actual = jugador["vida"]
         vida_max = jugador["vida_max"]
+        afinidad = jugador["afinidad"]
 
-        # Recuperar energía al máximo y actualizar last_reset
+        energia_max = energia_max_por_afinidad(afinidad)
+
         cursor.execute(
-            "UPDATE jugadores SET energia = ?, last_reset = ? WHERE id_usuario = ?",
-            (ENERGIA_MAX, now_iso, user_id)
+            "UPDATE jugadores SET energia = ? WHERE id_usuario = ?",
+            (energia_max, user_id)
         )
 
-        # Recuperar 10% de la vida máxima (igual que sleep)
-        recuperar = max(1, int(vida_max * 0.10))
+        # Recuperar vida como ya tenías
+        recuperar = max(1, int(vida_max * 0.20))
         nueva_vida = min(vida_actual + recuperar, vida_max)
         cursor.execute(
             "UPDATE jugadores SET vida = ? WHERE id_usuario = ?",
             (nueva_vida, user_id)
         )
 
+
     conn.commit()
     conn.close()
+
+
+def resetear_usuario(id_usuario: str):
+    conn = conectar()
+    cursor = conn.cursor()
+
+    # Traer datos del usuario
+    cursor.execute("""
+        SELECT vida, vida_max, afinidad
+        FROM jugadores
+        WHERE id_usuario = ?
+    """, (id_usuario,))
+    
+    jugador = cursor.fetchone()
+
+    # Si no existe, salir
+    if not jugador:
+        conn.close()
+        return False
+
+    vida_actual = jugador["vida"]
+    vida_max = jugador["vida_max"]
+    afinidad = jugador["afinidad"]
+
+    # Calcular energía máxima según afinidad
+    energia_max = energia_max_por_afinidad(afinidad)
+
+    # Resetear energía
+    cursor.execute(
+        "UPDATE jugadores SET energia = ? WHERE id_usuario = ?",
+        (energia_max, id_usuario)
+    )
+
+    # Recuperar vida
+    recuperar = max(1, int(vida_max * 0.10))
+    nueva_vida = min(vida_actual + recuperar, vida_max)
+
+    cursor.execute(
+        "UPDATE jugadores SET vida = ? WHERE id_usuario = ?",
+        (nueva_vida, id_usuario)
+    )
+
+    conn.commit()
+    conn.close()
+
+    return True
+
 
 def eliminar_jugador(user_id: str):
     conn = sqlite3.connect(DB_FILE)

@@ -24,7 +24,7 @@ async def run_sleep(interaction: Interaction):
         embed = Embed(
             title="🤔 Vida al máximo",
             description="Tu vida ya está completa. ¡No necesitas descansar ahora!",
-            color=0xC9A0DC  # lavanda/místico, queda re bien
+            color=0xC9A0DC
             )
         return await interaction.response.send_message(embed=embed, ephemeral=True)
 

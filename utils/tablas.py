@@ -23,15 +23,16 @@ def crear_tabla_jugadores():
             -- stats base
             vida_base INTEGER DEFAULT 100,
             base_damage INTEGER DEFAULT 10,
-
+                   
             -- stats actuales
             vida INTEGER DEFAULT 100,
             damage INTEGER DEFAULT 10,
-            energia INTEGER DEFAULT 30,
-
+            energia INTEGER DEFAULT 3,
+                   
             -- stats máximos
             vida_max INTEGER DEFAULT 100,
-
+            energia_max INTEGER DEFAULT 3,
+                   
             exploracion INTEGER DEFAULT 0,
             combate INTEGER DEFAULT 0,
             caceria INTEGER DEFAULT 0,

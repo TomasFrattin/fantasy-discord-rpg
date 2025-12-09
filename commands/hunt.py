@@ -14,35 +14,35 @@ import os
 
 # Pool simple inicial de mobs (expandible)
 MOBS = MOBS = [
-    {"id": "slime", "nombre": "Slime", "vida_max": 20, "ataque": 3, "emoji": "🫧",
+    {"id": "slime", "nombre": "Slime", "vida_max": 20, "ataque": 5, "emoji": "🫧",
      "url": "assets/mobs/slime.png"},
-    {"id": "lobo", "nombre": "Lobo Salvaje", "vida_max": 35, "ataque": 5, "emoji": "🐺",
+    {"id": "lobo", "nombre": "Lobo Salvaje", "vida_max": 35, "ataque": 7, "emoji": "🐺",
      "url": "assets/mobs/lobo.png"},
-    {"id": "bandido", "nombre": "Bandido Errante", "vida_max": 40, "ataque": 6, "emoji": "🗡️",
+    {"id": "bandido", "nombre": "Bandido Errante", "vida_max": 40, "ataque": 8, "emoji": "🗡️",
      "url": "assets/mobs/bandido.png"},
-    {"id": "espiritu", "nombre": "Espíritu Menor", "vida_max": 28, "ataque": 4, "emoji": "👻",
+    {"id": "espiritu", "nombre": "Espíritu Menor", "vida_max": 28, "ataque": 6, "emoji": "👻",
      "url": "assets/mobs/espiritu.png"},
-    {"id": "goblin", "nombre": "Goblin Travieso", "vida_max": 22, "ataque": 4, "emoji": "👹",
+    {"id": "goblin", "nombre": "Goblin Travieso", "vida_max": 22, "ataque": 6, "emoji": "👹",
      "url": "assets/mobs/goblin.png"},
-    {"id": "troll", "nombre": "Troll de las Cavernas", "vida_max": 60, "ataque": 8, "emoji": "🪨",
+    {"id": "troll", "nombre": "Troll de las Cavernas", "vida_max": 60, "ataque": 10, "emoji": "🪨",
      "url": "assets/mobs/troll.png"},
-    {"id": "vampiro", "nombre": "Vampiro Sombrío", "vida_max": 45, "ataque": 7, "emoji": "🧛",
+    {"id": "vampiro", "nombre": "Vampiro Sombrío", "vida_max": 45, "ataque": 9, "emoji": "🧛",
      "url": "assets/mobs/vampiro.png"},
-    {"id": "espectro", "nombre": "Espectro Errante", "vida_max": 30, "ataque": 5, "emoji": "👻",
+    {"id": "espectro", "nombre": "Espectro Errante", "vida_max": 30, "ataque": 7, "emoji": "👻",
      "url": "assets/mobs/espectro.png"},
-    {"id": "hiena", "nombre": "Hiena Hambrienta", "vida_max": 33, "ataque": 5, "emoji": "🦝",
+    {"id": "hiena", "nombre": "Hiena Hambrienta", "vida_max": 33, "ataque": 7, "emoji": "🦝",
      "url": "assets/mobs/hiena.png"},
-    {"id": "gnomo", "nombre": "Gnomo Pícaro", "vida_max": 18, "ataque": 3, "emoji": "🧝‍♂️",
+    {"id": "gnomo", "nombre": "Gnomo Pícaro", "vida_max": 18, "ataque": 5, "emoji": "🧝‍♂️",
      "url": "assets/mobs/gnomo.png"},
-    {"id": "dragoncillo", "nombre": "Dragoncillo", "vida_max": 50, "ataque": 9, "emoji": "🐉",
+    {"id": "dragoncillo", "nombre": "Dragoncillo", "vida_max": 50, "ataque": 11, "emoji": "🐉",
      "url": "assets/mobs/dragoncillo.png"},
-    {"id": "momia", "nombre": "Momia Antiguo", "vida_max": 40, "ataque": 6, "emoji": "🪦",
+    {"id": "momia", "nombre": "Momia Antiguo", "vida_max": 40, "ataque": 8, "emoji": "🪦",
      "url": "assets/mobs/momia.png"},
-    {"id": "serpiente", "nombre": "Serpiente Venenosa", "vida_max": 25, "ataque": 4, "emoji": "🐍",
+    {"id": "serpiente", "nombre": "Serpiente Venenosa", "vida_max": 25, "ataque": 6, "emoji": "🐍",
      "url": "assets/mobs/serpiente.png"},
-    {"id": "minotauro", "nombre": "Minotauro", "vida_max": 55, "ataque": 8, "emoji": "🐂",
+    {"id": "minotauro", "nombre": "Minotauro", "vida_max": 55, "ataque": 10, "emoji": "🐂",
      "url": "assets/mobs/minotauro.png"},
-    {"id": "hechicero", "nombre": "Hechicero Errante", "vida_max": 38, "ataque": 7, "emoji": "🧙",
+    {"id": "hechicero", "nombre": "Hechicero Errante", "vida_max": 38, "ataque": 9, "emoji": "🧙",
      "url": "assets/mobs/hechicero.png"},
 ]
 
@@ -291,7 +291,7 @@ class HuntCommand(commands.Cog):
         
         # Si ya tiene un combate activo, avisar
         if has_combat(user_id):
-            return await interaction.response.send_message(embed=mensaje_accion_en_progreso(), ephemeral=True)
+            return await interaction.response.send_message(embed=mensaje_accion_en_progreso(user_id), ephemeral=True)
 
 
         # Gastar energía

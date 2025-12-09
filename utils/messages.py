@@ -52,3 +52,11 @@ def mensaje_accion_caducada():
         color=Color.red()
     )
     return embed
+
+def mensaje_funcionalidad_en_mantenimiento():
+    embed = Embed(
+        title="🔧 Funcionalidad en mantenimiento",
+        description="Esta funcionalidad está en mantenimiento. Próximamente estará disponible. Disculpe las molestias.",
+        color=Color.orange()
+    )
+    return embed

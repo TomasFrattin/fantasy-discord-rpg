@@ -11,7 +11,7 @@ async def reset_diario():
     Resetea los valores diarios de todos los jugadores a la medianoche.
     """
     ahora = datetime.datetime.now()
-    if ahora.hour == 20 and ahora.minute == 28:
+    if ahora.hour == 20 and ahora.minute == 0:
         db.resetear_todos()
         print("Reset diario ejecutado.")
 

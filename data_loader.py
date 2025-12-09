@@ -25,10 +25,4 @@ for item in EQUIPABLES:
     EQUIPABLES_BY_TYPE[item["tipo"]].append(item)
     EQUIPABLES_BY_RARITY[item["rareza"]].append(item)
 
-RARITY_COLORS = {
-    "comun": 0xB0B0B0,       # gris
-    "raro": 0x3A82F7,        # azul
-    "epico": 0xA335EE,       # violeta
-    "legendario": 0xFF8000   # naranja
-}
 

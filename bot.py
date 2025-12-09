@@ -16,34 +16,24 @@ intents = discord.Intents.default()
 intents.message_content = True
 bot = commands.Bot(command_prefix=PREFIX, intents=intents)
 
-@bot.check
-async def evitar_acciones_simultaneas(ctx):
-    user_id = str(ctx.author.id)
-
-    if esta_ocupado(user_id):
-        await ctx.send(
-            "⚠️ Ya tenés otra acción en progreso. Esperá a que termine.",
-            ephemeral=True
-        )
-        return False
-
-    return True
 
 # ---------- INICIALIZACIÓN DE BASE DE DATOS ----------
-# tablas.borrar_tabla_jugadores()
+
 tablas.crear_tabla_inventario()
 tablas.crear_tabla_items()
-print("Base de datos borrada y tabla recreada al iniciar el bot.")
-
 tablas.crear_tabla_jugadores()
 
-db.resetear_todos()
+# print("Base de datos borrada y tabla recreada al iniciar el bot.")
+
+# db.resetear_usuario("366690600709521419")
+# db.eliminar_jugador("366690600709521419")
+# db.resetear_todos()
 
 # mi_id = "366690600709521419"
-# db.eliminar_jugador(mi_id)
+
 # mi_id_2 = "323250219796135937"
 # db.eliminar_jugador(mi_id_2)
-print("Jugador eliminado de la base de datos.")
+# print("Jugador eliminado de la base de datos.")
 
 async def main():
     async with bot:

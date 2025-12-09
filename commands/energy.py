@@ -14,6 +14,8 @@ async def run_energy(interaction: Interaction):
 
     energia = db.obtener_energia(user_id)
     if energia >= 3:
+        desc = random.choice(ENERGY_DESCS["extreme"])
+    elif energia == 3:
         desc = random.choice(ENERGY_DESCS["high"])
     elif energia == 2:
         desc = random.choice(ENERGY_DESCS["mid"])

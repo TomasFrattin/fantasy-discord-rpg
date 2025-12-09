@@ -6,7 +6,7 @@ from discord import ButtonStyle, app_commands, Interaction, Embed, Color
 from discord.ext import commands
 from discord.ui import View, Button, button
 from utils import db
-from utils.messages import mensaje_usuario_no_creado, mensaje_accion_en_progreso
+from utils.messages import mensaje_usuario_no_creado, mensaje_accion_en_progreso, mensaje_funcionalidad_en_mantenimiento
 import discord
 from data_loader import PECES
 from data.texts import mensaje_inicio_pesca
@@ -47,8 +47,15 @@ def generar_pesca(minutos: int):
     return pesca
 
 async def run_fish(interaction: Interaction, minutos: int):
+        # Bloqueo temporal del comando
+    return await interaction.response.send_message(
+        embed=mensaje_funcionalidad_en_mantenimiento(),
+        ephemeral=True
+    )
+
     user_id = str(interaction.user.id)
     jugador = db.obtener_jugador(user_id)
+
     if not jugador:
         return await interaction.response.send_message(embed=mensaje_usuario_no_creado(), ephemeral=True)
 
