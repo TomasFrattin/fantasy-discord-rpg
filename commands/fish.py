@@ -47,7 +47,7 @@ def generar_pesca(minutos: int):
     return pesca
 
 async def run_fish(interaction: Interaction, minutos: int):
-        # Bloqueo temporal del comando
+            # Bloqueo temporal del comando
     return await interaction.response.send_message(
         embed=mensaje_funcionalidad_en_mantenimiento(),
         ephemeral=True
@@ -59,6 +59,14 @@ async def run_fish(interaction: Interaction, minutos: int):
     if not jugador:
         return await interaction.response.send_message(embed=mensaje_usuario_no_creado(), ephemeral=True)
 
+    MIN_PESCA = 1
+    MAX_PESCA = 60
+    if minutos < MIN_PESCA or minutos > MAX_PESCA:
+        return await interaction.response.send_message(
+            f"❌ El tiempo de pesca debe estar entre {MIN_PESCA} y {MAX_PESCA} minutos.",
+            ephemeral=True
+        )
+
     accion = db.obtener_accion_actual(user_id)
     accion_fin_str = db.obtener_accion_fin(user_id)
 
@@ -66,12 +74,10 @@ async def run_fish(interaction: Interaction, minutos: int):
         try:
             accion_fin = datetime.fromisoformat(accion_fin_str)
             if datetime.utcnow() >= accion_fin:
-                # La acción ya expiró, limpiamos
                 db.actualizar_accion(user_id, None)
                 db.actualizar_accion_fin(user_id, None)
-                accion = None  # Continuamos con la pesca
+                accion = None
         except Exception:
-            # Si el formato de la fecha es inválido, limpiamos
             db.actualizar_accion(user_id, None)
             db.actualizar_accion_fin(user_id, None)
             accion = None
@@ -84,48 +90,52 @@ async def run_fish(interaction: Interaction, minutos: int):
         )
 
     # Registrar acción
-    accion_fin = datetime.now() + timedelta(minutes=minutos)
+    accion_fin = datetime.utcnow() + timedelta(minutes=minutos)
     db.actualizar_accion(user_id, "pescando")
     db.actualizar_accion_fin(user_id, accion_fin.isoformat())
 
-    # Embed de inicio
+    # Embed inicial
     embed_inicio = Embed(
         title=f"¡🎣 **{jugador['username']}** ha comenzado a pescar!",
-        description=mensaje_inicio_pesca(minutos),  # <-- acá sí pasás el valor real
+        description=mensaje_inicio_pesca(minutos),
         color=Color.blue()
     )
     view = FishView(user_id)
     await interaction.response.send_message(embed=embed_inicio, view=view, ephemeral=False)
-
     mensaje = await interaction.original_response()
 
-    tiempo_restante = minutos * 60  # segundos
-    intervalo_update = 2 * 60       # 2 minutos
-
-    while tiempo_restante > 0:
-        sleep_time = min(intervalo_update, tiempo_restante)
-        await asyncio.sleep(sleep_time)
-        tiempo_restante -= sleep_time
-
+    # Loop de actualización en tiempo real
+    while True:
         if view.cancelled:
             return
 
-        minutos_restantes = max(0, round(tiempo_restante / 60))
+        ahora = datetime.utcnow()
+        if ahora >= accion_fin:
+            break
+
+        minutos_restantes = round((accion_fin - ahora).total_seconds() / 60)
         embed_inicio.set_footer(text=f"⏳ Tiempo restante aprox.: {minutos_restantes} min")
-        await mensaje.edit(embed=embed_inicio, view=view)
+
+        try:
+            await mensaje.edit(embed=embed_inicio, view=view)
+        except Exception:
+            pass  # ignorar si falla la edición
+
+        await asyncio.sleep(10)  # chequear cada 10 segundos
 
     # Generar pesca
     pesca = generar_pesca(minutos)
     if pesca:
-        for pez in pesca:
-            db.agregar_item(user_id, pez["id"], 1)
-
         # Agrupar duplicados
         agrupados = {}
         for p in pesca:
             if p["id"] not in agrupados:
                 agrupados[p["id"]] = {"nombre": p["nombre"], "cantidad": 0, "valor": p["valor_oro"], "url": p.get("url")}
             agrupados[p["id"]]["cantidad"] += 1
+
+        # Guardar en la base de datos usando la cantidad correcta
+        for item_id, data in agrupados.items():
+            db.agregar_item(user_id, item_id, data["cantidad"])
 
         texto_flavor = random.choice([
             "¡Qué buena pesca! Parece que la fortuna está de tu lado. 🐟",
@@ -146,13 +156,7 @@ async def run_fish(interaction: Interaction, minutos: int):
                 value=f"Cantidad: × {info['cantidad']}\n",
                 inline=True
             )
-
-        # Placeholder para collage futuro
-        rutas_imagenes = [p.get("url") for p in agrupados.values() if p.get("url")]
-        # Aquí podrías generar el collage como en forage
-
     else:
-        # No se pescó nada
         embed_final = Embed(
             title="😢 Pesca vacía",
             description=random.choice([
@@ -167,7 +171,7 @@ async def run_fish(interaction: Interaction, minutos: int):
     # Fin de la pesca
     db.actualizar_accion(user_id, None)
     db.actualizar_accion_fin(user_id, None)
-    await interaction.edit_original_response(embed=embed_final, view=None)
+    await mensaje.edit(embed=embed_final, view=None)
 
 class FishingCommand(commands.Cog):
     def __init__(self, bot):

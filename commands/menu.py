@@ -12,7 +12,40 @@ from commands.sleep import run_sleep
 from commands.profile import run_profile
 from commands.energy import run_energy
 # Para otros comandos, por ahora usamos un mensaje temporal
+from discord.ui import Modal, TextInput
 
+MIN_PESCA = 1
+MAX_PESCA = 60
+
+class FishModal(Modal):
+    def __init__(self):
+        super().__init__(title="🎣 Pesca")
+        self.minutos_input = TextInput(
+            label=f"Minutos a pescar ({MIN_PESCA}-{MAX_PESCA})",
+            placeholder="Ej: 10",
+            required=True,
+            max_length=3  # suficiente para 120 minutos
+        )
+        self.add_item(self.minutos_input)
+
+    async def on_submit(self, interaction: Interaction):
+        try:
+            minutos = int(self.minutos_input.value)
+            if minutos < MIN_PESCA or minutos > MAX_PESCA:
+                await interaction.response.send_message(
+                    f"❌ Debés ingresar un número entre {MIN_PESCA} y {MAX_PESCA}.",
+                    ephemeral=True
+                )
+                return
+
+            # Llamada a tu función principal de pesca
+            await run_fish(interaction, minutos)
+
+        except ValueError:
+            await interaction.response.send_message(
+                "❌ Debés ingresar un número válido.",
+                ephemeral=True
+            )
 class MenuView(View):
     """Vista principal del menú de acciones con todos los botones."""
 
@@ -30,7 +63,7 @@ class MenuView(View):
 
     @button(label="Fish 🎣", style=ButtonStyle.success)
     async def fish_button(self, interaction: Interaction, button: Button):
-        await run_fish(interaction)
+        await interaction.response.send_modal(FishModal())
 
     @button(label="Merchant 🏪", style=ButtonStyle.success)
     async def merchant_button(self, interaction: Interaction, button: Button):
