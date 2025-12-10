@@ -163,43 +163,67 @@ def obtener_inventario(user_id: str):
 
 import random
 
+# --- SISTEMA DE RECOLECCIÓN ---
+
+def tiers_por_nivel(lvl_recoleccion):
+    if lvl_recoleccion < 5:
+        return ["comun"]
+    elif lvl_recoleccion < 10:
+        return ["comun", "raro"]
+    elif lvl_recoleccion < 15:
+        return ["comun", "raro", "epico"]
+    else:
+        return ["comun", "raro", "epico", "legendario"]
+
 
 def recolectar_materiales(user_id: str):
     conn = conectar()
-    cursor = conn.cursor()
-
-    # Traer todos los materiales de la DB
-    cursor.execute("SELECT * FROM items WHERE tipo = 'material'")
-    materiales = cursor.fetchall()
-
+    jugador = obtener_jugador(user_id)
+    lvl = jugador["lvl_recoleccion"] or 1  # <- cambio aquí
+    
+    materiales = obtener_materiales()
     if not materiales:
-        conn.close()
         return []
 
-    # Preparar pool con peso y cantidad máxima
+    # Determinar pool filtrando por rareza permitida
+    rarezas_permitidas = tiers_por_nivel(lvl)
     pool = {}
     for item in materiales:
         rareza = item["rareza"] or "comun"
+        if rareza not in rarezas_permitidas:
+            continue
+
+        # Definir peso y cantidad máxima por rareza
         if rareza == "comun":
             peso, max_q = 50, 3
         elif rareza == "raro":
-            peso, max_q = 20, 2
+            peso, max_q = 20, 1  # menos cantidad para niveles bajos
         elif rareza == "epico":
             peso, max_q = 5, 1
-        else:
+        else:  # legendario
             peso, max_q = 1, 1
+
         pool[item["id"]] = {"peso": peso, "max_q": max_q, "nombre": item["nombre"]}
 
-    # Elegir entre 1 y 5 materiales distintos
-    n_types = random.choices([1, 2, 3, 4, 5], weights=[40, 30, 15, 10, 5])[0]
+    if not pool:
+        conn.close()
+        return []
+
+    # Determinar cantidad de tipos a recolectar según nivel
+    if lvl < 5:
+        n_types = random.randint(1, 2)
+    elif lvl < 10:
+        n_types = random.randint(2, 3)
+    else:
+        n_types = random.randint(2, 4)
 
     # Selección ponderada sin repetición
     ids, pesos = zip(*[(k, v["peso"]) for k, v in pool.items()])
     chosen_ids = []
     while len(chosen_ids) < n_types and ids:
-        selected = random.choices(ids, weights=pesos)[0]
-        if selected not in chosen_ids:
-            chosen_ids.append(selected)
+        seleccionado = random.choices(ids, weights=pesos)[0]
+        if seleccionado not in chosen_ids:
+            chosen_ids.append(seleccionado)
 
     # Asignar cantidad aleatoria y agregar al inventario
     resultados = []
@@ -434,6 +458,21 @@ def agregar_columna_accion_fin():
     conn.commit()
     conn.close()
 
+# -------------------- EXP: CACERÍA - RECOLECCIÓN --------------------
+def obtener_item_por_id(item_id):
+    conn = conectar()
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "SELECT id, nombre, rareza, url FROM items WHERE id = ?",
+        (item_id,)
+    )
+    
+    result = cursor.fetchone()
+    
+    conn.close()
+    return result
+
 def actualizar_exp_caceria(user_id, exp):
     conn = conectar()
     cursor = conn.cursor()
@@ -453,3 +492,43 @@ def actualizar_lvl_caceria(user_id, lvl):
     )
     conn.commit()
     conn.close()
+
+def actualizar_exp_recoleccion(user_id, exp):
+    conn = conectar()
+    cursor = conn.cursor()
+    cursor.execute(
+        "UPDATE jugadores SET exp_recoleccion = ? WHERE user_id = ?",
+        (exp, user_id)
+    )
+    conn.commit()
+    conn.close()
+
+def actualizar_lvl_recoleccion(user_id, lvl):
+    conn = conectar()
+    cursor = conn.cursor()
+    cursor.execute(
+        "UPDATE jugadores SET lvl_recoleccion = ? WHERE user_id = ?",
+        (lvl, user_id)
+    )
+    conn.commit()
+    conn.close()
+    
+    
+def agregar_exp_recoleccion(user_id, exp_obtenida):
+    jugador = obtener_jugador(user_id)
+    exp_actual = jugador["exp_recoleccion"] or 0
+    lvl = jugador["lvl_recoleccion"] or 1
+
+    exp_actual += exp_obtenida
+    niveles_subidos = 0
+
+    # Umbral dinámico, similar a cacería
+    while exp_actual >= int(120 * (lvl ** 1.25)):
+        exp_actual -= int(120 * (lvl ** 1.25))
+        lvl += 1
+        niveles_subidos += 1
+
+    actualizar_exp_recoleccion(user_id, exp_actual)
+    actualizar_lvl_recoleccion(user_id, lvl)
+
+    return lvl, exp_actual, niveles_subidos

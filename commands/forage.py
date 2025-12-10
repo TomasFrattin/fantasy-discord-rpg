@@ -27,6 +27,8 @@ def crear_collage(rutas, tamaño_celda=(128, 128), gap=10):
     collage.save(output_path)
     return output_path
 
+
+
 class ForageCommand(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -55,7 +57,10 @@ class ForageCommand(commands.Cog):
         try:
             resultados = db.recolectar_materiales(user_id)
             if not resultados:
-                return await interaction.response.send_message("No conseguiste ningún material esta vez.", ephemeral=True)
+                return await interaction.response.send_message(
+                    "No conseguiste ningún material esta vez.",
+                    ephemeral=True
+                )
 
             texto_flavor = random.choice(RECOLECTAR_DESCRIPTIONS)
 
@@ -66,12 +71,31 @@ class ForageCommand(commands.Cog):
                     agrupados[item_id] = {"nombre": nombre, "cantidad": 0}
                 agrupados[item_id]["cantidad"] += cantidad
 
+            # ---------- CÁLCULO DE EXP ----------
+            exp_total = 0
+            for item_id, nombre, cantidad in resultados:
+                item = db.obtener_item_por_id(item_id)
+                rareza = item["rareza"] or "comun"
+
+                if rareza == "comun":
+                    exp_total += 5 * cantidad
+                elif rareza == "raro":
+                    exp_total += 12 * cantidad
+                elif rareza == "epico":
+                    exp_total += 25 * cantidad
+                else:
+                    exp_total += 45 * cantidad
+
+            nuevo_lvl, exp_restante, niveles_subidos = db.agregar_exp_recoleccion(user_id, exp_total)
+            # -----------------------------------
+
             embed = Embed(
                 title="🧺 Recolección completada",
                 description=texto_flavor,
                 color=0x00ff00
             )
 
+            # Items obtenidos
             for item_id, info in agrupados.items():
                 embed.add_field(
                     name=info["nombre"],
@@ -79,23 +103,45 @@ class ForageCommand(commands.Cog):
                     inline=True
                 )
 
-            # Obtener todos los materiales desde DB solo una vez
+            # EXP
+            if niveles_subidos > 0:
+                embed.add_field(
+                    name="⭐ Experiencia",
+                    value=(
+                        f"Ganaste **{exp_total} XP**.\n"
+                        f"¡Subiste {niveles_subidos} nivel(es)! Ahora sos nivel **{nuevo_lvl}**."
+                    ),
+                    inline=False
+                )
+            else:
+                # El umbral debe coincidir con el de tu función de nivel
+                umbral = int(150 * (nuevo_lvl ** 1.3))
+
+                embed.add_field(
+                    name="⭐ Experiencia",
+                    value=(
+                        f"Ganaste **{exp_total} XP**.\n"
+                        f"Progreso: **{exp_restante}/{umbral} XP**"
+                    ),
+                    inline=False
+                )
+
+            # ---------- Collage ----------
             materiales = db.obtener_materiales()
             materiales_by_id = {m["id"]: m for m in materiales}
 
-            # Crear collage solo para items que tengan URL en DB
             rutas_imagenes = []
             for item_id in agrupados:
                 item = materiales_by_id.get(item_id)
                 if item and item["url"] and os.path.isfile(item["url"]):
                     rutas_imagenes.append(item["url"])
 
-
             collage_path = crear_collage(rutas_imagenes)
             files = []
             if collage_path:
                 files.append(File(collage_path))
                 embed.set_image(url=f"attachment://{os.path.basename(collage_path)}")
+            # -----------------------------
 
             await interaction.response.send_message(embed=embed, files=files)
 
@@ -104,6 +150,7 @@ class ForageCommand(commands.Cog):
             await interaction.response.send_message(
                 "⚠️ Ocurrió un error durante la recolección.", ephemeral=True
             )
+
 
 async def setup(bot):
     await bot.add_cog(ForageCommand(bot))

@@ -20,13 +20,9 @@ async def run_profile(interaction: Interaction):
         color=0x1ABC9C
     )
 
+    # ----- Vida -----
     vida_actual = row["vida"]
     vida_max = row["vida_max"]
-
-    # Progreso de cacería
-    lvl = row["lvl_caceria"]
-    exp = row["exp_caceria"]
-    exp_needed = int(120 * (lvl ** 1.8))
 
     embed.add_field(
         name="❤️ Vida",
@@ -34,35 +30,50 @@ async def run_profile(interaction: Interaction):
         inline=True
     )
 
+    # ----- Daño -----
     embed.add_field(
         name="⚔️ Daño",
         value=f"**{row['damage']}**",
         inline=True
     )
 
+    # ----- Afinidad -----
     embed.add_field(
         name="🔮 Afinidad",
         value=f"**{row['afinidad']}**",
         inline=False
     )
 
+    # ----- Progresión -----
+    lvl_c = row["lvl_caceria"]
+    exp_c = row["exp_caceria"]
+    exp_c_needed = int(120 * (lvl_c ** 1.8))
+
+    lvl_r = row["lvl_recoleccion"]
+    exp_r = row["exp_recoleccion"]
+    exp_r_needed = int(120 * (lvl_r ** 1.25))
+
+    lvl_p = row["lvl_prestigio"]
+
     embed.add_field(
         name="📈 Progresión",
         value=(
-            f"🏹 Cacería: **{row['lvl_caceria']}**\n"
-            f"   — EXP: **{exp} / {exp_needed}**\n"
+            f"🏹 **Cacería**\n"
+            f"   Nivel: **{lvl_c}**\n"
+            f"   EXP: **{exp_c} / {exp_c_needed}**\n\n"
 
-            f"🌿 Recolección: **{row['lvl_recoleccion']}**\n"
+            f"🌿 **Recolección**\n"
+            f"   Nivel: **{lvl_r}**\n"
+            f"   EXP: **{exp_r} / {exp_r_needed}**\n\n"
 
-        
-            f"✨ Prestigio: **{row['lvl_prestigio']}**\n"
-
-
+            f"✨ **Prestigio**\n"
+            f"   Nivel: **{lvl_p}**"
         ),
         inline=False
     )
 
     await interaction.response.send_message(embed=embed)
+
 
 class ProfileCommand(commands.Cog):
     def __init__(self, bot):
