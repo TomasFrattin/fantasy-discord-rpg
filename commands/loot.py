@@ -28,6 +28,8 @@ EQUIPABLES_BY_RARITY = {}
 for item in EQUIPABLES:
     r = item.get("rareza", "comun")
     EQUIPABLES_BY_RARITY.setdefault(r, []).append(item)
+
+
 def obtener_tier(nivel_hunt):
     """
     Devuelve la rareza de un ítem según el nivel de hunt del jugador.
@@ -46,10 +48,9 @@ def obtener_tier(nivel_hunt):
 
     # Ajustar según nivel
     if nivel_hunt < 5:
-        base_probs["epico"] = 0.0
-        base_probs["legendario"] = 0.0
+        base_probs["raro"] = 0.0
     elif nivel_hunt < 10:
-        base_probs["legendario"] = 0.0
+        base_probs["epico"] = 0.0
     elif nivel_hunt < 15:
         base_probs["legendario"] = 0.0
 
@@ -195,13 +196,24 @@ class LootCommand(commands.Cog):
         view = EquiparOVender(user_id, item, slot_col=columna_equipo)
         await interaction.response.send_message(embed=embed, view=view)
 
-def generar_loot_para_usuario(user_id):
+def generar_loot_para_usuario(user_id, mob=None):
     jugador = db.obtener_jugador(user_id)
     nivel_hunt = jugador["lvl_caceria"]
 
+    # Tier base según nivel
     tier = obtener_tier(nivel_hunt)
 
-    # Fallback si no hay ítems de esa rareza
+    # Ajuste de tier según mob derrotado
+    if mob:
+        loot_bonus = mob.get("loot_bonus", 0)
+        if random.random() < loot_bonus:
+            # Subir un tier de rareza si aplica
+            if tier == "comun": tier = "poco_comun"
+            elif tier == "poco_comun": tier = "raro"
+            elif tier == "raro": tier = "epico"
+            elif tier == "epico": tier = "legendario"
+
+    # Fallback seguro si no hay ítems de esa rareza
     if tier not in EQUIPABLES_BY_RARITY or not EQUIPABLES_BY_RARITY[tier]:
         tier = "comun"
 
@@ -231,7 +243,7 @@ def generar_loot_para_usuario(user_id):
         "casco": "casco_equipado",
         "botas": "botas_equipadas"
     }
-    columna_equipo = columnas[tipo]
+    columna_equipo = columnas.get(tipo, "arma_equipada")
     equipada_id = jugador[columna_equipo]
 
     nuevo_atk = item.get("stats", {}).get("ataque", 0)
@@ -240,7 +252,6 @@ def generar_loot_para_usuario(user_id):
     # Nada equipado
     if not equipada_id:
         embed.set_footer(text="No tenés nada equipado de este tipo.")
-
         if nuevo_atk:
             embed.add_field(
                 name="⚔️ Daño",
@@ -253,7 +264,6 @@ def generar_loot_para_usuario(user_id):
                 value=f"**Objeto Actual:** —\n**Objeto Nuevo:** {item['nombre']} **(+{nuevo_hp})**",
                 inline=False
             )
-
     # Ya hay algo equipado
     else:
         equipado = EQUIPABLES_BY_ID.get(equipada_id)
@@ -281,7 +291,11 @@ def generar_loot_para_usuario(user_id):
 
     view = EquiparOVender(user_id, item, slot_col=columna_equipo)
     db.agregar_item(user_id, item["id"], 1)
-    return embed, view
+
+    # Devolver también la experiencia que otorga el mob
+    mob_exp = mob.get("mob_exp", 0) if mob else 0
+    return embed, view, mob_exp
+
 
 async def setup(bot):
     await bot.add_cog(LootCommand(bot))

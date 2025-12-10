@@ -1,4 +1,3 @@
-# commands/hunt.py
 import random
 import discord
 from discord import app_commands, Interaction, Embed, ButtonStyle
@@ -11,65 +10,90 @@ from data.texts import DEFEAT_DESCS, ESCAPE_CONFIG
 from utils.messages import mensaje_usuario_no_creado, mensaje_sin_energia, mensaje_accion_en_progreso
 from PIL import Image
 import os
+from commands.loot import generar_loot_para_usuario
 
-# Pool simple inicial de mobs (expandible)
-MOBS = MOBS = [
+# -----------------------------
+# MOBS con tier y exp
+# -----------------------------
+MOBS = [
     {"id": "slime", "nombre": "Slime", "vida_max": 20, "ataque": 5, "emoji": "🫧",
-     "url": "assets/mobs/slime.png"},
+     "tier": "comun", "exp": 10, "loot_bonus": 0, "url": "assets/mobs/slime.png"},
     {"id": "lobo", "nombre": "Lobo Salvaje", "vida_max": 35, "ataque": 7, "emoji": "🐺",
-     "url": "assets/mobs/lobo.png"},
-    {"id": "bandido", "nombre": "Bandido Errante", "vida_max": 40, "ataque": 8, "emoji": "🗡️",
-     "url": "assets/mobs/bandido.png"},
-    {"id": "espiritu", "nombre": "Espíritu Menor", "vida_max": 28, "ataque": 6, "emoji": "👻",
-     "url": "assets/mobs/espiritu.png"},
-    {"id": "goblin", "nombre": "Goblin Travieso", "vida_max": 22, "ataque": 6, "emoji": "👹",
-     "url": "assets/mobs/goblin.png"},
-    {"id": "troll", "nombre": "Troll de las Cavernas", "vida_max": 60, "ataque": 10, "emoji": "🪨",
-     "url": "assets/mobs/troll.png"},
-    {"id": "vampiro", "nombre": "Vampiro Sombrío", "vida_max": 45, "ataque": 9, "emoji": "🧛",
-     "url": "assets/mobs/vampiro.png"},
-    {"id": "espectro", "nombre": "Espectro Errante", "vida_max": 30, "ataque": 7, "emoji": "👻",
-     "url": "assets/mobs/espectro.png"},
-    {"id": "hiena", "nombre": "Hiena Hambrienta", "vida_max": 33, "ataque": 7, "emoji": "🦝",
-     "url": "assets/mobs/hiena.png"},
-    {"id": "gnomo", "nombre": "Gnomo Pícaro", "vida_max": 18, "ataque": 5, "emoji": "🧝‍♂️",
-     "url": "assets/mobs/gnomo.png"},
+     "tier": "poco_comun", "exp": 20, "loot_bonus": 0.02, "url": "assets/mobs/lobo.png"},
     {"id": "dragoncillo", "nombre": "Dragoncillo", "vida_max": 50, "ataque": 11, "emoji": "🐉",
-     "url": "assets/mobs/dragoncillo.png"},
+     "tier": "raro", "exp": 50, "loot_bonus": 0.05, "url": "assets/mobs/dragoncillo.png"},
+    {"id": "troll", "nombre": "Troll de las Cavernas", "vida_max": 60, "ataque": 10, "emoji": "🪨",
+     "tier": "raro", "exp": 45, "loot_bonus": 0.04, "url": "assets/mobs/troll.png"},
+    {"id": "vampiro", "nombre": "Vampiro Sombrío", "vida_max": 45, "ataque": 9, "emoji": "🧛",
+    "tier": "raro", "exp": 40, "loot_bonus": 0.04, "url": "assets/mobs/vampiro.png"},
+    {"id": "espectro", "nombre": "Espectro Errante", "vida_max": 30, "ataque": 7, "emoji": "👻",
+    "tier": "poco_comun", "exp": 20, "loot_bonus": 0.02, "url": "assets/mobs/espectro.png"},
+    {"id": "hiena", "nombre": "Hiena Hambrienta", "vida_max": 33, "ataque": 7, "emoji": "🦝",
+    "tier": "poco_comun", "exp": 22, "loot_bonus": 0.02, "url": "assets/mobs/hiena.png"},
+    {"id": "gnomo", "nombre": "Gnomo Pícaro", "vida_max": 18, "ataque": 5, "emoji": "🧝‍♂️",
+    "tier": "comun", "exp": 12, "loot_bonus": 0.0, "url": "assets/mobs/gnomo.png"},
+    {"id": "dragoncillo", "nombre": "Dragoncillo", "vida_max": 50, "ataque": 11, "emoji": "🐉",
+    "tier": "epico", "exp": 50, "loot_bonus": 0.05, "url": "assets/mobs/dragoncillo.png"},
     {"id": "momia", "nombre": "Momia Antiguo", "vida_max": 40, "ataque": 8, "emoji": "🪦",
-     "url": "assets/mobs/momia.png"},
+    "tier": "poco_comun", "exp": 25, "loot_bonus": 0.02, "url": "assets/mobs/momia.png"},
     {"id": "serpiente", "nombre": "Serpiente Venenosa", "vida_max": 25, "ataque": 6, "emoji": "🐍",
-     "url": "assets/mobs/serpiente.png"},
+    "tier": "comun", "exp": 15, "loot_bonus": 0.0, "url": "assets/mobs/serpiente.png"},
     {"id": "minotauro", "nombre": "Minotauro", "vida_max": 55, "ataque": 10, "emoji": "🐂",
-     "url": "assets/mobs/minotauro.png"},
+    "tier": "epico", "exp": 48, "loot_bonus": 0.04, "url": "assets/mobs/minotauro.png"},
     {"id": "hechicero", "nombre": "Hechicero Errante", "vida_max": 38, "ataque": 9, "emoji": "🧙",
-     "url": "assets/mobs/hechicero.png"},
-]
+    "tier": "epico", "exp": 42, "loot_bonus": 0.04, "url": "assets/mobs/hechicero.png"},
 
+]
+# -----------------------------
+# Funciones auxiliares
+# -----------------------------
 def preparar_imagen_mob(ruta, size=(300, 300)):
     img = Image.open(ruta).convert("RGBA")
     img.thumbnail(size, Image.LANCZOS)
-
-    # cuadro blanco o transparente
     fondo = Image.new("RGBA", size, (0, 0, 0, 0))
-
-    # centrar imagen
     offset = ((size[0] - img.width)//2, (size[1] - img.height)//2)
     fondo.paste(img, offset, img)
-
     output_path = f"data/temp/temp_mob_{os.path.basename(ruta)}"
     fondo.save(output_path)
-
     return output_path
 
-def elegir_mob() -> dict:
-    """Elige un mob aleatorio (posible lugar para tier/probabilidades)."""
-    return random.choice(MOBS)
+def elegir_mob(nivel_hunt: int) -> dict:
+    """Elige un mob según lvl_caceria y probabilidades de tier."""
+    if nivel_hunt < 5:
+        tiers = ["comun", "poco_comun"]
+    elif nivel_hunt < 10:
+        tiers = ["comun", "poco_comun", "raro"]
+    else:
+        tiers = ["comun", "poco_comun", "raro", "epico"]
+    
+    mobs_filtrados = [m for m in MOBS if m.get("tier","comun") in tiers]
+    return random.choice(mobs_filtrados)
 
+def agregar_exp_caceria(user_id, exp_obtenida):
+    jugador = db.obtener_jugador(user_id)
+    exp_actual = jugador["exp_caceria"] or 0
+    lvl = jugador["lvl_caceria"] or 1
 
+    exp_actual += exp_obtenida
+    niveles_subidos = 0
+
+    # Umbral dinámico: 100 * nivel
+    while exp_actual >= int(150 * (lvl ** 1.3)):
+        exp_actual -= 100 * lvl
+        lvl += 1
+        niveles_subidos += 1
+
+    db.actualizar_exp_caceria(user_id, exp_actual)
+    db.actualizar_lvl_caceria(user_id, lvl)
+
+    return lvl, exp_actual, niveles_subidos
+
+# -----------------------------
+# Vista del combate
+# -----------------------------
 class HuntView(View):
     def __init__(self, user_id: str):
-        super().__init__(timeout=60)  # expira en 60s
+        super().__init__(timeout=60)
         self.user_id = user_id
 
     @button(label="Atacar", style=ButtonStyle.primary)
@@ -81,11 +105,10 @@ class HuntView(View):
         if not combate:
             return await interaction.response.send_message("El combate ya no está activo.", ephemeral=True)
 
-        import random
-        # --- Ataque del jugador ---
         jugador = db.obtener_jugador(self.user_id)
         player_atk = jugador["damage"]
 
+        # --- Ataque jugador ---
         mob_def = int(combate["mob_hp_max"] * 0.02)
         daño_jugador = int(max(player_atk * random.uniform(0.95, 1.05) - mob_def, 0))
         fallo_jugador = random.random() < 0.1
@@ -96,13 +119,13 @@ class HuntView(View):
         if combate["mob_hp"] < 0:
             combate["mob_hp"] = 0
 
-        # --- Ataque del mob (si sigue vivo) ---
+        # --- Ataque mob ---
         daño_mob = 0
         fallo_mob = False
         if combate["mob_hp"] > 0:
             mob_atk = combate["mob_atk"]
             player_def = int(combate["player_hp_max"] * 0.02)
-            daño_mob = int(max(mob_atk * random.uniform(0.95, 1.05) - player_def, 0))
+            daño_mob = int(max(mob_atk * random.uniform(0.95,1.05) - player_def,0))
             fallo_mob = random.random() < 0.1
             if fallo_mob:
                 daño_mob = 0
@@ -111,15 +134,11 @@ class HuntView(View):
             if combate["player_hp"] < 0:
                 combate["player_hp"] = 0
 
-        # --- Construir embed ---
+        # --- Embed ---
         embed = Embed(
             title=f"⚔️ Combate vs {combate['mob_emoji']} {combate['mob_nombre']}",
             color=0xFF4500
         )
-
-        # No mostrar imagen más veces
-        # Si no querés que se muestre nunca más, simplemente no hacemos nada aquí.
-        combate["image_shown"] = True
 
         embed.add_field(
             name=f"💀 {combate['mob_nombre']}",
@@ -127,62 +146,77 @@ class HuntView(View):
             inline=False
         )
         embed.add_field(
-            name=f"🧍 Jugador",
+            name="🧍 Jugador",
             value=f"HP: **{combate['player_hp']}/{combate['player_hp_max']}**",
             inline=False
         )
 
         turno_msg = ""
         if fallo_jugador:
-            turno_msg += f"⚠️ Fallaste tu ataque!\n"
+            turno_msg += "⚠️ Fallaste tu ataque!\n"
         else:
             turno_msg += f"🗡️ Le hiciste **{daño_jugador}** de daño.\n"
-
         if combate["mob_hp"] > 0:
             if fallo_mob:
                 turno_msg += f"⚠️ {combate['mob_nombre']} falló su ataque!\n"
             else:
                 turno_msg += f"💥 {combate['mob_nombre']} te hizo **{daño_mob}** de daño.\n"
-
         embed.description = turno_msg
 
-        # --- Chequear resultados ---
+        # --- Derrota ---
         if combate["player_hp"] <= 0:
             embed.title += "\n❌ Derrota"
             embed.color = 0x8B0000
-            # Perder todo el oro
             db.sumar_oro(self.user_id, -db.obtener_jugador(self.user_id)["oro"])
-            jugador = db.obtener_jugador(self.user_id)
-            vida_max = jugador["vida_max"]
-            db.actualizar_vida(self.user_id, max(1, vida_max // 2))  # Deja la vida a la mitad, mínimo 1
-
-            # Poner energía a 0 al morir
-            energia_actual = jugador["energia"]
-            db.gastar_energia(self.user_id, energia_actual)
-
+            db.actualizar_vida(self.user_id, max(1,jugador["vida_max"]//2))
+            db.gastar_energia(self.user_id, jugador["energia"])
             delete_combat(self.user_id)
             desc = random.choice(DEFEAT_DESCS)
-            embed.add_field(
-                name="🪦 Derrota",
-                value=f"{desc}\n\nAl incorporarte, notas que perdiste todo tu oro 💰 y sientes un gran cansancio. 😓",
-                inline=False
-            )       
+            embed.add_field(name="🪦 Derrota",
+                            value=f"{desc}\n\nPerdiste todo tu oro y estás exhausto 😓", inline=False)
             await interaction.response.edit_message(embed=embed, view=None, attachments=[])
             return
 
+        # --- Victoria ---
         if combate["mob_hp"] <= 0:
             embed.title += "\n🏆 Victoria"
             embed.color = 0x00FF00
-            delete_combat(self.user_id)
-            # Llamar función de loot y mostrar resultado
-            from commands.loot import generar_loot_para_usuario
-            loot_embed, loot_view = generar_loot_para_usuario(self.user_id)
+
+            exp_ganada = combate.get("mob_exp", 0)
+            resultado = agregar_exp_caceria(self.user_id, exp_ganada)
+
+            if resultado:
+                nuevo_lvl, exp_restante, niveles_subidos = resultado
+
+                if niveles_subidos > 0:
+                    embed.add_field(
+                        name="⭐ Experiencia",
+                        value=(
+                            f"Has ganado **{exp_ganada} XP**.\n"
+                            f"¡Subiste {niveles_subidos} nivel(es)! Ahora sos nivel **{nuevo_lvl}**."
+                        ),
+                        inline=False
+                    )
+                else:
+                    embed.add_field(
+                        name="⭐ Experiencia",
+                        value=(
+                            f"Has ganado **{exp_ganada} XP**.\n"
+                            f"Progreso: **{exp_restante}/{100 * nuevo_lvl} XP**"
+                        ),
+                        inline=False
+                    )
+                    
             await interaction.response.edit_message(embed=embed, view=None, attachments=[])
-            # Enviar loot como nuevo mensaje (no ephemeral, para que pueda interactuar)
+
+            loot_embed, loot_view, mob_exp = generar_loot_para_usuario(self.user_id, combate)
+
+            delete_combat(self.user_id)
+
             await interaction.followup.send(embed=loot_embed, view=loot_view, ephemeral=True)
             return
 
-        # Si sigue el combate, actualiza el mensaje y guarda el estado
+        # Continuar combate
         create_combat(self.user_id, combate)
         await interaction.response.edit_message(embed=embed, view=self, attachments=[])
 
@@ -268,6 +302,9 @@ class HuntView(View):
         await self.intentar_huir(interaction)
 
 
+# -----------------------------
+# Comando hunt
+# -----------------------------
 class HuntCommand(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -275,83 +312,60 @@ class HuntCommand(commands.Cog):
     @app_commands.command(name="hunt", description="Buscar un enemigo para combatir (gasta 1 energía).")
     async def hunt(self, interaction: Interaction):
         user_id = str(interaction.user.id)
-
-        # Verificar personaje y energía
-        row = db.obtener_jugador(user_id)
-        if not row:
+        jugador = db.obtener_jugador(user_id)
+        if not jugador:
             return await interaction.response.send_message(embed=mensaje_usuario_no_creado(), ephemeral=True)
         
         energia = db.obtener_energia(user_id)
         if energia <= 0:
             return await interaction.response.send_message(embed=mensaje_sin_energia(), ephemeral=True)
-
-        accion = db.obtener_accion_actual(user_id)
-        if accion:
-            return await interaction.response.send_message(embed=mensaje_accion_en_progreso(user_id), ephemeral=True)
         
-        # Si ya tiene un combate activo, avisar
-        if has_combat(user_id):
+        if db.obtener_accion_actual(user_id) or has_combat(user_id):
             return await interaction.response.send_message(embed=mensaje_accion_en_progreso(user_id), ephemeral=True)
 
-
-        # Gastar energía
         db.gastar_energia(user_id, 1)
-        logging.info(f"[HUNT] Usuario {user_id} ha gastado 1 energía para cazar.")
-        # Elegir mob y crear estado de combate
-        mob = elegir_mob()
-        logging.info(f"[HUNT] Usuario {user_id} ha encontrado un mob: {mob['nombre']} (ID: {mob['id']}).")
-        
-        jugador = db.obtener_jugador(user_id)
-        player_hp = int(jugador["vida"])  # vida actual
+        logging.info(f"[HUNT] Usuario {user_id} gastó 1 energía.")
 
-        factor_vida = random.uniform(0.96, 1.04)
-
-        mob_hp = int(mob["vida_max"] * factor_vida)
+        # Elegir mob según lvl_caceria
+        mob = elegir_mob(jugador["lvl_caceria"])
+        mob_hp = int(mob["vida_max"] * random.uniform(0.96,1.04))
 
         combat_payload = {
             "mob_id": mob["id"],
             "mob_nombre": mob["nombre"],
-            "mob_emoji": mob.get("emoji", ""),
+            "mob_emoji": mob.get("emoji",""),
             "mob_hp": mob_hp,
             "mob_hp_max": mob_hp,
             "mob_atk": mob["ataque"],
-            "player_hp": player_hp,
-            "player_hp_max": int(jugador["vida_max"]),
+            "mob_exp": mob["exp"],
+            "mob_loot_bonus": mob.get("loot_bonus",0),
+            "player_hp": jugador["vida"],
+            "player_hp_max": jugador["vida_max"],
             "image_shown": False,
         }
         create_combat(user_id, combat_payload)
 
         embed = Embed(
             title=f"{mob.get('emoji','')} ¡Has encontrado un enemigo! {mob.get('emoji','')}",
-            description=f"Se ha topado con **{mob['nombre']}**. ¿Qué harás?",
+            description=f"Te topaste con **{mob['nombre']}**. ¿Qué harás?",
             color=0xA335EE
         )
 
-        # Subtítulo: Estadísticas del enemigo
-        embed.add_field(name=f"📊 Estadísticas de **{mob['nombre']}**", value="\n", inline=False)
-        embed.add_field(name="🔴 Vida", value=f"**{mob_hp} / {mob_hp}**", inline=True)
+        embed.add_field(name=f"📊 Estadísticas de {mob['nombre']}", value="\n", inline=False)
+        embed.add_field(name="🔴 Vida", value=f"**{mob_hp}/{mob_hp}**", inline=True)
         embed.add_field(name="⚔️ Ataque", value=f"**{mob['ataque']}**", inline=True)
-
-        # Subtítulo: Estadísticas del jugador
-        embed.add_field(name=f"📊 Estadísticas de **{jugador['username']}**", value="\n", inline=False)
-        embed.add_field(name="🧍 Vida", value=f"**{jugador['vida']} / {jugador['vida_max']}**", inline=True)
+        embed.add_field(name=f"📊 Estadísticas de {jugador['username']}", value="\n", inline=False)
+        embed.add_field(name="🧍 Vida", value=f"**{jugador['vida']}/{jugador['vida_max']}**", inline=True)
         embed.add_field(name="🗡️ Daño", value=f"**{jugador['damage']}**", inline=True)
 
         view = HuntView(user_id)
-        mob_img_path = preparar_imagen_mob(mob["url"], size=(280, 280))
-
+        mob_img_path = preparar_imagen_mob(mob["url"], size=(280,280))
         if mob_img_path:
             file = discord.File(mob_img_path, filename=os.path.basename(mob_img_path))
             embed.set_image(url=f"attachment://{os.path.basename(mob_img_path)}")
-
             await interaction.response.send_message(embed=embed, view=view, file=file)
-
-            # eliminar archivo temporal
-            try:
-                os.remove(mob_img_path)
-            except:
-                pass
-
+            try: os.remove(mob_img_path)
+            except: pass
         else:
             await interaction.response.send_message(embed=embed, view=view)
 

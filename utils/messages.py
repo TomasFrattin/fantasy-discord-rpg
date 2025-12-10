@@ -26,8 +26,8 @@ def mensaje_sin_energia():
     return embed
 
 
-def mensaje_accion_en_progreso(id_usuario: str):
-    accion = db.obtener_accion_actual(id_usuario)
+def mensaje_accion_en_progreso(user_id: str):
+    accion = db.obtener_accion_actual(user_id)
     accion_texto = accion if accion else "desconocida"
     
     embed = Embed(

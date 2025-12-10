@@ -16,7 +16,7 @@ def crear_tabla_jugadores():
     cursor = conn.cursor()
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS jugadores (
-        id_usuario TEXT PRIMARY KEY,
+        user_id TEXT PRIMARY KEY,
         username TEXT,
         afinidad TEXT,
         

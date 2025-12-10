@@ -23,6 +23,11 @@ async def run_profile(interaction: Interaction):
     vida_actual = row["vida"]
     vida_max = row["vida_max"]
 
+    # Progreso de cacería
+    lvl = row["lvl_caceria"]
+    exp = row["exp_caceria"]
+    exp_needed = int(120 * (lvl ** 1.8))
+
     embed.add_field(
         name="❤️ Vida",
         value=f"**{vida_actual} / {vida_max}**",
@@ -45,8 +50,14 @@ async def run_profile(interaction: Interaction):
         name="📈 Progresión",
         value=(
             f"🏹 Cacería: **{row['lvl_caceria']}**\n"
+            f"   — EXP: **{exp} / {exp_needed}**\n"
+
             f"🌿 Recolección: **{row['lvl_recoleccion']}**\n"
+
+        
             f"✨ Prestigio: **{row['lvl_prestigio']}**\n"
+
+
         ),
         inline=False
     )

@@ -13,7 +13,7 @@ def conectar():
     return conn
 
 # -------------------- STATS --------------------
-def recalcular_stats(id_usuario):
+def recalcular_stats(user_id):
     """Recalcula daño y vida en base al equipamiento."""
     conn = conectar()
     cursor = conn.cursor()
@@ -21,8 +21,8 @@ def recalcular_stats(id_usuario):
     cursor.execute("""
         SELECT vida_base, base_damage, 
                arma_equipada, armadura_equipada, casco_equipado, botas_equipadas
-        FROM jugadores WHERE id_usuario = ?
-    """, (id_usuario,))
+        FROM jugadores WHERE user_id = ?
+    """, (user_id,))
     pj = cursor.fetchone()
 
     if not pj:
@@ -54,8 +54,8 @@ def recalcular_stats(id_usuario):
     cursor.execute("""
         UPDATE jugadores
         SET vida_max = ?, damage = ?, vida = MIN(vida, ?)
-        WHERE id_usuario = ?
-    """, (base_hp + bonus_hp, base_dmg + bonus_dmg, base_hp + bonus_hp, id_usuario))
+        WHERE user_id = ?
+    """, (base_hp + bonus_hp, base_dmg + bonus_dmg, base_hp + bonus_hp, user_id))
 
     conn.commit()
     conn.close()
@@ -66,7 +66,7 @@ def sleep(user_id: str):
     cursor = conn.cursor()
 
     # Obtener vida actual y vida máxima real
-    cursor.execute("SELECT vida, vida_max FROM jugadores WHERE id_usuario = ?", (user_id,))
+    cursor.execute("SELECT vida, vida_max FROM jugadores WHERE user_id = ?", (user_id,))
     row = cursor.fetchone()
 
     if not row:
@@ -79,7 +79,7 @@ def sleep(user_id: str):
     nueva_vida = min(vida_actual + recuperar, vida_max)
 
     cursor.execute(
-        "UPDATE jugadores SET vida = ? WHERE id_usuario = ?",
+        "UPDATE jugadores SET vida = ? WHERE user_id = ?",
         (nueva_vida, user_id)
     )
 
@@ -90,7 +90,7 @@ def sleep(user_id: str):
 
 
 # -------------------- JUGADOR --------------------
-def registrar_jugador(id_usuario, username, afinidad):
+def registrar_jugador(user_id, username, afinidad):
     energia_inicial = energia_max_por_afinidad(afinidad)
 
     conn = conectar()
@@ -98,17 +98,17 @@ def registrar_jugador(id_usuario, username, afinidad):
     now_iso = datetime.now().replace(microsecond=0).isoformat(sep=' ')
     cursor.execute("""
         INSERT OR IGNORE INTO jugadores 
-        (id_usuario, username, afinidad, energia, energia_max, last_reset)
+        (user_id, username, afinidad, energia, energia_max, last_reset)
         VALUES (?, ?, ?, ?, ?, ?)
-    """, (id_usuario, username, afinidad, energia_inicial, energia_inicial, now_iso))
+    """, (user_id, username, afinidad, energia_inicial, energia_inicial, now_iso))
     conn.commit()
     conn.close()
 
 
-def obtener_jugador(id_usuario):
+def obtener_jugador(user_id):
     conn = conectar()
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM jugadores WHERE id_usuario = ?", (id_usuario,))
+    cursor.execute("SELECT * FROM jugadores WHERE user_id = ?", (user_id,))
     row = cursor.fetchone()
     conn.close()
     return row
@@ -116,22 +116,22 @@ def obtener_jugador(id_usuario):
 def actualizar_vida(user_id, nueva_vida):
     conn = conectar()
     cursor = conn.cursor()
-    cursor.execute("UPDATE jugadores SET vida = ? WHERE id_usuario = ?", (nueva_vida, user_id))
+    cursor.execute("UPDATE jugadores SET vida = ? WHERE user_id = ?", (nueva_vida, user_id))
     conn.commit()
     conn.close()
 # -------------------- INVENTARIO --------------------
 # REFACTORIZAR
-# def agregar_consumible(id_usuario, item_id):
+# def agregar_consumible(user_id, item_id):
 #     conn = conectar()
 #     cursor = conn.cursor()
 
-#     cursor.execute("SELECT inventario FROM jugadores WHERE id_usuario = ?", (id_usuario,))
+#     cursor.execute("SELECT inventario FROM jugadores WHERE user_id = ?", (user_id,))
 #     fila = cursor.fetchone()
 
 #     inv = json.loads(fila[0]) if fila else []
 #     inv.append(item_id)
 
-#     cursor.execute("UPDATE jugadores SET inventario = ? WHERE id_usuario = ?", (json.dumps(inv), id_usuario))
+#     cursor.execute("UPDATE jugadores SET inventario = ? WHERE user_id = ?", (json.dumps(inv), user_id))
 #     conn.commit()
 #     conn.close()
 
@@ -214,44 +214,44 @@ def recolectar_materiales(user_id: str):
     return resultados
 
 # -------------------- EQUIPAMIENTO --------------------
-def equipar(id_usuario, slot, item_id):
+def equipar(user_id, slot, item_id):
     conn = conectar()
     cursor = conn.cursor()
 
-    cursor.execute(f"UPDATE jugadores SET {slot} = ? WHERE id_usuario = ?", (item_id, id_usuario))
+    cursor.execute(f"UPDATE jugadores SET {slot} = ? WHERE user_id = ?", (item_id, user_id))
     conn.commit()
     conn.close()
 
-    recalcular_stats(id_usuario)
+    recalcular_stats(user_id)
 
 
 # -------------------- ORO / ENERGÍA --------------------
-def sumar_oro(id_usuario, cantidad):
+def sumar_oro(user_id, cantidad):
     conn = conectar()
     cursor = conn.cursor()
-    cursor.execute("UPDATE jugadores SET oro = oro + ? WHERE id_usuario = ?", (cantidad, id_usuario))
+    cursor.execute("UPDATE jugadores SET oro = oro + ? WHERE user_id = ?", (cantidad, user_id))
     conn.commit()
     conn.close()
 
 
-def obtener_energia(id_usuario):
+def obtener_energia(user_id):
     conn = conectar()
     cursor = conn.cursor()
-    cursor.execute("SELECT energia FROM jugadores WHERE id_usuario = ?", (id_usuario,))
+    cursor.execute("SELECT energia FROM jugadores WHERE user_id = ?", (user_id,))
     fila = cursor.fetchone()
     conn.close()
     return fila[0] if fila else None
 
 
-def gastar_energia(id_usuario, cantidad=1):
+def gastar_energia(user_id, cantidad=1):
     conn = conectar()
     cursor = conn.cursor()
-    cursor.execute("SELECT energia FROM jugadores WHERE id_usuario = ?", (id_usuario,))
+    cursor.execute("SELECT energia FROM jugadores WHERE user_id = ?", (user_id,))
     fila = cursor.fetchone()
 
     if fila:
         nueva = max(fila[0] - cantidad, 0)
-        cursor.execute("UPDATE jugadores SET energia = ? WHERE id_usuario = ?", (nueva, id_usuario))
+        cursor.execute("UPDATE jugadores SET energia = ? WHERE user_id = ?", (nueva, user_id))
         conn.commit()
 
     conn.close()
@@ -266,11 +266,11 @@ def resetear_todos():
     conn = conectar()
     cursor = conn.cursor()
 
-    cursor.execute("SELECT id_usuario, vida, vida_max, afinidad FROM jugadores")
+    cursor.execute("SELECT user_id, vida, vida_max, afinidad FROM jugadores")
     jugadores = cursor.fetchall()
 
     for jugador in jugadores:
-        user_id = jugador["id_usuario"]
+        user_id = jugador["user_id"]
         vida_actual = jugador["vida"]
         vida_max = jugador["vida_max"]
         afinidad = jugador["afinidad"]
@@ -278,7 +278,7 @@ def resetear_todos():
         energia_max = energia_max_por_afinidad(afinidad)
 
         cursor.execute(
-            "UPDATE jugadores SET energia = ? WHERE id_usuario = ?",
+            "UPDATE jugadores SET energia = ? WHERE user_id = ?",
             (energia_max, user_id)
         )
 
@@ -286,7 +286,7 @@ def resetear_todos():
         recuperar = max(1, int(vida_max * 0.20))
         nueva_vida = min(vida_actual + recuperar, vida_max)
         cursor.execute(
-            "UPDATE jugadores SET vida = ? WHERE id_usuario = ?",
+            "UPDATE jugadores SET vida = ? WHERE user_id = ?",
             (nueva_vida, user_id)
         )
 
@@ -295,7 +295,7 @@ def resetear_todos():
     conn.close()
 
 
-def resetear_usuario(id_usuario: str):
+def resetear_usuario(user_id: str):
     conn = conectar()
     cursor = conn.cursor()
 
@@ -303,8 +303,8 @@ def resetear_usuario(id_usuario: str):
     cursor.execute("""
         SELECT vida, vida_max, afinidad
         FROM jugadores
-        WHERE id_usuario = ?
-    """, (id_usuario,))
+        WHERE user_id = ?
+    """, (user_id,))
     
     jugador = cursor.fetchone()
 
@@ -322,8 +322,8 @@ def resetear_usuario(id_usuario: str):
 
     # Resetear energía
     cursor.execute(
-        "UPDATE jugadores SET energia = ? WHERE id_usuario = ?",
-        (energia_max, id_usuario)
+        "UPDATE jugadores SET energia = ? WHERE user_id = ?",
+        (energia_max, user_id)
     )
 
     # Recuperar vida
@@ -331,8 +331,8 @@ def resetear_usuario(id_usuario: str):
     nueva_vida = min(vida_actual + recuperar, vida_max)
 
     cursor.execute(
-        "UPDATE jugadores SET vida = ? WHERE id_usuario = ?",
-        (nueva_vida, id_usuario)
+        "UPDATE jugadores SET vida = ? WHERE user_id = ?",
+        (nueva_vida, user_id)
     )
 
     conn.commit()
@@ -344,7 +344,7 @@ def resetear_usuario(id_usuario: str):
 def eliminar_jugador(user_id: str):
     conn = sqlite3.connect(DB_FILE)
     cursor = conn.cursor()
-    cursor.execute("DELETE FROM jugadores WHERE id_usuario = ?", (user_id,))
+    cursor.execute("DELETE FROM jugadores WHERE user_id = ?", (user_id,))
     conn.commit()
     conn.close()
 
@@ -374,41 +374,41 @@ def obtener_equipables():
     return items
 
 
-def actualizar_accion(id_usuario: str, accion: str | None):
+def actualizar_accion(user_id: str, accion: str | None):
     """Actualiza la acción actual del jugador (pescando, etc.)"""
     conn = conectar()
     cursor = conn.cursor()
-    cursor.execute("UPDATE jugadores SET accion_actual = ? WHERE id_usuario = ?", (accion, id_usuario))
+    cursor.execute("UPDATE jugadores SET accion_actual = ? WHERE user_id = ?", (accion, user_id))
     conn.commit()
     conn.close()
 
-def obtener_accion_actual(id_usuario: str) -> str | None:
+def obtener_accion_actual(user_id: str) -> str | None:
     """Obtiene la acción actual del jugador (pescando, etc.)"""
     conn = conectar()
     cursor = conn.cursor()
-    cursor.execute("SELECT accion_actual FROM jugadores WHERE id_usuario = ?", (id_usuario,))
+    cursor.execute("SELECT accion_actual FROM jugadores WHERE user_id = ?", (user_id,))
     fila = cursor.fetchone()
     conn.close()
     return fila["accion_actual"] if fila else None
 
-def actualizar_accion_fin(id_usuario: str, accion_fin: str | None):
+def actualizar_accion_fin(user_id: str, accion_fin: str | None):
     """Actualiza la fecha/hora de finalización de la acción actual del jugador."""
     conn = conectar()
     cursor = conn.cursor()
     cursor.execute(
-        "UPDATE jugadores SET accion_fin = ? WHERE id_usuario = ?",
-        (accion_fin, id_usuario)
+        "UPDATE jugadores SET accion_fin = ? WHERE user_id = ?",
+        (accion_fin, user_id)
     )
     conn.commit()
     conn.close()
 
-def obtener_accion_fin(id_usuario: str) -> str | None:
+def obtener_accion_fin(user_id: str) -> str | None:
     """Obtiene la fecha/hora de finalización de la acción actual del jugador."""
     conn = conectar()
     cursor = conn.cursor()
     cursor.execute(
-        "SELECT accion_fin FROM jugadores WHERE id_usuario = ?",
-        (id_usuario,)
+        "SELECT accion_fin FROM jugadores WHERE user_id = ?",
+        (user_id,)
     )
     fila = cursor.fetchone()
     conn.close()
@@ -431,5 +431,25 @@ def agregar_columna_accion_fin():
     else:
         print("La columna 'accion_fin' ya existe.")
 
+    conn.commit()
+    conn.close()
+
+def actualizar_exp_caceria(user_id, exp):
+    conn = conectar()
+    cursor = conn.cursor()
+    cursor.execute(
+        "UPDATE jugadores SET exp_caceria = ? WHERE user_id = ?",
+        (exp, user_id)
+    )
+    conn.commit()
+    conn.close()
+    
+def actualizar_lvl_caceria(user_id, lvl):
+    conn = conectar()
+    cursor = conn.cursor()
+    cursor.execute(
+        "UPDATE jugadores SET lvl_caceria = ? WHERE user_id = ?",
+        (lvl, user_id)
+    )
     conn.commit()
     conn.close()
