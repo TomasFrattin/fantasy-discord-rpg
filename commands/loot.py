@@ -97,7 +97,7 @@ class LootCommand(commands.Cog):
 
         # Obtener jugador DESPUÉS de gastar energía
         jugador = db.obtener_jugador(user_id)
-        nivel_hunt = jugador["caceria"]
+        nivel_hunt = jugador["lvl_caceria"]
 
         # Tier según hunt
         tier = obtener_tier(nivel_hunt)
@@ -197,7 +197,7 @@ class LootCommand(commands.Cog):
 
 def generar_loot_para_usuario(user_id):
     jugador = db.obtener_jugador(user_id)
-    nivel_hunt = jugador["caceria"]
+    nivel_hunt = jugador["lvl_caceria"]
 
     tier = obtener_tier(nivel_hunt)
 

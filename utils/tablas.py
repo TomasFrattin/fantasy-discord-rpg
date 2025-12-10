@@ -15,39 +15,46 @@ def crear_tabla_jugadores():
     conn = conectar()
     cursor = conn.cursor()
     cursor.execute("""
-        CREATE TABLE IF NOT EXISTS jugadores (
-            id_usuario TEXT PRIMARY KEY,
-            username TEXT,
-            afinidad TEXT,
-            
-            -- stats base
-            vida_base INTEGER DEFAULT 100,
-            base_damage INTEGER DEFAULT 10,
-                   
-            -- stats actuales
-            vida INTEGER DEFAULT 100,
-            damage INTEGER DEFAULT 10,
-            energia INTEGER DEFAULT 3,
-                   
-            -- stats máximos
-            vida_max INTEGER DEFAULT 100,
-            energia_max INTEGER DEFAULT 3,
-                   
-            exploracion INTEGER DEFAULT 0,
-            combate INTEGER DEFAULT 0,
-            caceria INTEGER DEFAULT 0,
+    CREATE TABLE IF NOT EXISTS jugadores (
+        id_usuario TEXT PRIMARY KEY,
+        username TEXT,
+        afinidad TEXT,
+        
+        -- vida
+        vida_base INTEGER DEFAULT 100,
+        vida INTEGER DEFAULT 100,
+        vida_max INTEGER DEFAULT 100,
+        
+        -- daño
+        base_damage INTEGER DEFAULT 10,
+        damage INTEGER DEFAULT 10,
+        
+        -- energía
+        energia INTEGER DEFAULT 3,
+        energia_max INTEGER DEFAULT 3,
+        
+        -- niveles y experiencia
+        lvl_recoleccion INTEGER DEFAULT 1,
+        exp_recoleccion INTEGER DEFAULT 0,
+        lvl_caceria INTEGER DEFAULT 1,
+        exp_caceria INTEGER DEFAULT 0,
+        lvl_prestigio INTEGER DEFAULT 1,
+        exp_prestigio INTEGER DEFAULT 0,
 
-            arma_equipada TEXT,
-            armadura_equipada TEXT,
-            casco_equipado TEXT,
-            botas_equipadas TEXT,
+        -- equipo
+        arma_equipada TEXT,
+        armadura_equipada TEXT,
+        casco_equipado TEXT,
+        botas_equipadas TEXT,
                     
-            oro INTEGER DEFAULT 0,
-            last_reset TEXT,
+        -- otros
+        oro INTEGER DEFAULT 0,
+        last_reset TEXT,
 
-            accion_actual TEXT DEFAULT NULL,
-            accion_fin TEXT DEFAULT NULL
-        )
+        -- acciones
+        accion_actual TEXT DEFAULT NULL,
+        accion_fin TEXT DEFAULT NULL
+    )
     """)
     conn.commit()
     conn.close()

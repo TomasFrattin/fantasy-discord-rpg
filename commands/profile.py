@@ -44,12 +44,9 @@ async def run_profile(interaction: Interaction):
     embed.add_field(
         name="📈 Progresión",
         value=(
-            # f"🧭 Exploración: **{row['exploracion']}W**\n"
-            # f"⚔️ Combate: **{row['combate']}**\n"
-            # f"🏹 Cacería: **{row['caceria']}**"
-            f"🧭 Exploración: **WIP**\n"
-            f"⚔️ Combate: **WIP**\n"
-            f"🏹 Cacería: **WIP**"
+            f"🏹 Cacería: **{row['lvl_caceria']}**\n"
+            f"🌿 Recolección: **{row['lvl_recoleccion']}**\n"
+            f"✨ Prestigio: **{row['lvl_prestigio']}**\n"
         ),
         inline=False
     )
