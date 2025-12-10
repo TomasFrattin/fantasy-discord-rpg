@@ -8,7 +8,7 @@
       "descripcion": "Un pez común, fácil de pescar. Ideal para recetas básicas o vender por unas monedas.",
       "valor_oro": 5,
       "url": "assets/materiales/pez_comun.png",
-      "peso": 50
+      "peso": 80
     },
     {
       "id": "pez_raro",

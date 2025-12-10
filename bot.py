@@ -25,7 +25,7 @@ tablas.crear_tabla_jugadores()
 
 # print("Base de datos borrada y tabla recreada al iniciar el bot.")
 
-# db.resetear_usuario("366690600709521419")
+db.resetear_usuario("366690600709521419")
 # db.eliminar_jugador("366690600709521419")
 # db.resetear_todos()
 

@@ -9,7 +9,8 @@
         "ataque": 3
       },
       "valor_oro": 5,
-      "descripcion": "Una espada oxidada y débil."
+      "descripcion": "Una espada oxidada y débil.",
+      "url": "assets/equipables/weapon_001.png"
     },
     {
       "id": "weapon_002",
@@ -20,7 +21,8 @@
         "ataque": 8
       },
       "valor_oro": 15,
-      "descripcion": "El arma básica de un aventurero novato."
+      "descripcion": "El arma básica de un aventurero novato.",
+      "url": "assets/equipables/weapon_002.png"
     },
     {
       "id": "weapon_003",
@@ -31,7 +33,8 @@
         "ataque": 12
       },
       "valor_oro": 28,
-      "descripcion": "Un hacha pesada diseñada para combate."
+      "descripcion": "Un hacha pesada diseñada para combate.",
+      "url": "assets/equipables/weapon_003.png"
     },
     {
       "id": "weapon_007",
@@ -42,7 +45,8 @@
         "ataque": 14
       },
       "valor_oro": 35,
-      "descripcion": "Una espada confiable, equilibrada y duradera."
+      "descripcion": "Una espada confiable, equilibrada y duradera.",
+      "url": "assets/equipables/weapon_007.png"
     },
     {
       "id": "weapon_004",
@@ -53,7 +57,8 @@
         "ataque": 20
       },
       "valor_oro": 75,
-      "descripcion": "Emanando calor, su filo arde en batalla."
+      "descripcion": "Emanando calor, su filo arde en batalla.",
+      "url": "assets/equipables/weapon_004.png"
     },
     {
       "id": "weapon_005",
@@ -64,7 +69,8 @@
         "ataque": 24
       },
       "valor_oro": 95,
-      "descripcion": "Una lanza enorme que requiere fuerza notable."
+      "descripcion": "Una lanza enorme que requiere fuerza notable.",
+      "url": "assets/equipables/weapon_005.png"
     },
     {
       "id": "weapon_008",
@@ -75,7 +81,8 @@
         "ataque": 22
       },
       "valor_oro": 85,
-      "descripcion": "Sus golpes llevan la fuerza de la noche."
+      "descripcion": "Sus golpes llevan la fuerza de la noche.",
+      "url": "assets/equipables/weapon_008.png"
     },
     {
       "id": "weapon_009",
@@ -86,7 +93,8 @@
         "ataque": 26
       },
       "valor_oro": 110,
-      "descripcion": "Una lanza que emite llamas al impactar."
+      "descripcion": "Una lanza que emite llamas al impactar.",
+      "url": "assets/equipables/weapon_009.png"
     },
     {
       "id": "weapon_006",
@@ -97,7 +105,8 @@
         "ataque": 35
       },
       "valor_oro": 180,
-      "descripcion": "Forjada en el aliento de un dragón ancestral."
+      "descripcion": "Forjada en el aliento de un dragón ancestral.",
+      "url": "assets/equipables/weapon_006.png"
     },
     {
       "id": "weapon_010",
@@ -108,7 +117,8 @@
         "ataque": 38
       },
       "valor_oro": 200,
-      "descripcion": "Una espada que parece absorber la luz a su alrededor."
+      "descripcion": "Una espada que parece absorber la luz a su alrededor.",
+      "url": "assets/equipables/weapon_010.png"
     },
     {
       "id": "armor_001",
@@ -119,7 +129,8 @@
         "vida": 10
       },
       "valor_oro": 10,
-      "descripcion": "Ligera y flexible."
+      "descripcion": "Ligera y flexible.",
+      "url": "assets/equipables/armor_001.png"
     },
     {
       "id": "armor_005",
@@ -130,7 +141,8 @@
         "vida": 12
       },
       "valor_oro": 12,
-      "descripcion": "Ligera, pero con una protección básica aceptable."
+      "descripcion": "Ligera, pero con una protección básica aceptable.",
+      "url": "assets/equipables/armor_005.png"
     },
     {
       "id": "armor_002",
@@ -141,7 +153,8 @@
         "vida": 18
       },
       "valor_oro": 30,
-      "descripcion": "Protección sólida para aventureros."
+      "descripcion": "Protección sólida para aventureros.",
+      "url": "assets/equipables/armor_002.png"
     },
     {
       "id": "armor_006",
@@ -152,7 +165,8 @@
         "vida": 22
       },
       "valor_oro": 40,
-      "descripcion": "Placas sólidas pero con buena movilidad."
+      "descripcion": "Placas sólidas pero con buena movilidad.",
+      "url": "assets/equipables/armor_006.png"
     },
     {
       "id": "armor_003",
@@ -163,7 +177,8 @@
         "vida": 30
       },
       "valor_oro": 80,
-      "descripcion": "Otorga una defensa notable."
+      "descripcion": "Otorga una defensa notable.",
+      "url": "assets/equipables/armor_003.png"
     },
     {
       "id": "armor_007",
@@ -174,7 +189,8 @@
         "vida": 35
       },
       "valor_oro": 90,
-      "descripcion": "Ideal para proteger zonas vitales sin limitar la agilidad."
+      "descripcion": "Ideal para proteger zonas vitales sin limitar la agilidad.",
+      "url": "assets/equipables/armor_007.png"
     },
     {
       "id": "armor_004",
@@ -185,7 +201,8 @@
         "vida": 50
       },
       "valor_oro": 190,
-      "descripcion": "Un símbolo de soberanía olvidada."
+      "descripcion": "Un símbolo de soberanía olvidada.",
+      "url": "assets/equipables/armor_004.png"
     },
     {
       "id": "armor_008",
@@ -196,7 +213,8 @@
         "vida": 60
       },
       "valor_oro": 210,
-      "descripcion": "Una armadura que inspira respeto y temor en batalla."
+      "descripcion": "Una armadura que inspira respeto y temor en batalla.",
+      "url": "assets/equipables/armor_008.png"
     },
     {
       "id": "boots_001",
@@ -207,7 +225,8 @@
         "vida": 2
       },
       "valor_oro": 6,
-      "descripcion": "Botas cómodas para caminar largas distancias."
+      "descripcion": "Botas cómodas para caminar largas distancias.",
+      "url": "assets/equipables/boots_001.png"
     },
     {
       "id": "boots_002",
@@ -218,7 +237,8 @@
         "vida": 5
       },
       "valor_oro": 18,
-      "descripcion": "Mejoran la movilidad en combate."
+      "descripcion": "Mejoran la movilidad en combate.",
+      "url": "assets/equipables/boots_002.png"
     },
     {
       "id": "boots_004",
@@ -229,7 +249,8 @@
         "vida": 4
       },
       "valor_oro": 16,
-      "descripcion": "Permiten moverse silenciosamente en cualquier terreno."
+      "descripcion": "Permiten moverse silenciosamente en cualquier terreno.",
+      "url": "assets/equipables/boots_004.png"
     },
     {
       "id": "boots_005",
@@ -240,7 +261,8 @@
         "vida": 8
       },
       "valor_oro": 70,
-      "descripcion": "Aumenta velocidad y agresividad en combate."
+      "descripcion": "Aumenta velocidad y agresividad en combate.",
+      "url": "assets/equipables/boots_005.png"
     },
     {
       "id": "boots_003",
@@ -251,18 +273,20 @@
         "vida": 10
       },
       "valor_oro": 120,
-      "descripcion": "Otorgan una velocidad sobrenatural."
+      "descripcion": "Otorgan una velocidad sobrenatural.",
+      "url": "assets/equipables/boots_003.png"
     },
     {
       "id": "boots_006",
-      "nombre": "Botas del Viento",
+      "nombre": "Botas del Guardian Inamovible",
       "tipo": "botas",
       "rareza": "legendario",
       "stats": {
         "vida": 15
       },
       "valor_oro": 140,
-      "descripcion": "Otorgan velocidad sobrenatural y agilidad inhumana."
+      "descripcion": "Estas botas imbuidas en magia de tierra le permiten a su usuario mantener su posición incluso en el campo de batalla mas caótico.",
+      "url": "assets/equipables/boots_006.png"
     },
     {
       "id": "helmet_001",
@@ -273,7 +297,8 @@
         "vida": 5
       },
       "valor_oro": 7,
-      "descripcion": "Protección básica para principiantes."
+      "descripcion": "Protección básica para principiantes.",
+      "url": "assets/equipables/helmet_001.png"
     },
     {
       "id": "helmet_002",
@@ -284,7 +309,8 @@
         "vida": 10
       },
       "valor_oro": 20,
-      "descripcion": "Un casco fuerte y confiable."
+      "descripcion": "Un casco fuerte y confiable.",
+      "url": "assets/equipables/helmet_002.png"
     },
     {
       "id": "helmet_005",
@@ -295,7 +321,8 @@
         "vida": 12
       },
       "valor_oro": 25,
-      "descripcion": "Protección eficaz sin sacrificar movilidad."
+      "descripcion": "Protección eficaz sin sacrificar movilidad.",
+      "url": "assets/equipables/helmet_005.png"
     },
     {
       "id": "helmet_003",
@@ -306,7 +333,8 @@
         "vida": 18
       },
       "valor_oro": 55,
-      "descripcion": "Su diseño sagrado mejora la resistencia."
+      "descripcion": "Su diseño sagrado mejora la resistencia.",
+      "url": "assets/equipables/helmet_003.png"
     },
     {
       "id": "helmet_006",
@@ -317,7 +345,8 @@
         "vida": 20
       },
       "valor_oro": 60,
-      "descripcion": "Forjado con escamas de dragón, resistente al fuego."
+      "descripcion": "Forjado con escamas de dragón, resistente al fuego.",
+      "url": "assets/equipables/helmet_006.png"
     },
     {
       "id": "helmet_004",
@@ -328,7 +357,8 @@
         "vida": 30
       },
       "valor_oro": 130,
-      "descripcion": "Un relicario que otorga poder prohibido."
+      "descripcion": "Un relicario que otorga poder prohibido.",
+      "url": "assets/equipables/helmet_004.png"
     },
     {
       "id": "helmet_007",
@@ -339,18 +369,20 @@
         "vida": 35
       },
       "valor_oro": 150,
-      "descripcion": "Un artefacto antiguo que protege cuerpo y mente."
+      "descripcion": "Un artefacto antiguo que protege cuerpo y mente.",
+      "url": "assets/equipables/helmet_007.png"
     },
     {
       "id": "weapon_011",
       "nombre": "Daga del Errante",
       "tipo": "arma",
-      "rareza": "poco_comun",
+      "rareza": "|n",
       "stats": {
         "ataque": 6
       },
       "valor_oro": 12,
-      "descripcion": "Una daga ligera que parece haber pasado por muchas manos."
+      "descripcion": "Una daga ligera que parece haber pasado por muchas manos.",
+      "url": "assets/equipables/weapon_011.png"
     },
     {
       "id": "armor_009",
@@ -361,7 +393,8 @@
         "vida": 8
       },
       "valor_oro": 15,
-      "descripcion": "Proporciona protección básica sin limitar la movilidad."
+      "descripcion": "Proporciona protección básica sin limitar la movilidad.",
+      "url": "assets/equipables/armor_009.png"
     },
     {
       "id": "boots_007",
@@ -372,7 +405,8 @@
         "vida": 3
       },
       "valor_oro": 10,
-      "descripcion": "Ideales para viajes largos, cómodas y resistentes."
+      "descripcion": "Ideales para viajes largos, cómodas y resistentes.",
+      "url": "assets/equipables/boots_007.png"
     },
     {
       "id": "helmet_008",
@@ -383,7 +417,8 @@
         "vida": 4
       },
       "valor_oro": 12,
-      "descripcion": "Ligero y fácil de llevar, protege la cabeza sin comprometer agilidad."
+      "descripcion": "Ligero y fácil de llevar, protege la cabeza sin comprometer agilidad.",
+      "url": "assets/equipables/helmet_008.png"
     },
     {
       "id": "weapon_012",
@@ -394,7 +429,8 @@
         "ataque": 5
       },
       "valor_oro": 8,
-      "descripcion": "Un bastón sencillo, útil para principiantes y viajeros."
+      "descripcion": "Un bastón sencillo, útil para principiantes y viajeros.",
+      "url": "assets/equipables/weapon_012.png"
     },
     {
       "id": "weapon_013",
@@ -405,7 +441,8 @@
         "ataque": 7
       },
       "valor_oro": 14,
-      "descripcion": "Una espada sencilla, fácil de manejar y resistente."
+      "descripcion": "Una espada sencilla, fácil de manejar y resistente.",
+      "url": "assets/equipables/weapon_013.png"
     },
     {
       "id": "armor_010",
@@ -416,7 +453,8 @@
         "vida": 6
       },
       "valor_oro": 11,
-      "descripcion": "Ligera y cómoda, ideal para nuevos aventureros."
+      "descripcion": "Ligera y cómoda, ideal para nuevos aventureros.",
+      "url": "assets/equipables/armor_010.png"
     },
     {
       "id": "boots_008",
@@ -427,7 +465,8 @@
         "vida": 4
       },
       "valor_oro": 9,
-      "descripcion": "Ofrecen buena protección y soporte para largos recorridos."
+      "descripcion": "Ofrecen buena protección y soporte para largos recorridos.",
+      "url": "assets/equipables/boots_008.png"
     },
     {
       "id": "helmet_009",
@@ -438,7 +477,8 @@
         "vida": 6
       },
       "valor_oro": 13,
-      "descripcion": "Proporciona protección básica, ligero y cómodo."
+      "descripcion": "Proporciona protección básica, ligero y cómodo.",
+      "url": "assets/equipables/helmet_009.png"
     },
     {
       "id": "weapon_014",
@@ -449,7 +489,8 @@
         "ataque": 8
       },
       "valor_oro": 16,
-      "descripcion": "Un hacha simple para aprender técnicas básicas de combate."
+      "descripcion": "Un hacha simple para aprender técnicas básicas de combate.",
+      "url": "assets/equipables/weapon_014.png"
     },
     {
       "id": "armor_011",
@@ -460,7 +501,8 @@
         "vida": 7
       },
       "valor_oro": 13,
-      "descripcion": "Ofrece protección mínima, pero muy ligera y fácil de llevar."
+      "descripcion": "Ofrece protección mínima, pero muy ligera y fácil de llevar.",
+      "url": "assets/equipables/armor_011.png"
     },
     {
       "id": "boots_009",
@@ -471,7 +513,8 @@
         "vida": 5
       },
       "valor_oro": 10,
-      "descripcion": "Botas resistentes para principiantes, cómodas y seguras."
+      "descripcion": "Botas resistentes para principiantes, cómodas y seguras.",
+      "url": "assets/equipables/boots_009.png"
     },
     {
       "id": "helmet_010",
@@ -482,7 +525,8 @@
         "vida": 5
       },
       "valor_oro": 12,
-      "descripcion": "Protege sin limitar la movilidad durante el entrenamiento."
+      "descripcion": "Protege sin limitar la movilidad durante el entrenamiento.",
+      "url": "assets/equipables/helmet_010.png"
     }
   ]
 }

@@ -69,6 +69,11 @@ RECOLECTAR_DESCRIPTIONS = [
 
 
 ENERGY_DESCS = {
+    "extreme": [
+        "🌟 Una energía desbordante te inunda, sintiéndote invencible y listo para cualquier desafío.",
+        "⚡ Tu cuerpo vibra con una fuerza sobrenatural, como si pudieras conquistar montañas y atravesar océanos sin esfuerzo.",
+        "🔥 La magia fluye en cada fibra de tu ser, otorgándote un vigor inagotable que desafía los límites humanos."
+    ],
     "high": [
         "⚡ Sentís el vigor recorriendo tu cuerpo, como si la magia del mundo te impulsara.",
         "🔥 Tus pasos resuenan con fuerza heroica; podrías recorrer un reino entero sin cansarte.",
