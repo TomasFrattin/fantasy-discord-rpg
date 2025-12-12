@@ -1,7 +1,29 @@
-__pycache__/
-*.pyc
-.env
-config/
-temp_*.png
-data/equipables_ordenado.json
-ordenar_json.py
+# ---------------------------
+# Archivos de Python compilados
+# ---------------------------
+__pycache__/      
+*.pyc            
+
+# ---------------------------
+# Archivos de configuración y entorno
+# ---------------------------
+.env             
+config/           
+
+# ---------------------------
+# Archivos temporales o de trabajo
+# ---------------------------
+temp_*.png        
+
+# ---------------------------
+# Archivos de datos de proyecto
+# ---------------------------
+data/equipables_ordenado.json   
+ordenar_json.py                 
+
+# ---------------------------
+# Base de datos SQLite
+# ---------------------------
+*.db               
+*.db-wal       
+*.db-shm          

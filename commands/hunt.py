@@ -11,51 +11,12 @@ from utils.messages import mensaje_usuario_no_creado, mensaje_sin_energia, mensa
 from PIL import Image
 import os
 from commands.loot import generar_loot_para_usuario
-
-# -----------------------------
-# MOBS con tier y exp
-# -----------------------------
-MOBS = [
-    {"id": "slime", "nombre": "Slime", "vida_max": 20, "ataque": 5, "emoji": "🫧",
-     "tier": "comun", "exp": 10, "loot_bonus": 0, "url": "assets/mobs/slime.png"},
-    {"id": "lobo", "nombre": "Lobo Salvaje", "vida_max": 35, "ataque": 7, "emoji": "🐺",
-     "tier": "poco_comun", "exp": 20, "loot_bonus": 0.02, "url": "assets/mobs/lobo.png"},
-    {"id": "dragoncillo", "nombre": "Dragoncillo", "vida_max": 50, "ataque": 11, "emoji": "🐉",
-     "tier": "raro", "exp": 50, "loot_bonus": 0.05, "url": "assets/mobs/dragoncillo.png"},
-    {"id": "troll", "nombre": "Troll de las Cavernas", "vida_max": 60, "ataque": 10, "emoji": "🪨",
-     "tier": "raro", "exp": 45, "loot_bonus": 0.04, "url": "assets/mobs/troll.png"},
-    {"id": "vampiro", "nombre": "Vampiro Sombrío", "vida_max": 45, "ataque": 9, "emoji": "🧛",
-    "tier": "raro", "exp": 40, "loot_bonus": 0.04, "url": "assets/mobs/vampiro.png"},
-    {"id": "espectro", "nombre": "Espectro Errante", "vida_max": 30, "ataque": 7, "emoji": "👻",
-    "tier": "poco_comun", "exp": 20, "loot_bonus": 0.02, "url": "assets/mobs/espectro.png"},
-    {"id": "hiena", "nombre": "Hiena Hambrienta", "vida_max": 33, "ataque": 7, "emoji": "🦝",
-    "tier": "poco_comun", "exp": 22, "loot_bonus": 0.02, "url": "assets/mobs/hiena.png"},
-    {"id": "gnomo", "nombre": "Gnomo Pícaro", "vida_max": 18, "ataque": 5, "emoji": "🧝‍♂️",
-    "tier": "comun", "exp": 12, "loot_bonus": 0.0, "url": "assets/mobs/gnomo.png"},
-    {"id": "dragoncillo", "nombre": "Dragoncillo", "vida_max": 50, "ataque": 11, "emoji": "🐉",
-    "tier": "epico", "exp": 50, "loot_bonus": 0.05, "url": "assets/mobs/dragoncillo.png"},
-    {"id": "momia", "nombre": "Momia Antiguo", "vida_max": 40, "ataque": 8, "emoji": "🪦",
-    "tier": "poco_comun", "exp": 25, "loot_bonus": 0.02, "url": "assets/mobs/momia.png"},
-    {"id": "serpiente", "nombre": "Serpiente Venenosa", "vida_max": 25, "ataque": 6, "emoji": "🐍",
-    "tier": "comun", "exp": 15, "loot_bonus": 0.0, "url": "assets/mobs/serpiente.png"},
-    {"id": "minotauro", "nombre": "Minotauro", "vida_max": 55, "ataque": 10, "emoji": "🐂",
-    "tier": "epico", "exp": 48, "loot_bonus": 0.04, "url": "assets/mobs/minotauro.png"},
-    {"id": "hechicero", "nombre": "Hechicero Errante", "vida_max": 38, "ataque": 9, "emoji": "🧙",
-    "tier": "epico", "exp": 42, "loot_bonus": 0.04, "url": "assets/mobs/hechicero.png"},
-
-]
+from data_loader import MOBS
+from utils.helpers import preparar_imagen_mob
+from services.jugador import sumar_oro
 # -----------------------------
 # Funciones auxiliares
 # -----------------------------
-def preparar_imagen_mob(ruta, size=(300, 300)):
-    img = Image.open(ruta).convert("RGBA")
-    img.thumbnail(size, Image.LANCZOS)
-    fondo = Image.new("RGBA", size, (0, 0, 0, 0))
-    offset = ((size[0] - img.width)//2, (size[1] - img.height)//2)
-    fondo.paste(img, offset, img)
-    output_path = f"data/temp/temp_mob_{os.path.basename(ruta)}"
-    fondo.save(output_path)
-    return output_path
 
 def elegir_mob(nivel_hunt: int) -> dict:
     """Elige un mob según lvl_caceria y probabilidades de tier."""
@@ -67,7 +28,13 @@ def elegir_mob(nivel_hunt: int) -> dict:
         tiers = ["comun", "poco_comun", "raro", "epico"]
     
     mobs_filtrados = [m for m in MOBS if m.get("tier","comun") in tiers]
+
+        # Chance de que aparezca un mob legendario
+    if random.random() < 0.02:  # 2% de probabilidad
+        mobs_filtrados = [m for m in MOBS if m.get("tier") == "legendario"]
+
     return random.choice(mobs_filtrados)
+
 
 def agregar_exp_caceria(user_id, exp_obtenida):
     jugador = db.obtener_jugador(user_id)
@@ -77,7 +44,7 @@ def agregar_exp_caceria(user_id, exp_obtenida):
     exp_actual += exp_obtenida
     niveles_subidos = 0
 
-    # Umbral dinámico: 100 * nivel
+    # Umbral dinámico: 150 * (lvl ** 1.3)
     while exp_actual >= int(150 * (lvl ** 1.3)):
         exp_actual -= 100 * lvl
         lvl += 1
@@ -167,7 +134,7 @@ class HuntView(View):
         if combate["player_hp"] <= 0:
             embed.title += "\n❌ Derrota"
             embed.color = 0x8B0000
-            db.sumar_oro(self.user_id, -db.obtener_jugador(self.user_id)["oro"])
+            sumar_oro(self.user_id, -db.obtener_jugador(self.user_id)["oro"])
             db.actualizar_vida(self.user_id, max(1,jugador["vida_max"]//2))
             db.gastar_energia(self.user_id, jugador["energia"])
             delete_combat(self.user_id)
@@ -198,11 +165,12 @@ class HuntView(View):
                         inline=False
                     )
                 else:
+                    exp_necesaria = int(150 * (nuevo_lvl ** 1.3))
                     embed.add_field(
                         name="⭐ Experiencia",
                         value=(
                             f"Has ganado **{exp_ganada} XP**.\n"
-                            f"Progreso: **{exp_restante}/{100 * nuevo_lvl} XP**"
+                            f"Progreso: **{exp_restante}/{exp_necesaria} XP**"
                         ),
                         inline=False
                     )

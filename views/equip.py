@@ -2,6 +2,7 @@ import discord
 from discord.ui import View, Button
 from utils import db
 import logging
+from services.jugador import sumar_oro
 
 # Configuración básica del logging
 logging.basicConfig(level=logging.INFO)
@@ -68,7 +69,7 @@ class EquiparOVender(View):
 
         try:
             oro = self.item.get("valor_oro", 0)
-            db.sumar_oro(self.user_id, oro)
+            sumar_oro(self.user_id, oro)
 
             # Embed visual para vender
             embed = discord.Embed(title=f"💰 Vendiste {self.item['nombre']}", color=discord.Color.gold())

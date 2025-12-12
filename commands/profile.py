@@ -47,11 +47,11 @@ async def run_profile(interaction: Interaction):
     # ----- Progresión -----
     lvl_c = row["lvl_caceria"]
     exp_c = row["exp_caceria"]
-    exp_c_needed = int(120 * (lvl_c ** 1.8))
+    exp_c_needed = int(150 * (lvl_c ** 1.3))
 
     lvl_r = row["lvl_recoleccion"]
     exp_r = row["exp_recoleccion"]
-    exp_r_needed = int(120 * (lvl_r ** 1.25))
+    exp_r_needed = int(150 * (lvl_r ** 1.3))
 
     lvl_p = row["lvl_prestigio"]
 

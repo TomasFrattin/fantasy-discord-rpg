@@ -10,29 +10,28 @@ from views.equip import EquiparOVender
 import asyncio
 from utils.locks import esta_ocupado
 from utils import db
+from services.jugador import resetear_jugador, eliminar_jugador, resetear_todos
 
 # ---------- BOT ----------
 intents = discord.Intents.default()
 intents.message_content = True
 bot = commands.Bot(command_prefix=PREFIX, intents=intents)
 
-
 # ---------- INICIALIZACIÓN DE BASE DE DATOS ----------
-
 tablas.crear_tabla_inventario()
 tablas.crear_tabla_items()
 tablas.crear_tabla_jugadores()
 
 # print("Base de datos borrada y tabla recreada al iniciar el bot.")
 
-db.resetear_usuario("366690600709521419")
-# db.eliminar_jugador("366690600709521419")
-# db.resetear_todos()
+resetear_jugador("366690600709521419")
+# eliminar_jugador("366690600709521419")
+# resetear_todos()
 
 # mi_id = "366690600709521419"
 
 # mi_id_2 = "323250219796135937"
-# db.eliminar_jugador(mi_id_2)
+# eliminar_jugador(mi_id_2)
 # print("Jugador eliminado de la base de datos.")
 
 async def main():

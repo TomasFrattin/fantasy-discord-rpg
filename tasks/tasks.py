@@ -1,7 +1,7 @@
 # tasks.py
 import datetime
 from discord.ext import tasks
-from utils import db
+from services.jugador import resetear_todos
 
 # ---------- Tasks ----------
 
@@ -12,7 +12,7 @@ async def reset_diario():
     """
     ahora = datetime.datetime.now()
     if ahora.hour == 20 and ahora.minute == 0:
-        db.resetear_todos()
+        resetear_todos()
         print("Reset diario ejecutado.")
 
 # Aquí podés agregar más tasks en el futuro, por ejemplo loot diario, eventos de mapa, etc.

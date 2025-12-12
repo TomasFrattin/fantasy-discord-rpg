@@ -6,28 +6,7 @@ import random
 import os
 from PIL import Image
 from utils.messages import mensaje_usuario_no_creado, mensaje_sin_energia, mensaje_accion_en_progreso
-
-def crear_collage(rutas, tamaño_celda=(128, 128), gap=10):
-    if not rutas:
-        return None
-
-    cols = min(3, len(rutas))
-    filas = (len(rutas) + cols - 1) // cols
-    ancho = cols * tamaño_celda[0] + (cols - 1) * gap
-    alto = filas * tamaño_celda[1] + (filas - 1) * gap
-    collage = Image.new("RGBA", (ancho, alto), (255, 255, 255, 0))
-
-    for idx, ruta in enumerate(rutas):
-        img = Image.open(ruta).convert("RGBA").resize(tamaño_celda)
-        x = (idx % cols) * (tamaño_celda[0] + gap)
-        y = (idx // cols) * (tamaño_celda[1] + gap)
-        collage.paste(img, (x, y), img)
-
-    output_path = "data/temp/temp_collage.png"
-    collage.save(output_path)
-    return output_path
-
-
+from utils.helpers import crear_collage
 
 class ForageCommand(commands.Cog):
     def __init__(self, bot):
@@ -115,13 +94,13 @@ class ForageCommand(commands.Cog):
                 )
             else:
                 # El umbral debe coincidir con el de tu función de nivel
-                umbral = int(150 * (nuevo_lvl ** 1.3))
+                exp_necesaria = int(150 * (nuevo_lvl ** 1.3))
 
                 embed.add_field(
                     name="⭐ Experiencia",
                     value=(
                         f"Ganaste **{exp_total} XP**.\n"
-                        f"Progreso: **{exp_restante}/{umbral} XP**"
+                        f"Progreso: **{exp_restante}/{exp_necesaria} XP**"
                     ),
                     inline=False
                 )

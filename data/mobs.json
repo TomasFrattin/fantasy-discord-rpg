@@ -1,0 +1,180 @@
+{
+  "mobs": [
+    {
+      "id": "slime",
+      "nombre": "Slime",
+      "vida_max": 20,
+      "ataque": 5,
+      "emoji": "🫧",
+      "tier": "comun",
+      "exp": 10,
+      "loot_bonus": 0,
+      "url": "assets/mobs/slime.png"
+    },
+    {
+      "id": "lobo",
+      "nombre": "Lobo Salvaje",
+      "vida_max": 35,
+      "ataque": 7,
+      "emoji": "🐺",
+      "tier": "poco_comun",
+      "exp": 20,
+      "loot_bonus": 0.02,
+      "url": "assets/mobs/lobo.png"
+    },
+    {
+      "id": "dragoncillo",
+      "nombre": "Dragoncillo",
+      "vida_max": 50,
+      "ataque": 11,
+      "emoji": "🐉",
+      "tier": "raro",
+      "exp": 50,
+      "loot_bonus": 0.05,
+      "url": "assets/mobs/dragoncillo.png"
+    },
+    {
+      "id": "troll",
+      "nombre": "Troll de las Cavernas",
+      "vida_max": 60,
+      "ataque": 10,
+      "emoji": "🪨",
+      "tier": "raro",
+      "exp": 45,
+      "loot_bonus": 0.04,
+      "url": "assets/mobs/troll.png"
+    },
+    {
+      "id": "vampiro",
+      "nombre": "Vampiro Sombrío",
+      "vida_max": 45,
+      "ataque": 9,
+      "emoji": "🧛",
+      "tier": "raro",
+      "exp": 40,
+      "loot_bonus": 0.04,
+      "url": "assets/mobs/vampiro.png"
+    },
+    {
+      "id": "espectro",
+      "nombre": "Espectro Errante",
+      "vida_max": 30,
+      "ataque": 7,
+      "emoji": "👻",
+      "tier": "poco_comun",
+      "exp": 20,
+      "loot_bonus": 0.02,
+      "url": "assets/mobs/espectro.png"
+    },
+    {
+      "id": "hiena",
+      "nombre": "Hiena Hambrienta",
+      "vida_max": 33,
+      "ataque": 7,
+      "emoji": "🦝",
+      "tier": "poco_comun",
+      "exp": 22,
+      "loot_bonus": 0.02,
+      "url": "assets/mobs/hiena.png"
+    },
+    {
+      "id": "gnomo",
+      "nombre": "Gnomo Pícaro",
+      "vida_max": 18,
+      "ataque": 5,
+      "emoji": "🧝‍♂️",
+      "tier": "comun",
+      "exp": 12,
+      "loot_bonus": 0.0,
+      "url": "assets/mobs/gnomo.png"
+    },
+    {
+      "id": "dragoncillo",
+      "nombre": "Dragoncillo",
+      "vida_max": 50,
+      "ataque": 11,
+      "emoji": "🐉",
+      "tier": "epico",
+      "exp": 50,
+      "loot_bonus": 0.05,
+      "url": "assets/mobs/dragoncillo.png"
+    },
+    {
+      "id": "momia",
+      "nombre": "Momia Antiguo",
+      "vida_max": 40,
+      "ataque": 8,
+      "emoji": "🪦",
+      "tier": "poco_comun",
+      "exp": 25,
+      "loot_bonus": 0.02,
+      "url": "assets/mobs/momia.png"
+    },
+    {
+      "id": "serpiente",
+      "nombre": "Serpiente Venenosa",
+      "vida_max": 25,
+      "ataque": 6,
+      "emoji": "🐍",
+      "tier": "comun",
+      "exp": 15,
+      "loot_bonus": 0.0,
+      "url": "assets/mobs/serpiente.png"
+    },
+    {
+      "id": "minotauro",
+      "nombre": "Minotauro",
+      "vida_max": 55,
+      "ataque": 10,
+      "emoji": "🐂",
+      "tier": "epico",
+      "exp": 48,
+      "loot_bonus": 0.04,
+      "url": "assets/mobs/minotauro.png"
+    },
+    {
+      "id": "hechicero",
+      "nombre": "Hechicero Errante",
+      "vida_max": 38,
+      "ataque": 9,
+      "emoji": "🧙",
+      "tier": "epico",
+      "exp": 42,
+      "loot_bonus": 0.04,
+      "url": "assets/mobs/hechicero.png"
+    },
+    {
+      "id": "mimic_cofre",
+      "nombre": "Mimic Traicionero",
+      "vida_max": 120,
+      "ataque": 20,
+      "emoji": "🗝️",
+      "tier": "legendario",
+      "exp": 100,
+      "loot_bonus": 0.2,
+      "url": "assets/mobs/mimic.png"
+    },
+    {
+      "id": "slime_shiny",
+      "nombre": "Slime Brillante",
+      "vida_max": 50,
+      "ataque": 10,
+      "emoji": "✨",
+      "tier": "legendario",
+      "exp": 90,
+      "loot_bonus": 0.15,
+      "url": "assets/mobs/slime_shiny.png"
+    },
+    {
+      "id": "dragoncillo_shiny",
+      "nombre": "Dragoncillo Dorado",
+      "vida_max": 120,
+      "ataque": 25,
+      "emoji": "🐉✨",
+      "tier": "legendario",
+      "exp": 150,
+      "loot_bonus": 0.25,
+      "url": "assets/mobs/dragoncillo_shiny.png"
+    }
+  ]
+}

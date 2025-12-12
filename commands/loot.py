@@ -49,10 +49,19 @@ def obtener_tier(nivel_hunt):
     # Ajustar según nivel
     if nivel_hunt < 5:
         base_probs["raro"] = 0.0
+        base_probs["epico"] = 0.0
+        base_probs["legendario"] = 0.0
     elif nivel_hunt < 10:
         base_probs["epico"] = 0.0
+        base_probs["legendario"] = 0.0
     elif nivel_hunt < 15:
         base_probs["legendario"] = 0.0
+    
+    # NORMALIZACIÓN AQUÍ
+    total = sum(base_probs.values())
+    if total > 0:
+        for k in base_probs:
+            base_probs[k] /= total
 
     # Convertir a rangos acumulativos
     acumulado = 0.0

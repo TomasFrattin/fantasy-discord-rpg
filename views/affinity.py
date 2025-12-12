@@ -4,6 +4,7 @@ from utils import db
 from data.texts import ELEMENT_DESCRIPTIONS
 from utils.locks import terminar_accion
 import random
+from services.jugador import registrar_jugador
 
 ELEMENTS = [
     {"name": "Fuego", "emoji": "🔥"},
@@ -45,7 +46,7 @@ class RandomAfinidadButton(Button):
         emoji = next((e["emoji"] for e in ELEMENTS if e["name"] == afinidad_random), "")
 
         # Registrar directamente al jugador
-        db.registrar_jugador(self.view_obj.user_id, interaction.user.name, afinidad_random)
+        registrar_jugador(self.view_obj.user_id, interaction.user.name, afinidad_random)
         description = ELEMENT_DESCRIPTIONS.get(afinidad_random, "")
 
         # Liberar el lock
@@ -103,7 +104,7 @@ class ConfirmarAfinidad(View):
                 ephemeral=True
             )
 
-        db.registrar_jugador(self.user_id, interaction.user.name, self.afinidad)
+        registrar_jugador(self.user_id, interaction.user.name, self.afinidad)
         description = ELEMENT_DESCRIPTIONS.get(self.afinidad, "")
 
         # Liberar el lock

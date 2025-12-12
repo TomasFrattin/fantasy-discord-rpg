@@ -8,10 +8,11 @@ from utils.messages import mensaje_usuario_no_creado
 
 # Rareza → emoji + color sugerido
 RARITY_STYLE = {
-    "comun":       {"emoji": "⚪", "color": 0xA8A8A8},
-    "raro":        {"emoji": "🔵", "color": 0x4A90E2},
-    "epico":       {"emoji": "🟣", "color": 0x9B59B6},
-    "legendario":  {"emoji": "🟡", "color": 0xF1C40F},
+    "comun": {"emoji": "⚪", "color": 0xA8A8A8},
+    "raro": {"emoji": "🔵", "color": 0x4A90E2},
+    "poco_comun": {"emoji":"🟢", "color": 0x4CAF50},
+    "epico": {"emoji": "🟣", "color": 0x9B59B6},
+    "legendario": {"emoji": "🟡", "color": 0xF1C40F},
 }
 
 RAREZA_ORDEN = {
@@ -32,11 +33,10 @@ class InventoryCommand(commands.Cog):
         row = db.obtener_jugador(user_id)
         if not row:
             return await interaction.response.send_message(embed=mensaje_usuario_no_creado(), ephemeral=True)
-
+        
         # -------------------------
         # FUNCIONES AUXILIARES
         # -------------------------
-
         def formatear_stat_unico(item):
             stats = item.get("stats", {})
             if not stats:
@@ -51,7 +51,7 @@ class InventoryCommand(commands.Cog):
         def formatear_slot(item_id):
             if not item_id:
                 return "—"
-
+            
             item = EQUIPABLES_BY_ID.get(item_id)
             if not item:
                 return item_id  # fallback raro pero seguro
@@ -107,7 +107,6 @@ class InventoryCommand(commands.Cog):
         else:
             inventario_texto = "Vacío"
 
-
         # -------------------------
         # EMBED FINAL
         # -------------------------
@@ -122,7 +121,6 @@ class InventoryCommand(commands.Cog):
         embed.add_field(name="📦 Objetos", value=inventario_texto, inline=False)
 
         await interaction.response.send_message(embed=embed)
-
 
 async def setup(bot):
     await bot.add_cog(InventoryCommand(bot))
