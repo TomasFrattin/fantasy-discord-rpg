@@ -13,7 +13,8 @@ import os
 from commands.loot import generar_loot_para_usuario
 from data_loader import MOBS
 from utils.helpers import preparar_imagen_mob
-from services.jugador import sumar_oro, obtener_energia, gastar_energia, actualizar_vida, obtener_jugador
+from services.jugadores import sumar_oro, obtener_energia, gastar_energia, actualizar_vida, obtener_jugador
+from services.acciones import obtener_accion_actual
 
 # -----------------------------
 # Funciones auxiliares
@@ -136,7 +137,7 @@ class HuntView(View):
             embed.title += "\n❌ Derrota"
             embed.color = 0x8B0000
             sumar_oro(self.user_id, -obtener_jugador(self.user_id)["oro"])
-            actualizar_vida(self.user_id, max(1,jugador["vida_max"]//2))
+            actualizar_vida(self.user_id, 1)
             gastar_energia(self.user_id, jugador["energia"])
             delete_combat(self.user_id)
             desc = random.choice(DEFEAT_DESCS)
@@ -289,7 +290,7 @@ class HuntCommand(commands.Cog):
         if energia <= 0:
             return await interaction.response.send_message(embed=mensaje_sin_energia(), ephemeral=True)
         
-        if db.obtener_accion_actual(user_id) or has_combat(user_id):
+        if obtener_accion_actual(user_id) or has_combat(user_id):
             return await interaction.response.send_message(embed=mensaje_accion_en_progreso(user_id), ephemeral=True)
 
         gastar_energia(user_id, 1)

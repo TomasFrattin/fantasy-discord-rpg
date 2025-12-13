@@ -1,10 +1,8 @@
-import json
 import sqlite3
 from config import DB_FILE
-from datetime import datetime
 import random
-from config import DB_FILE
-from services.jugador import obtener_jugador
+from contextlib import contextmanager
+from services.jugadores import obtener_jugador
 
 # -------------------- CONEXIÓN --------------------
 def conectar():
@@ -12,6 +10,17 @@ def conectar():
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA journal_mode=WAL;")
     return conn
+
+# -------------------- CONTEXTO --------------------
+@contextmanager
+def get_cursor():
+    conn = conectar()
+    cursor = conn.cursor()
+    try:
+        yield cursor
+        conn.commit()
+    finally:
+        conn.close()
 
 # -------------------- STATS --------------------
 def recalcular_stats(user_id):
@@ -61,39 +70,31 @@ def recalcular_stats(user_id):
     conn.commit()
     conn.close()
 
-# -------------------- JUGADOR --------------------
-
-
 # -------------------- INVENTARIO --------------------
-
 def agregar_item(user_id: str, item_id: str, cantidad: int = 1):
-    conn = conectar()
-    cur = conn.cursor()
-    cur.execute(
-        "INSERT INTO inventario (user_id, item_id, cantidad) VALUES (?, ?, ?)"
-        " ON CONFLICT(user_id, item_id) DO UPDATE SET cantidad = cantidad + ?",
-        (user_id, item_id, cantidad, cantidad)
-    )
-    conn.commit()
-    conn.close()
+    with get_cursor() as cursor:
+        cursor.execute(
+            "INSERT INTO inventario (user_id, item_id, cantidad) VALUES (?, ?, ?)"
+            " ON CONFLICT(user_id, item_id) DO UPDATE SET cantidad = cantidad + ?",
+            (user_id, item_id, cantidad, cantidad)
+        )
+
 
 def obtener_inventario(user_id: str):
-    conn = conectar()
-    cur = conn.cursor()
-    cur.execute("""
-        SELECT i.item_id, it.nombre, i.cantidad, it.tipo, it.rareza
-        FROM inventario i
-        JOIN items it ON it.id = i.item_id
-        WHERE i.user_id = ?
-    """, (user_id,))
-    rows = cur.fetchall()
-    conn.close()
-    return [{"item_id": r[0], "nombre": r[1], "cantidad": r[2], "tipo": r[3], "rareza": r[4]} for r in rows]
+    with get_cursor() as cursor:
+        cursor.execute("""
+            SELECT i.item_id, it.nombre, i.cantidad, it.tipo, it.rareza
+            FROM inventario i
+            JOIN items it ON it.id = i.item_id
+            WHERE i.user_id = ?
+        """, (user_id,))
+        rows = cursor.fetchall()
 
-import random
+        return [{"item_id": r["item_id"], "nombre": r["nombre"], "cantidad": r["cantidad"],
+                "tipo": r["tipo"], "rareza": r["rareza"]} for r in rows]
+
 
 # --- SISTEMA DE RECOLECCIÓN ---
-
 def tiers_por_nivel(lvl_recoleccion):
     if lvl_recoleccion < 5:
         return ["comun"]
@@ -168,99 +169,31 @@ def recolectar_materiales(user_id: str):
 
 # -------------------- EQUIPAMIENTO --------------------
 def equipar(user_id, slot, item_id):
-    conn = conectar()
-    cursor = conn.cursor()
-
-    cursor.execute(f"UPDATE jugadores SET {slot} = ? WHERE user_id = ?", (item_id, user_id))
-    conn.commit()
-    conn.close()
-
+    with get_cursor() as cursor:
+     cursor.execute(f"UPDATE jugadores SET {slot} = ? WHERE user_id = ?", (item_id, user_id))
+   
     recalcular_stats(user_id)
 
 # -------------------- ORO / ENERGÍA --------------------
 
 def obtener_materiales():
-    conn = conectar()
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM items WHERE tipo='material'")
-    items = cursor.fetchall()
-    conn.close()
-    return items
+    with get_cursor() as cursor:
+        cursor.execute("SELECT * FROM items WHERE tipo='material'")
+        items = cursor.fetchall()
+        return items
 
 def obtener_consumibles():
-    conn = conectar()
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM items WHERE tipo='consumible'")
-    items = cursor.fetchall()
-    conn.close()
-    return items
+    with get_cursor() as cursor:
+        cursor.execute("SELECT * FROM items WHERE tipo='consumible'")
+        items = cursor.fetchall()
+        return items
 
 def obtener_equipables():
-    conn = conectar()
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM items WHERE tipo IN ('arma','armadura','casco','botas')")
-    items = cursor.fetchall()
-    conn.close()
-    return items
+    with get_cursor() as cursor:
+        cursor.execute("SELECT * FROM items WHERE tipo IN ('arma','armadura','casco','botas')")
+        items = cursor.fetchall()
+        return items
 
-def actualizar_accion(user_id: str, accion: str | None):
-    """Actualiza la acción actual del jugador (pescando, etc.)"""
-    conn = conectar()
-    cursor = conn.cursor()
-    cursor.execute("UPDATE jugadores SET accion_actual = ? WHERE user_id = ?", (accion, user_id))
-    conn.commit()
-    conn.close()
-
-def obtener_accion_actual(user_id: str) -> str | None:
-    """Obtiene la acción actual del jugador (pescando, etc.)"""
-    conn = conectar()
-    cursor = conn.cursor()
-    cursor.execute("SELECT accion_actual FROM jugadores WHERE user_id = ?", (user_id,))
-    fila = cursor.fetchone()
-    conn.close()
-    return fila["accion_actual"] if fila else None
-
-def actualizar_accion_fin(user_id: str, accion_fin: str | None):
-    """Actualiza la fecha/hora de finalización de la acción actual del jugador."""
-    conn = conectar()
-    cursor = conn.cursor()
-    cursor.execute(
-        "UPDATE jugadores SET accion_fin = ? WHERE user_id = ?",
-        (accion_fin, user_id)
-    )
-    conn.commit()
-    conn.close()
-
-def obtener_accion_fin(user_id: str) -> str | None:
-    """Obtiene la fecha/hora de finalización de la acción actual del jugador."""
-    conn = conectar()
-    cursor = conn.cursor()
-    cursor.execute(
-        "SELECT accion_fin FROM jugadores WHERE user_id = ?",
-        (user_id,)
-    )
-    fila = cursor.fetchone()
-    conn.close()
-    return fila["accion_fin"] if fila else None
-
-
-def agregar_columna_accion_fin():
-    """Agrega la columna 'accion_fin' a la tabla jugadores si no existe."""
-    conn = conectar()
-    cursor = conn.cursor()
-
-    # Revisar columnas existentes
-    cursor.execute("PRAGMA table_info(jugadores)")
-    columnas = [col[1] for col in cursor.fetchall()]
-
-    if "accion_fin" not in columnas:
-        cursor.execute("ALTER TABLE jugadores ADD COLUMN accion_fin TEXT DEFAULT NULL")
-        print("Columna 'accion_fin' agregada correctamente.")
-    else:
-        print("La columna 'accion_fin' ya existe.")
-
-    conn.commit()
-    conn.close()
 
 # -------------------- EXP: CACERÍA - RECOLECCIÓN --------------------
 def obtener_item_por_id(item_id):

@@ -5,7 +5,7 @@ from views.affinity import ElegirAfinidad
 from utils import db
 from utils.locks import esta_ocupado, comenzar_accion
 from utils.messages import mensaje_usuario_ya_existente
-from services.jugador import obtener_jugador
+from services.jugadores import obtener_jugador
 
 class StartCommand(commands.Cog):
     def __init__(self, bot):

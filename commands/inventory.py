@@ -5,7 +5,7 @@ from discord.ext import commands
 from utils import db
 from data_loader import EQUIPABLES_BY_ID
 from utils.messages import mensaje_usuario_no_creado
-from services.jugador import obtener_jugador
+from services.jugadores import obtener_jugador
 # Rareza → emoji + color sugerido
 RARITY_STYLE = {
     "comun": {"emoji": "⚪", "color": 0xA8A8A8},

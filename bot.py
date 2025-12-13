@@ -5,7 +5,7 @@ from config import TOKEN, PREFIX, WELCOME_CHANNELS
 from utils import tablas
 from data.texts import STARTUP_COMMANDS
 import asyncio
-from services.jugador import resetear_jugador, eliminar_jugador, resetear_todos
+from services.jugadores import resetear_jugador, eliminar_jugador, resetear_todos
 
 # ---------- BOT ----------
 intents = discord.Intents.default()

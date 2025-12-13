@@ -2,7 +2,7 @@ import discord
 from discord.ui import View, Button
 from utils import db
 import logging
-from services.jugador import sumar_oro, obtener_jugador
+from services.jugadores import sumar_oro, obtener_jugador
 
 # Configuración básica del logging
 logging.basicConfig(level=logging.INFO)

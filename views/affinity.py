@@ -4,7 +4,7 @@ from utils import db
 from data.texts import ELEMENT_DESCRIPTIONS
 from utils.locks import terminar_accion
 import random
-from services.jugador import registrar_jugador
+from services.jugadores import registrar_jugador
 
 ELEMENTS = [
     {"name": "Fuego", "emoji": "🔥"},

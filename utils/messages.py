@@ -1,5 +1,6 @@
 from discord import Embed, Color
 from utils import db
+from services.acciones import obtener_accion_actual
 
 def mensaje_usuario_ya_existente():
     embed = Embed(
@@ -27,7 +28,7 @@ def mensaje_sin_energia():
 
 
 def mensaje_accion_en_progreso(user_id: str):
-    accion = db.obtener_accion_actual(user_id)
+    accion = obtener_accion_actual(user_id)
     accion_texto = accion if accion else "desconocida"
     
     embed = Embed(

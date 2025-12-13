@@ -4,7 +4,7 @@ from discord import app_commands, Interaction, Embed
 from discord.ext import commands
 from utils import db
 from utils.messages import mensaje_usuario_no_creado
-from services.jugador import obtener_jugador
+from services.jugadores import obtener_jugador
 
 async def run_profile(interaction: Interaction):
     user_id = str(interaction.user.id)

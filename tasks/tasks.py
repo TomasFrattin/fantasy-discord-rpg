@@ -1,7 +1,7 @@
 # tasks.py
 import datetime
 from discord.ext import tasks
-from services.jugador import resetear_todos
+from services.jugadores import resetear_todos
 
 # ---------- Tasks ----------
 

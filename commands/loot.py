@@ -7,7 +7,7 @@ from discord.ext import commands
 from utils import db
 from data_loader import EQUIPABLES, EQUIPABLES_BY_ID
 from views.equip import EquiparOVender
-from services.jugador import obtener_energia, gastar_energia, obtener_jugador
+from services.jugadores import obtener_energia, gastar_energia, obtener_jugador
 
 RARITY_COLORS = {
     "comun": 0xB0B0B0,

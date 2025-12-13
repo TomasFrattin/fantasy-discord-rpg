@@ -10,7 +10,8 @@ from utils.messages import mensaje_usuario_no_creado, mensaje_accion_en_progreso
 import discord
 from data_loader import PECES
 from data.texts import mensaje_inicio_pesca
-from services.jugador import obtener_jugador
+from services.jugadores import obtener_jugador
+from services.acciones import actualizar_accion, actualizar_accion_fin, obtener_accion_actual, obtener_accion_fin
 
 class FishView(View):
     def __init__(self, user_id: str):
@@ -24,8 +25,8 @@ class FishView(View):
             return await interaction.response.send_message("Este botón no es para vos.", ephemeral=True)
         
         self.cancelled = True
-        db.actualizar_accion(self.user_id, None)
-        db.actualizar_accion_fin(self.user_id, None)
+        actualizar_accion(self.user_id, None)
+        actualizar_accion_fin(self.user_id, None)
 
         embed = Embed(
             title="❌ Pesca cancelada",
@@ -68,22 +69,22 @@ async def run_fish(interaction: Interaction, minutos: int):
             ephemeral=True
         )
 
-    accion = db.obtener_accion_actual(user_id)
-    accion_fin_str = db.obtener_accion_fin(user_id)
+    accion = obtener_accion_actual(user_id)
+    accion_fin_str = obtener_accion_fin(user_id)
 
     if accion and accion_fin_str:
         try:
             accion_fin = datetime.fromisoformat(accion_fin_str)
             if datetime.utcnow() >= accion_fin:
-                db.actualizar_accion(user_id, None)
-                db.actualizar_accion_fin(user_id, None)
+                actualizar_accion(user_id, None)
+                actualizar_accion_fin(user_id, None)
                 accion = None
         except Exception:
-            db.actualizar_accion(user_id, None)
-            db.actualizar_accion_fin(user_id, None)
+            actualizar_accion(user_id, None)
+            actualizar_accion_fin(user_id, None)
             accion = None
 
-    accion = db.obtener_accion_actual(user_id)
+    accion = obtener_accion_actual(user_id)
     if accion:
         return await interaction.response.send_message(
             embed=mensaje_accion_en_progreso(user_id),
@@ -92,8 +93,8 @@ async def run_fish(interaction: Interaction, minutos: int):
 
     # Registrar acción
     accion_fin = datetime.utcnow() + timedelta(minutes=minutos)
-    db.actualizar_accion(user_id, "pescando")
-    db.actualizar_accion_fin(user_id, accion_fin.isoformat())
+    actualizar_accion(user_id, "pescando")
+    actualizar_accion_fin(user_id, accion_fin.isoformat())
 
     # Embed inicial
     embed_inicio = Embed(
@@ -170,8 +171,8 @@ async def run_fish(interaction: Interaction, minutos: int):
         )
 
     # Fin de la pesca
-    db.actualizar_accion(user_id, None)
-    db.actualizar_accion_fin(user_id, None)
+    actualizar_accion(user_id, None)
+    actualizar_accion_fin(user_id, None)
     await mensaje.edit(embed=embed_final, view=None)
 
 class FishingCommand(commands.Cog):
