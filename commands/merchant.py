@@ -3,6 +3,7 @@ from discord import app_commands, Interaction, Embed
 from discord.ext import commands
 from utils import db
 from utils.messages import mensaje_usuario_no_creado, mensaje_accion_en_progreso
+from services.jugador import obtener_jugador
 
 # -------------------------
 # Función independiente
@@ -10,7 +11,7 @@ from utils.messages import mensaje_usuario_no_creado, mensaje_accion_en_progreso
 async def run_merchant(interaction: Interaction):
     user_id = str(interaction.user.id)
 
-    row = db.obtener_jugador(user_id)
+    row = obtener_jugador(user_id)
     if not row:
         return await interaction.response.send_message(embed=mensaje_usuario_no_creado(), ephemeral=True)
 

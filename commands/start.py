@@ -5,6 +5,7 @@ from views.affinity import ElegirAfinidad
 from utils import db
 from utils.locks import esta_ocupado, comenzar_accion
 from utils.messages import mensaje_usuario_ya_existente
+from services.jugador import obtener_jugador
 
 class StartCommand(commands.Cog):
     def __init__(self, bot):
@@ -25,7 +26,7 @@ class StartCommand(commands.Cog):
             )
 
         # Verificar si ya tiene personaje
-        row = db.obtener_jugador(user_id)
+        row = obtener_jugador(user_id)
         if row:
             return await interaction.response.send_message(embed=mensaje_usuario_ya_existente(), ephemeral=True)
 

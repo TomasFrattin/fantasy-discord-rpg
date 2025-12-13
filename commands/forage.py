@@ -7,7 +7,7 @@ import os
 from PIL import Image
 from utils.messages import mensaje_usuario_no_creado, mensaje_sin_energia, mensaje_accion_en_progreso
 from utils.helpers import crear_collage
-from services.jugador import obtener_energia, gastar_energia
+from services.jugador import obtener_energia, gastar_energia, obtener_jugador
 
 class ForageCommand(commands.Cog):
     def __init__(self, bot):
@@ -20,7 +20,7 @@ class ForageCommand(commands.Cog):
     async def forage(self, interaction: Interaction):
         user_id = str(interaction.user.id)
 
-        jugador = db.obtener_jugador(user_id)
+        jugador = obtener_jugador(user_id)
         if not jugador:
             return await interaction.response.send_message(embed=mensaje_usuario_no_creado(), ephemeral=True)
 

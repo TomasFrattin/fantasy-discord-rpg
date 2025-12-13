@@ -4,12 +4,12 @@ from utils import db
 import random
 from data.texts import ENERGY_DESCS
 from utils.messages import mensaje_usuario_no_creado
-from services.jugador import obtener_energia
+from services.jugador import obtener_energia, obtener_jugador
 
 async def run_energy(interaction: Interaction):
     user_id = str(interaction.user.id)
     
-    row = db.obtener_jugador(user_id)
+    row = obtener_jugador(user_id)
     if not row:
         return await interaction.response.send_message(embed=mensaje_usuario_no_creado(), ephemeral=True)
 

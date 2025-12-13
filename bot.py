@@ -1,15 +1,10 @@
 import discord
 from discord.ext import commands
 from tasks.tasks import start_all
-from discord.ui import View, Button
 from config import TOKEN, PREFIX, WELCOME_CHANNELS
-from views.affinity import ElegirAfinidad
 from utils import tablas
 from data.texts import STARTUP_COMMANDS
-from views.equip import EquiparOVender
 import asyncio
-from utils.locks import esta_ocupado
-from utils import db
 from services.jugador import resetear_jugador, eliminar_jugador, resetear_todos
 
 # ---------- BOT ----------
@@ -25,7 +20,7 @@ tablas.crear_tabla_jugadores()
 # print("Base de datos borrada y tabla recreada al iniciar el bot.")
 
 resetear_jugador("366690600709521419")
-# eliminar_jugador("366690600709521419")
+eliminar_jugador("366690600709521419")
 # resetear_todos()
 
 # mi_id = "366690600709521419"

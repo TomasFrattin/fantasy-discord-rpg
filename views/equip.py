@@ -2,7 +2,7 @@ import discord
 from discord.ui import View, Button
 from utils import db
 import logging
-from services.jugador import sumar_oro
+from services.jugador import sumar_oro, obtener_jugador
 
 # Configuración básica del logging
 logging.basicConfig(level=logging.INFO)
@@ -40,7 +40,7 @@ class EquiparOVender(View):
             db.equipar(self.user_id, slot, self.item["id"])
 
             # Obtener stats actuales del jugador
-            jugador = db.obtener_jugador(self.user_id)
+            jugador = obtener_jugador(self.user_id)
 
             # Preparar embed
             slot_nombre = slot.replace('_equipada', '').capitalize()

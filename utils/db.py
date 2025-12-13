@@ -4,6 +4,7 @@ from config import DB_FILE
 from datetime import datetime
 import random
 from config import DB_FILE
+from services.jugador import obtener_jugador
 
 # -------------------- CONEXIÓN --------------------
 def conectar():
@@ -60,51 +61,9 @@ def recalcular_stats(user_id):
     conn.commit()
     conn.close()
 
-
-def sleep(user_id: str):
-    conn = conectar()
-    cursor = conn.cursor()
-
-    # Obtener vida actual y vida máxima real
-    cursor.execute("SELECT vida, vida_max FROM jugadores WHERE user_id = ?", (user_id,))
-    row = cursor.fetchone()
-
-    if not row:
-        conn.close()
-        return None
-
-    vida_actual, vida_max = row["vida"], row["vida_max"]
-
-    recuperar = max(1, int(vida_max * 0.20))
-    nueva_vida = min(vida_actual + recuperar, vida_max)
-
-    cursor.execute(
-        "UPDATE jugadores SET vida = ? WHERE user_id = ?",
-        (nueva_vida, user_id)
-    )
-
-    conn.commit()
-    conn.close()
-
-    return nueva_vida, recuperar
-
-
 # -------------------- JUGADOR --------------------
 
-def obtener_jugador(user_id):
-    conn = conectar()
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM jugadores WHERE user_id = ?", (user_id,))
-    row = cursor.fetchone()
-    conn.close()
-    return row
 
-def actualizar_vida(user_id, nueva_vida):
-    conn = conectar()
-    cursor = conn.cursor()
-    cursor.execute("UPDATE jugadores SET vida = ? WHERE user_id = ?", (nueva_vida, user_id))
-    conn.commit()
-    conn.close()
 # -------------------- INVENTARIO --------------------
 
 def agregar_item(user_id: str, item_id: str, cantidad: int = 1):

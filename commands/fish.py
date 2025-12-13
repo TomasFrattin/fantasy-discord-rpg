@@ -10,6 +10,7 @@ from utils.messages import mensaje_usuario_no_creado, mensaje_accion_en_progreso
 import discord
 from data_loader import PECES
 from data.texts import mensaje_inicio_pesca
+from services.jugador import obtener_jugador
 
 class FishView(View):
     def __init__(self, user_id: str):
@@ -54,7 +55,7 @@ async def run_fish(interaction: Interaction, minutos: int):
     )
 
     user_id = str(interaction.user.id)
-    jugador = db.obtener_jugador(user_id)
+    jugador = obtener_jugador(user_id)
 
     if not jugador:
         return await interaction.response.send_message(embed=mensaje_usuario_no_creado(), ephemeral=True)

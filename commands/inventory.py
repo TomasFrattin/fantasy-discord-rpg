@@ -5,7 +5,7 @@ from discord.ext import commands
 from utils import db
 from data_loader import EQUIPABLES_BY_ID
 from utils.messages import mensaje_usuario_no_creado
-
+from services.jugador import obtener_jugador
 # Rareza → emoji + color sugerido
 RARITY_STYLE = {
     "comun": {"emoji": "⚪", "color": 0xA8A8A8},
@@ -30,7 +30,7 @@ class InventoryCommand(commands.Cog):
     async def inventory(self, interaction: discord.Interaction):
         user_id = str(interaction.user.id)
         
-        row = db.obtener_jugador(user_id)
+        row = obtener_jugador(user_id)
         if not row:
             return await interaction.response.send_message(embed=mensaje_usuario_no_creado(), ephemeral=True)
         

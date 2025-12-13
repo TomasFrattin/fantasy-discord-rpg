@@ -16,6 +16,14 @@ def registrar_jugador(user_id, username, afinidad):
     conn.commit()
     conn.close()
 
+def obtener_jugador(user_id):
+    conn = conectar()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM jugadores WHERE user_id = ?", (user_id,))
+    row = cursor.fetchone()
+    conn.close()
+    return row
+
 def energia_max_por_afinidad(afinidad: str) -> int:
     base = 3
     if afinidad.lower() == "arcano":
@@ -135,3 +143,37 @@ def gastar_energia(user_id, cantidad=1):
     conn.close()
 
     return nueva
+
+def sleep(user_id: str):
+    conn = conectar()
+    cursor = conn.cursor()
+
+    # Obtener vida actual y vida máxima real
+    cursor.execute("SELECT vida, vida_max FROM jugadores WHERE user_id = ?", (user_id,))
+    row = cursor.fetchone()
+
+    if not row:
+        conn.close()
+        return None
+
+    vida_actual, vida_max = row["vida"], row["vida_max"]
+
+    recuperar = max(1, int(vida_max * 0.20))
+    nueva_vida = min(vida_actual + recuperar, vida_max)
+
+    cursor.execute(
+        "UPDATE jugadores SET vida = ? WHERE user_id = ?",
+        (nueva_vida, user_id)
+    )
+
+    conn.commit()
+    conn.close()
+
+    return nueva_vida, recuperar
+
+def actualizar_vida(user_id, nueva_vida):
+    conn = conectar()
+    cursor = conn.cursor()
+    cursor.execute("UPDATE jugadores SET vida = ? WHERE user_id = ?", (nueva_vida, user_id))
+    conn.commit()
+    conn.close()

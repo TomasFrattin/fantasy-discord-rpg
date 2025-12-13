@@ -7,7 +7,7 @@ from discord.ext import commands
 from utils import db
 from data_loader import EQUIPABLES, EQUIPABLES_BY_ID
 from views.equip import EquiparOVender
-from services.jugador import obtener_energia, gastar_energia
+from services.jugador import obtener_energia, gastar_energia, obtener_jugador
 
 RARITY_COLORS = {
     "comun": 0xB0B0B0,
@@ -107,7 +107,7 @@ class LootCommand(commands.Cog):
         gastar_energia(user_id, 1)
 
         # Obtener jugador DESPUÉS de gastar energía
-        jugador = db.obtener_jugador(user_id)
+        jugador = obtener_jugador(user_id)
         nivel_hunt = jugador["lvl_caceria"]
 
         # Tier según hunt
@@ -207,7 +207,7 @@ class LootCommand(commands.Cog):
         await interaction.response.send_message(embed=embed, view=view)
 
 def generar_loot_para_usuario(user_id, mob=None):
-    jugador = db.obtener_jugador(user_id)
+    jugador = obtener_jugador(user_id)
     nivel_hunt = jugador["lvl_caceria"]
 
     # Tier base según nivel

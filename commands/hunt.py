@@ -13,7 +13,7 @@ import os
 from commands.loot import generar_loot_para_usuario
 from data_loader import MOBS
 from utils.helpers import preparar_imagen_mob
-from services.jugador import sumar_oro, obtener_energia, gastar_energia
+from services.jugador import sumar_oro, obtener_energia, gastar_energia, actualizar_vida, obtener_jugador
 
 # -----------------------------
 # Funciones auxiliares
@@ -38,7 +38,7 @@ def elegir_mob(nivel_hunt: int) -> dict:
 
 
 def agregar_exp_caceria(user_id, exp_obtenida):
-    jugador = db.obtener_jugador(user_id)
+    jugador = obtener_jugador(user_id)
     exp_actual = jugador["exp_caceria"] or 0
     lvl = jugador["lvl_caceria"] or 1
 
@@ -73,7 +73,7 @@ class HuntView(View):
         if not combate:
             return await interaction.response.send_message("El combate ya no está activo.", ephemeral=True)
 
-        jugador = db.obtener_jugador(self.user_id)
+        jugador = obtener_jugador(self.user_id)
         player_atk = jugador["damage"]
 
         # --- Ataque jugador ---
@@ -98,7 +98,7 @@ class HuntView(View):
             if fallo_mob:
                 daño_mob = 0
             combate["player_hp"] -= daño_mob
-            db.actualizar_vida(self.user_id, combate["player_hp"])
+            actualizar_vida(self.user_id, combate["player_hp"])
             if combate["player_hp"] < 0:
                 combate["player_hp"] = 0
 
@@ -135,8 +135,8 @@ class HuntView(View):
         if combate["player_hp"] <= 0:
             embed.title += "\n❌ Derrota"
             embed.color = 0x8B0000
-            sumar_oro(self.user_id, -db.obtener_jugador(self.user_id)["oro"])
-            db.actualizar_vida(self.user_id, max(1,jugador["vida_max"]//2))
+            sumar_oro(self.user_id, -obtener_jugador(self.user_id)["oro"])
+            actualizar_vida(self.user_id, max(1,jugador["vida_max"]//2))
             gastar_energia(self.user_id, jugador["energia"])
             delete_combat(self.user_id)
             desc = random.choice(DEFEAT_DESCS)
@@ -228,7 +228,7 @@ class HuntView(View):
         combate["player_hp"] -= daño_mob
         if combate["player_hp"] < 0:
             combate["player_hp"] = 0
-        db.actualizar_vida(self.user_id, combate["player_hp"])
+        actualizar_vida(self.user_id, combate["player_hp"])
 
         # Embed de fallo con estilo de combate
         mensaje = random.choice(ESCAPE_CONFIG["mensajes_fallo"])
@@ -281,7 +281,7 @@ class HuntCommand(commands.Cog):
     @app_commands.command(name="hunt", description="Buscar un enemigo para combatir (gasta 1 energía).")
     async def hunt(self, interaction: Interaction):
         user_id = str(interaction.user.id)
-        jugador = db.obtener_jugador(user_id)
+        jugador = obtener_jugador(user_id)
         if not jugador:
             return await interaction.response.send_message(embed=mensaje_usuario_no_creado(), ephemeral=True)
         
