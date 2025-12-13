@@ -5,6 +5,7 @@ from views.affinity import ElegirAfinidad
 from utils import db
 from utils.locks import esta_ocupado, comenzar_accion
 from utils.messages import mensaje_usuario_ya_existente
+
 class StartCommand(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -30,8 +31,8 @@ class StartCommand(commands.Cog):
 
         # Bloquear
         comenzar_accion(user_id)
-
         view = ElegirAfinidad(user_id)
+
         await interaction.response.send_message(
             content=WELCOME_MESSAGE,
             view=view,

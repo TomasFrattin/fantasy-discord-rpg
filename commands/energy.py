@@ -4,6 +4,7 @@ from utils import db
 import random
 from data.texts import ENERGY_DESCS
 from utils.messages import mensaje_usuario_no_creado
+from services.jugador import obtener_energia
 
 async def run_energy(interaction: Interaction):
     user_id = str(interaction.user.id)
@@ -12,7 +13,7 @@ async def run_energy(interaction: Interaction):
     if not row:
         return await interaction.response.send_message(embed=mensaje_usuario_no_creado(), ephemeral=True)
 
-    energia = db.obtener_energia(user_id)
+    energia = obtener_energia(user_id)
     if energia >= 3:
         desc = random.choice(ENERGY_DESCS["extreme"])
     elif energia == 3:

@@ -1,5 +1,5 @@
 import os
-from tkinter import Image
+from PIL import Image
 
 def preparar_imagen_mob(ruta, size=(300, 300)):
     img = Image.open(ruta).convert("RGBA")

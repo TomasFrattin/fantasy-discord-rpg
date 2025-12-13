@@ -7,6 +7,7 @@ import os
 from PIL import Image
 from utils.messages import mensaje_usuario_no_creado, mensaje_sin_energia, mensaje_accion_en_progreso
 from utils.helpers import crear_collage
+from services.jugador import obtener_energia, gastar_energia
 
 class ForageCommand(commands.Cog):
     def __init__(self, bot):
@@ -23,7 +24,7 @@ class ForageCommand(commands.Cog):
         if not jugador:
             return await interaction.response.send_message(embed=mensaje_usuario_no_creado(), ephemeral=True)
 
-        energia = db.obtener_energia(user_id)
+        energia = obtener_energia(user_id)
         if energia <= 0:
             return await interaction.response.send_message(embed=mensaje_sin_energia(), ephemeral=True)
 
@@ -31,7 +32,7 @@ class ForageCommand(commands.Cog):
         if accion:
             return await interaction.response.send_message(embed=mensaje_accion_en_progreso(user_id), ephemeral=True)
         
-        db.gastar_energia(user_id, 1)
+        gastar_energia(user_id, 1)
 
         try:
             resultados = db.recolectar_materiales(user_id)

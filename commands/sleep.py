@@ -4,6 +4,7 @@ from utils import db
 import random
 from data.texts import SLEEP_DESCS
 from utils.messages import mensaje_usuario_no_creado, mensaje_sin_energia, mensaje_accion_en_progreso
+from services.jugador import obtener_energia, gastar_energia
 
 async def run_sleep(interaction: Interaction):
     user_id = str(interaction.user.id)
@@ -12,7 +13,7 @@ async def run_sleep(interaction: Interaction):
     if not row:
         return await interaction.response.send_message(embed=mensaje_usuario_no_creado(), ephemeral=True)
     
-    energia = db.obtener_energia(user_id)
+    energia = obtener_energia(user_id)
     if energia <= 0:
         return await interaction.response.send_message(embed=mensaje_sin_energia(), ephemeral=True)
     
@@ -29,7 +30,7 @@ async def run_sleep(interaction: Interaction):
         return await interaction.response.send_message(embed=embed, ephemeral=True)
 
     # Gastar energía
-    db.gastar_energia(user_id, 1)
+    gastar_energia(user_id, 1)
 
     # Realizar recuperación
     nueva_vida, recuperado = db.sleep(user_id)
