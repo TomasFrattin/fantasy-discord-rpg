@@ -1,24 +1,124 @@
 {
   "peces": [
     {
-      "id": "pez_comun",
-      "nombre": "Pez Común",
+      "id": "mojarra",
+      "nombre": "Mojarra",
       "tipo": "material",
       "rareza": "comun",
-      "descripcion": "Un pez común, fácil de pescar. Ideal para recetas básicas o vender por unas monedas.",
+      "descripcion": "Un pez pequeño y abundante en aguas tranquilas. Muy común en la pesca diaria.",
       "valor_oro": 5,
-      "url": "assets/materiales/pez_comun.png",
-      "peso": 80
+      "url": "assets/materiales/mojarra.png",
+      "peso": 70
     },
     {
-      "id": "pez_raro",
-      "nombre": "Pez Raro",
+      "id": "bagre_joven",
+      "nombre": "Bagre Joven",
+      "tipo": "material",
+      "rareza": "comun",
+      "descripcion": "Un bagre de tamaño pequeño, frecuente en ríos y lagunas.",
+      "valor_oro": 6,
+      "url": "assets/materiales/bagre_joven.png",
+      "peso": 90
+    },
+    {
+      "id": "sardina",
+      "nombre": "Sardina",
+      "tipo": "material",
+      "rareza": "comun",
+      "descripcion": "Pez chico y plateado que suele moverse en cardúmenes.",
+      "valor_oro": 5,
+      "url": "assets/materiales/sardina.png",
+      "peso": 60
+    },
+    {
+      "id": "carpa_pequena",
+      "nombre": "Carpa Pequeña",
+      "tipo": "material",
+      "rareza": "comun",
+      "descripcion": "Una carpa joven, resistente y muy habitual en aguas dulces.",
+      "valor_oro": 7,
+      "url": "assets/materiales/carpa_pequena.png",
+      "peso": 110
+    },
+    {
+      "id": "pejerrey",
+      "nombre": "Pejerrey",
+      "tipo": "material",
+      "rareza": "poco_comun",
+      "descripcion": "Pez alargado y veloz, apreciado por su carne y algo más difícil de capturar.",
+      "valor_oro": 12,
+      "url": "assets/materiales/pejerrey.png",
+      "peso": 140
+    },
+    {
+      "id": "doradillo",
+      "nombre": "Doradillo",
+      "tipo": "material",
+      "rareza": "poco_comun",
+      "descripcion": "Pariente pequeño del dorado, fuerte y muy combativo al pescar.",
+      "valor_oro": 14,
+      "url": "assets/materiales/doradillo.png",
+      "peso": 160
+    },
+    {
+      "id": "trucha_criolla",
+      "nombre": "Trucha Criolla",
+      "tipo": "material",
+      "rareza": "poco_comun",
+      "descripcion": "Pez ágil de aguas frías, menos común y más valioso.",
+      "valor_oro": 15,
+      "url": "assets/materiales/trucha_criolla.png",
+      "peso": 150
+    },
+    {
+      "id": "tararira",
+      "nombre": "Tararira",
+      "tipo": "material",
+      "rareza": "poco_comun",
+      "descripcion": "Depredador de agua dulce, conocido por su agresividad.",
+      "valor_oro": 16,
+      "url": "assets/materiales/tararira.png",
+      "peso": 180
+    },
+    {
+      "id": "surubi",
+      "nombre": "Surubí",
       "tipo": "material",
       "rareza": "raro",
-      "descripcion": "Un pez poco común, algo más difícil de capturar. Usado en pociones y recetas especiales.",
-      "valor_oro": 15,
-      "url": "assets/materiales/pez_raro.png",
-      "peso": 20
+      "descripcion": "Un pez grande y esquivo de río profundo. Muy apreciado por su calidad.",
+      "valor_oro": 22,
+      "url": "assets/materiales/surubi.png",
+      "peso": 220
+    },
+    {
+      "id": "pacú",
+      "nombre": "Pacú",
+      "tipo": "material",
+      "rareza": "raro",
+      "descripcion": "Pez fuerte y desconfiado, difícil de capturar sin buena técnica.",
+      "valor_oro": 24,
+      "url": "assets/materiales/pacu.png",
+      "peso": 210
+    },
+    {
+      "id": "mero_joven",
+      "nombre": "Mero Joven",
+      "tipo": "material",
+      "rareza": "raro",
+      "descripcion": "Un ejemplar joven de un pez poderoso, poco frecuente en las capturas.",
+      "valor_oro": 26,
+      "url": "assets/materiales/mero_joven.png",
+      "peso": 230
+    },
+    {
+      "id": "corvina_negra",
+      "nombre": "Corvina Negra",
+      "tipo": "material",
+      "rareza": "raro",
+      "descripcion": "Pez grande y silencioso de aguas profundas, muy buscado por pescadores expertos.",
+      "valor_oro": 28,
+      "url": "assets/materiales/corvina_negra.png",
+      "peso": 240
     },
     {
       "id": "pez_epico",
