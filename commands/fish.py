@@ -12,6 +12,10 @@ from services.jugadores import obtener_jugador, sumar_oro
 from services.acciones import actualizar_accion, actualizar_accion_fin
 from views.fish import PrimeraCanaView
 from utils.helpers import preparar_imagen_pez
+from config import configurar_logging
+import logging 
+
+configurar_logging()
 
 COOLDOWN_PESCA = 900  # segundos
 minutos_cooldown = COOLDOWN_PESCA // 60
@@ -102,6 +106,7 @@ async def run_fish(interaction: Interaction):
         color=Color.blue()
     )
     
+    logging.info(f"[HUNT] Usuario {user_id} ({jugador['username']}) pescó {pez['nombre']} valorado en {oro_ganado} de oro.")
     pez_img_path = preparar_imagen_pez(f"assets/peces/{os.path.basename(pez['url'])}", size=(280,280))
     if pez_img_path and pez_img_path.exists():
         file = discord.File(pez_img_path, filename=pez_img_path.name)

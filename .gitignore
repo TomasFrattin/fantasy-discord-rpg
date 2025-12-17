@@ -27,3 +27,8 @@ ordenar_json.py
 *.db               
 *.db-wal       
 *.db-shm          
+
+# ---------------------------
+# Dependencias
+# ---------------------------
+venv/
