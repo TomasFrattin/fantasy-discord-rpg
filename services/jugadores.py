@@ -153,3 +153,10 @@ def sleep(user_id: str):
 def actualizar_vida(user_id, nueva_vida):
     with get_cursor() as cursor:
         cursor.execute("UPDATE jugadores SET vida = ? WHERE user_id = ?", (nueva_vida, user_id))
+
+def actualizar_cana(user_id, cana):
+    with get_cursor() as cursor:
+        cursor.execute(
+            "UPDATE jugadores SET cana_equipada = ? WHERE user_id = ?",
+            (cana, user_id)
+        )

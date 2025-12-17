@@ -1,188 +1,128 @@
 # commands/fish.py
-import asyncio
 import random
-from datetime import datetime, timedelta
-from discord import ButtonStyle, app_commands, Interaction, Embed, Color
-from discord.ext import commands
-from discord.ui import View, Button, button
-from utils import db
-from utils.messages import mensaje_usuario_no_creado, mensaje_accion_en_progreso, mensaje_funcionalidad_en_mantenimiento
+import time
 import discord
+from discord import app_commands, Interaction, Embed, Color
+from discord.ext import commands
+import os
+from utils.messages import mensaje_usuario_no_creado
 from data_loader import PECES
-from data.texts import mensaje_inicio_pesca
-from services.jugadores import obtener_jugador
-from services.acciones import actualizar_accion, actualizar_accion_fin, obtener_accion_actual, obtener_accion_fin
+from data.texts import ENCUENTRO_VIEJO_PESCADOR
+from services.jugadores import obtener_jugador, sumar_oro
+from services.acciones import actualizar_accion, actualizar_accion_fin
+from views.fish import PrimeraCanaView
+from utils.helpers import preparar_imagen_pez
 
-class FishView(View):
-    def __init__(self, user_id: str):
-        super().__init__(timeout=None)
-        self.user_id = user_id
-        self.cancelled = False
+COOLDOWN_PESCA = 900  # segundos
+minutos_cooldown = COOLDOWN_PESCA // 60
+segundos_cooldown = COOLDOWN_PESCA % 60
 
-    @discord.ui.button(label="Cancelar pesca", style=ButtonStyle.danger)
-    async def cancelar(self, interaction: Interaction, button: Button):
-        if str(interaction.user.id) != self.user_id:
-            return await interaction.response.send_message("Este botón no es para vos.", ephemeral=True)
-        
-        self.cancelled = True
-        actualizar_accion(self.user_id, None)
-        actualizar_accion_fin(self.user_id, None)
+def elegir_pez_por_peso(peces):
+    pesos = [p["peso"] for p in peces]
+    return random.choices(peces, weights=pesos, k=1)[0]
 
-        embed = Embed(
-            title="❌ Pesca cancelada",
-            description="La pesca fue cancelada.",
-            color=Color.red()
-        )
-        self.stop()
-        await interaction.response.edit_message(embed=embed, view=None)
 
-def generar_pesca(minutos: int):
-    """Genera los peces según la duración de la pesca, incluyendo posibilidad de no sacar nada."""
-    pesca = []
-    for _ in range(minutos):
-        # Chance de que no salga nada (por ejemplo 60%)
-        if random.random() < 0.6:
-            continue  # No se captura nada este minuto
+def peces_por_cana(cana):
+    # Por ahora solo caña rústica → peces comunes
+    if cana == "cana_rustica":
+        return [p for p in PECES if p["rareza"] == "comun"]
+    return []
 
-        pez = random.choices(PECES, weights=[p["peso"] for p in PECES], k=1)[0]
-        pesca.append(pez)
-    return pesca
 
-async def run_fish(interaction: Interaction, minutos: int):
-            # Bloqueo temporal del comando
-    return await interaction.response.send_message(
-        embed=mensaje_funcionalidad_en_mantenimiento(),
-        ephemeral=True
-    )
+async def run_fish(interaction: Interaction):
 
     user_id = str(interaction.user.id)
     jugador = obtener_jugador(user_id)
 
     if not jugador:
-        return await interaction.response.send_message(embed=mensaje_usuario_no_creado(), ephemeral=True)
-
-    MIN_PESCA = 1
-    MAX_PESCA = 60
-    if minutos < MIN_PESCA or minutos > MAX_PESCA:
         return await interaction.response.send_message(
-            f"❌ El tiempo de pesca debe estar entre {MIN_PESCA} y {MAX_PESCA} minutos.",
+            embed=mensaje_usuario_no_creado(),
             ephemeral=True
         )
 
-    accion = obtener_accion_actual(user_id)
-    accion_fin_str = obtener_accion_fin(user_id)
+    # ─────────────────────────────
+    # PRIMERA VEZ SIN CAÑA
+    # ─────────────────────────────
+    if not jugador["cana_equipada"]:
+        embed = Embed(
+            title=ENCUENTRO_VIEJO_PESCADOR["titulo"],
+            description=ENCUENTRO_VIEJO_PESCADOR["descripcion"],
+            color=Color.gold()
+        )
+        view = PrimeraCanaView(user_id)
+        await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
+        await view.wait()
+        return
 
-    if accion and accion_fin_str:
-        try:
-            accion_fin = datetime.fromisoformat(accion_fin_str)
-            if datetime.utcnow() >= accion_fin:
-                actualizar_accion(user_id, None)
-                actualizar_accion_fin(user_id, None)
-                accion = None
-        except Exception:
-            actualizar_accion(user_id, None)
-            actualizar_accion_fin(user_id, None)
-            accion = None
+    now = int(time.time())
 
-    accion = obtener_accion_actual(user_id)
-    if accion:
+    # ─────────────────────────────
+    # COOLDOWN
+    # ─────────────────────────────
+    if jugador["accion_fin"] and jugador["accion_fin"] > now:
+        restante = jugador["accion_fin"] - now
+        minutos_restantes = restante // 60
+        segundos_restantes = restante % 60
+        embed = discord.Embed(
+            title="⏳ Enfriamiento de pesca",
+            description=f"Todavía estás esperando que piquen…\n**{minutos_restantes} min {segundos_restantes} s** restantes",
+            color=discord.Color.orange()
+        )
+        return await interaction.response.send_message(embed=embed, ephemeral=True)
+    else:
+        actualizar_accion_fin(user_id, None)
+
+    # ─────────────────────────────
+    # PESCA
+    # ─────────────────────────────
+    peces_disponibles = peces_por_cana(jugador["cana_equipada"])
+
+    if not peces_disponibles:
         return await interaction.response.send_message(
-            embed=mensaje_accion_en_progreso(user_id),
+            "🎣 No hay peces disponibles para esta caña.",
             ephemeral=True
         )
 
-    # Registrar acción
-    accion_fin = datetime.utcnow() + timedelta(minutes=minutos)
-    actualizar_accion(user_id, "pescando")
-    actualizar_accion_fin(user_id, accion_fin.isoformat())
+    pez = elegir_pez_por_peso(peces_disponibles)
+    oro_ganado = pez["valor_oro"]
 
-    # Embed inicial
-    embed_inicio = Embed(
-        title=f"¡🎣 **{jugador['username']}** ha comenzado a pescar!",
-        description=mensaje_inicio_pesca(minutos),
+    sumar_oro(user_id, oro_ganado)
+
+    # actualizar_accion(user_id, "pescar")
+    actualizar_accion_fin(user_id, now + COOLDOWN_PESCA)
+
+    embed = Embed(
+        title="🎣 ¡Pescaste algo!",
+        description=(
+            f"🐟 **{pez['nombre']}**\n"
+            f"_{pez['descripcion']}_\n\n"
+            f"💰 Ganaste **{oro_ganado} de oro**\n"
+            f"⏳ Podés volver a pescar en **{minutos_cooldown} min {segundos_cooldown} s**"
+        ),
         color=Color.blue()
     )
-    view = FishView(user_id)
-    await interaction.response.send_message(embed=embed_inicio, view=view, ephemeral=False)
-    mensaje = await interaction.original_response()
-
-    # Loop de actualización en tiempo real
-    while True:
-        if view.cancelled:
-            return
-
-        ahora = datetime.utcnow()
-        if ahora >= accion_fin:
-            break
-
-        minutos_restantes = round((accion_fin - ahora).total_seconds() / 60)
-        embed_inicio.set_footer(text=f"⏳ Tiempo restante aprox.: {minutos_restantes} min")
-
-        try:
-            await mensaje.edit(embed=embed_inicio, view=view)
-        except Exception:
-            pass  # ignorar si falla la edición
-
-        await asyncio.sleep(10)  # chequear cada 10 segundos
-
-    # Generar pesca
-    pesca = generar_pesca(minutos)
-    if pesca:
-        # Agrupar duplicados
-        agrupados = {}
-        for p in pesca:
-            if p["id"] not in agrupados:
-                agrupados[p["id"]] = {"nombre": p["nombre"], "cantidad": 0, "valor": p["valor_oro"], "url": p.get("url")}
-            agrupados[p["id"]]["cantidad"] += 1
-
-        # Guardar en la base de datos usando la cantidad correcta
-        for item_id, data in agrupados.items():
-            db.agregar_item(user_id, item_id, data["cantidad"])
-
-        texto_flavor = random.choice([
-            "¡Qué buena pesca! Parece que la fortuna está de tu lado. 🐟",
-            "Los peces han caído en tu red. ¡Un día productivo! 🎣",
-            "¡Hora de contar los tesoros del agua! 🌊",
-            "Tu paciencia ha dado frutos, algunos peces se unen a tu inventario. 🐠",
-        ])
-
-        embed_final = Embed(
-            title="🏆 Pesca terminada",
-            description=texto_flavor,
-            color=Color.green()
-        )
-
-        for info in agrupados.values():
-            embed_final.add_field(
-                name=info["nombre"],
-                value=f"Cantidad: × {info['cantidad']}\n",
-                inline=True
-            )
+    
+    pez_img_path = preparar_imagen_pez(f"assets/peces/{os.path.basename(pez['url'])}", size=(280,280))
+    if pez_img_path and pez_img_path.exists():
+        file = discord.File(pez_img_path, filename=pez_img_path.name)
+        embed.set_image(url=f"attachment://{pez_img_path.name}")
+        await interaction.response.send_message(embed=embed, file=file)
+        try: os.remove(pez_img_path)
+        except: pass
     else:
-        embed_final = Embed(
-            title="😢 Pesca vacía",
-            description=random.choice([
-                "Intentaste pescar, pero los peces no estaban de humor hoy. 🍂",
-                "Las aguas están tranquilas, pero tu caña no atrapó nada. 🌊",
-                "Hoy los peces han sido esquivos. ¡No pierdas la esperanza! 🐟",
-                "Nada muerde tu anzuelo... mejor suerte la próxima vez. 🎣",
-            ]),
-            color=Color.orange()
-        )
-
-    # Fin de la pesca
-    actualizar_accion(user_id, None)
-    actualizar_accion_fin(user_id, None)
-    await mensaje.edit(embed=embed_final, view=None)
+        await interaction.response.send_message(embed=embed)
 
 class FishingCommand(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @app_commands.command(name="fish", description="Intentar pescar en las aguas del reino")
-    @app_commands.describe(minutos="Cuánto tiempo querés pescar (en minutos)")
-    async def fish(self, interaction: Interaction, minutos: int):
-        await run_fish(interaction, minutos)
+    @app_commands.command(
+        name="fish",
+        description="Intentar pescar en las aguas del reino"
+    )
+    async def fish(self, interaction: Interaction):
+        await run_fish(interaction)
+
 
 async def setup(bot):
     await bot.add_cog(FishingCommand(bot))

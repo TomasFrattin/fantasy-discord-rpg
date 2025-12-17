@@ -46,7 +46,8 @@ def crear_tabla_jugadores():
         armadura_equipada TEXT,
         casco_equipado TEXT,
         botas_equipadas TEXT,
-                    
+        cana_equipada TEXT,     
+                        
         -- otros
         oro INTEGER DEFAULT 0,
         last_reset TEXT,
@@ -56,6 +57,77 @@ def crear_tabla_jugadores():
         accion_fin TEXT DEFAULT NULL
     )
     """)
+    conn.commit()
+    conn.close()
+
+def crear_tabla_jugadores_nueva():
+    conn = conectar()
+    cursor = conn.cursor()
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS jugadores_nueva (
+        user_id TEXT PRIMARY KEY,
+        username TEXT,
+        afinidad TEXT,
+        
+        -- vida
+        vida_base INTEGER DEFAULT 100,
+        vida INTEGER DEFAULT 100,
+        vida_max INTEGER DEFAULT 100,
+        
+        -- daño
+        base_damage INTEGER DEFAULT 10,
+        damage INTEGER DEFAULT 10,
+        
+        -- energía
+        energia INTEGER DEFAULT 3,
+        energia_max INTEGER DEFAULT 3,
+        
+        -- niveles y experiencia
+        lvl_recoleccion INTEGER DEFAULT 1,
+        exp_recoleccion INTEGER DEFAULT 0,
+        lvl_caceria INTEGER DEFAULT 1,
+        exp_caceria INTEGER DEFAULT 0,
+        lvl_prestigio INTEGER DEFAULT 1,
+        exp_prestigio INTEGER DEFAULT 0,
+
+        -- equipo
+        arma_equipada TEXT,
+        armadura_equipada TEXT,
+        casco_equipado TEXT,
+        botas_equipadas TEXT,
+        cana_equipada TEXT,   -- NUEVA COLUMNA
+                    
+        -- otros
+        oro INTEGER DEFAULT 0,
+        last_reset TEXT,
+
+        -- acciones
+        accion_actual TEXT DEFAULT NULL,
+        accion_fin INTEGER DEFAULT NULL
+    )
+    """)
+    
+    # Copiar los datos de la tabla antigua
+    cursor.execute("""
+    INSERT INTO jugadores_nueva (
+        user_id, username, afinidad, vida_base, vida, vida_max, 
+        base_damage, damage, energia, energia_max, lvl_recoleccion,
+        exp_recoleccion, lvl_caceria, exp_caceria, lvl_prestigio, exp_prestigio,
+        arma_equipada, armadura_equipada, casco_equipado, botas_equipadas,
+        oro, last_reset, accion_actual, accion_fin
+    )
+    SELECT user_id, username, afinidad, vida_base, vida, vida_max,
+           base_damage, damage, energia, energia_max, lvl_recoleccion,
+           exp_recoleccion, lvl_caceria, exp_caceria, lvl_prestigio, exp_prestigio,
+           arma_equipada, armadura_equipada, casco_equipado, botas_equipadas,
+           oro, last_reset, accion_actual, accion_fin
+    FROM jugadores
+    """)
+    
+    # Eliminar la tabla vieja y renombrar la nueva
+    cursor.execute("DROP TABLE jugadores")
+    cursor.execute("ALTER TABLE jugadores_nueva RENAME TO jugadores")
+    
     conn.commit()
     conn.close()
 

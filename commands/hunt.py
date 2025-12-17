@@ -5,7 +5,6 @@ from discord.ext import commands
 from discord.ui import View, button, Button
 from utils import db
 from utils.combat_manager import create_combat, get_combat, delete_combat, has_combat
-import logging
 from data.texts import DEFEAT_DESCS, ESCAPE_CONFIG
 from utils.messages import mensaje_usuario_no_creado, mensaje_sin_energia, mensaje_accion_en_progreso
 from PIL import Image
@@ -15,10 +14,12 @@ from data_loader import MOBS
 from utils.helpers import preparar_imagen_mob
 from services.jugadores import sumar_oro, obtener_energia, gastar_energia, actualizar_vida, obtener_jugador
 from services.acciones import obtener_accion_actual
-
+from config import configurar_logging
+import logging 
 # -----------------------------
 # Funciones auxiliares
 # -----------------------------
+configurar_logging()
 
 def elegir_mob(nivel_hunt: int) -> dict:
     """Elige un mob según lvl_caceria y probabilidades de tier."""
@@ -294,7 +295,7 @@ class HuntCommand(commands.Cog):
             return await interaction.response.send_message(embed=mensaje_accion_en_progreso(user_id), ephemeral=True)
 
         gastar_energia(user_id, 1)
-        logging.info(f"[HUNT] Usuario {user_id} gastó 1 energía.")
+        logging.info(f"[HUNT] Usuario {user_id} ({jugador['username']}) gastó 1 energía.")
 
         # Elegir mob según lvl_caceria
         mob = elegir_mob(jugador["lvl_caceria"])

@@ -9,7 +9,8 @@ STARTUP_COMMANDS = [
     {"comando": "🧺 /forage (⚡)", "descripcion": "Recolectar materiales."},
     {"comando": "😴 /sleep (⚡)", "descripcion": "Recupera vida descansando."},
     {"comando": "🏪 /merchant", "descripcion": "Visitar al mercader para comprar objetos."},
-    {"comando": "🔨 /craft", "descripcion": "Crear objetos equipables o consumibles."}
+    {"comando": "🔨 /craft", "descripcion": "Crear objetos equipables o consumibles."},
+    {"comando": "🪙 /contribution", "descripcion": "Aporta una cantidad de oro a las mejoras del reino."}
 ]
 
 
@@ -146,4 +147,21 @@ ESCAPE_CONFIG = {
         "🌲 Tu intento de huida fue frustrado por un obstáculo inesperado, el enemigo sigue cerca.",
         "🕳️ Caíste en un pequeño agujero mientras corrías, perdiendo tiempo y permitiendo que la criatura te acorralara."
     ]
+}
+
+ENCUENTRO_VIEJO_PESCADOR = {
+    "titulo": "🎣 Un encuentro en el muelle",
+    "descripcion": (
+        "Te acercás lentamente al viejo muelle de madera 🪵. Las tablas crujen bajo tus pies "
+        "mientras las olas golpean con suavidad 🌊, trayendo consigo el aroma salado del mar. "
+        "El viento sopla constante 💨, meciendo las cuerdas y haciendo danzar las redes olvidadas.\n\n"
+        "A un costado, casi confundido con el paisaje, ves a un anciano pescador 👴. Su espalda está encorvada "
+        "y sus manos tiemblan mientras sostiene una vieja caña 🎣, gastada por los años y las mareas. "
+        "Cada intento de lanzar el anzuelo parece una pequeña lucha contra el tiempo ⏳.\n\n"
+        "Al notar tu presencia, el anciano te observa en silencio por unos segundos 👀. Luego, con una leve sonrisa, "
+        "asiente lentamente.\n\n"
+        "— *Hace tiempo que estas aguas ya no son para mí…* —murmura—. *Tal vez vos puedas sacar mejor provecho de esta caña.*\n\n"
+        "El viejo extiende su caña rústica hacia vos 🤲. Es simple, marcada por el uso, pero todavía firme.\n"
+        "¿Qué decidís hacer?"
+    )
 }

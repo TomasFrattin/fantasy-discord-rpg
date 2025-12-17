@@ -11,6 +11,28 @@ def preparar_imagen_mob(ruta, size=(300, 300)):
     fondo.save(output_path)
     return output_path
 
+def preparar_imagen_pez(ruta, size=(300, 300)):
+    from pathlib import Path
+    ruta = Path(ruta)
+    if not ruta.is_file():
+        ruta = Path("assets/peces") / ruta.name
+
+    if not ruta.exists():
+        return None
+
+    img = Image.open(ruta).convert("RGBA")
+    img.thumbnail(size, Image.LANCZOS)
+    fondo = Image.new("RGBA", size, (0,0,0,0))
+    offset = ((size[0]-img.width)//2, (size[1]-img.height)//2)
+    fondo.paste(img, offset, img)
+
+    output_dir = Path("data/temp")
+    output_dir.mkdir(parents=True, exist_ok=True)
+    output_path = output_dir / f"temp_pez_{ruta.name}"
+    fondo.save(output_path)
+
+    return output_path  # Path, no string
+
 def crear_collage(rutas, tamaño_celda=(128, 128), gap=10):
     if not rutas:
         return None

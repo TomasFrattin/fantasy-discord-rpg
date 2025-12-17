@@ -16,11 +16,11 @@ bot = commands.Bot(command_prefix=PREFIX, intents=intents)
 tablas.crear_tabla_inventario()
 tablas.crear_tabla_items()
 tablas.crear_tabla_jugadores()
-
+# tablas.crear_tabla_jugadores_nueva()
 # print("Base de datos borrada y tabla recreada al iniciar el bot.")
 
 resetear_jugador("366690600709521419")
-eliminar_jugador("366690600709521419")
+# eliminar_jugador("366690600709521419")
 # resetear_todos()
 
 # mi_id = "366690600709521419"
@@ -43,6 +43,8 @@ async def main():
         await bot.load_extension("commands.fish")     # <- cog de pesca
         await bot.load_extension("commands.menu")
         await bot.load_extension("commands.craft")    # <- cog de crafting
+        await bot.load_extension("commands.contribution")
+        await bot.load_extension("commands.ranking")
 
         await bot.start(TOKEN)
 
