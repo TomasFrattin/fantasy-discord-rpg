@@ -14,6 +14,7 @@ WELCOME_CHANNELS = [123123]
 
 # URL para invitar al bot con todos los permisos
 # https://discord.com/oauth2/authorize?client_id=1422719749116137623&scope=bot%20applications.commands&permissions=277025508352
+# https://discord.com/oauth2/authorize?client_id=1450950385521922261&scope=bot%20applications.commands&permissions=277025508352
 
 def configurar_logging():
     # Limpiar handlers previos

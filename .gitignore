@@ -32,3 +32,4 @@ ordenar_json.py
 # Dependencias
 # ---------------------------
 venv/
+data/arkanor.db.sql

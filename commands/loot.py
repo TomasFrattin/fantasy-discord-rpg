@@ -78,16 +78,16 @@ def obtener_tier(nivel_hunt):
 # -----------------------------
 # Simulación de 1000 loots
 # -----------------------------
-def simular_loots(nivel_hunt, n=50):
-    resultados = Counter()
-    for _ in range(n):
-        tier = obtener_tier(nivel_hunt)
-        resultados[tier] += 1
-    return resultados
+# def simular_loots(nivel_hunt, n=50):
+#     resultados = Counter()
+#     for _ in range(n):
+#         tier = obtener_tier(nivel_hunt)
+#         resultados[tier] += 1
+#     return resultados
 
-# Ejecutar simulación para nivel 5, 500 loots
-sim = simular_loots(nivel_hunt=16, n=500)
-print(sim)
+# # Ejecutar simulación para nivel 5, 500 loots
+# sim = simular_loots(nivel_hunt=16, n=500)
+# print(sim)
 
 
 class LootCommand(commands.Cog):

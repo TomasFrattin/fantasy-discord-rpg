@@ -91,8 +91,6 @@ class ContributionCommand(commands.Cog):
             # Enviar embed principal del fondo alcanzado
             await interaction.response.send_message(embed=embed)
 
-            # Mensaje informativo de recompensas
-            await interaction.followup.send("🎁 ¡Las recompensas han sido entregadas automáticamente a los 3 mejores contribuyentes!")
 
             # Dar recompensas automáticamente al top 3
             from services.ranking import ranking_fondo_visual
