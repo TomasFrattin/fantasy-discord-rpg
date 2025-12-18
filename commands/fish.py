@@ -18,7 +18,7 @@ import logging
 
 configurar_logging()
 
-COOLDOWN_PESCA = 1  # segundos
+COOLDOWN_PESCA = 900  # segundos
 minutos_cooldown = COOLDOWN_PESCA // 60
 segundos_cooldown = COOLDOWN_PESCA % 60
 
