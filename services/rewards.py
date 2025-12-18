@@ -10,6 +10,14 @@ RECOMPENSAS = {
     3: {"oro": 200, "rareza": "raro", "slot": "arma_equipada"},
 }
 
+TIPO_A_SLOT = {
+    "arma": "arma_equipada",
+    "armadura": "armadura_equipada",
+    "casco": "casco_equipado",
+    "botas": "botas_equipadas",
+    "cana": "cana_equipada"
+}
+
 async def recompensar_top(interaction: discord.Interaction, top_ranking):
     """Da las recompensas automáticamente y muestra un embed del podio."""
 
@@ -25,12 +33,6 @@ async def recompensar_top(interaction: discord.Interaction, top_ranking):
 
     for i, jugador in enumerate(top_ranking, start=1):
         recompensa = RECOMPENSAS[i]
-
-        # DEBUG
-        print("DEBUG - Rareza de la recompensa:", recompensa["rareza"])
-        print("DEBUG - Items disponibles:", EQUIPABLES_BY_RARITY.get(recompensa["rareza"], []))
-
-        # Elegir item aleatorio de la rareza
         equipables = EQUIPABLES_BY_RARITY.get(recompensa["rareza"], [])
         if not equipables:
             print(f"[WARN] No hay equipables para la rareza '{recompensa['rareza']}'")
@@ -38,9 +40,12 @@ async def recompensar_top(interaction: discord.Interaction, top_ranking):
 
         item = random.choice(equipables)
 
+        # Determinar slot real según tipo de item
+        slot_real = TIPO_A_SLOT.get(item["tipo"], "arma_equipada")  # fallback por si no coincide
+        
         # Dar oro y equipar automáticamente
         sumar_oro(jugador["user_id"], recompensa["oro"])
-        equipar(jugador["user_id"], recompensa["slot"], item["id"])
+        equipar(jugador["user_id"], slot_real, item["id"])
 
         # Medalla según posición
         medalla = ["🥇","🥈","🥉"][i-1]
