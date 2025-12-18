@@ -12,12 +12,13 @@ from services.jugadores import obtener_jugador, sumar_oro
 from services.acciones import actualizar_accion, actualizar_accion_fin
 from views.fish import PrimeraCanaView
 from utils.helpers import preparar_imagen_pez
+from data.canas import CANAS
 from config import configurar_logging
 import logging 
 
 configurar_logging()
 
-COOLDOWN_PESCA = 900  # segundos
+COOLDOWN_PESCA = 1  # segundos
 minutos_cooldown = COOLDOWN_PESCA // 60
 segundos_cooldown = COOLDOWN_PESCA % 60
 
@@ -26,11 +27,13 @@ def elegir_pez_por_peso(peces):
     return random.choices(peces, weights=pesos, k=1)[0]
 
 
-def peces_por_cana(cana):
-    # Por ahora solo caña rústica → peces comunes
-    if cana == "cana_rustica":
-        return [p for p in PECES if p["rareza"] == "comun"]
-    return []
+def peces_por_cana(cana_id: str):
+    cana = CANAS.get(cana_id)
+    if not cana:
+        return []
+
+    rarezas_permitidas = cana["rareza_permitida"]
+    return [p for p in PECES if p["rareza"] in rarezas_permitidas]
 
 
 async def run_fish(interaction: Interaction):
@@ -92,12 +95,15 @@ async def run_fish(interaction: Interaction):
 
     sumar_oro(user_id, oro_ganado)
 
+    cana = CANAS[jugador["cana_equipada"]]
+
     # actualizar_accion(user_id, "pescar")
     actualizar_accion_fin(user_id, now + COOLDOWN_PESCA)
 
     embed = Embed(
         title="🎣 ¡Pescaste algo!",
         description=(
+            f"🎯 **Caña usada:** {cana['nombre']}\n\n"
             f"🐟 **{pez['nombre']}**\n"
             f"_{pez['descripcion']}_\n\n"
             f"💰 Ganaste **{oro_ganado} de oro**\n"
@@ -105,8 +111,12 @@ async def run_fish(interaction: Interaction):
         ),
         color=Color.blue()
     )
-    
-    logging.info(f"[HUNT] Usuario {user_id} ({jugador['username']}) pescó {pez['nombre']} valorado en {oro_ganado} de oro.")
+
+    logging.info(
+        f"[FISH] Usuario {user_id} ({jugador['username']}) "
+        f"usó {cana['nombre']} y pescó {pez['nombre']} "
+        f"({pez['rareza']}) por {oro_ganado} oro."
+    )
     pez_img_path = preparar_imagen_pez(f"assets/peces/{os.path.basename(pez['url'])}", size=(280,280))
     if pez_img_path and pez_img_path.exists():
         file = discord.File(pez_img_path, filename=pez_img_path.name)

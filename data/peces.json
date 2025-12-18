@@ -18,7 +18,7 @@
       "descripcion": "Un bagre de tamaño pequeño, frecuente en ríos y lagunas.",
       "valor_oro": 6,
       "url": "assets/materiales/bagre_joven.png",
-      "peso": 90
+      "peso": 75
     },
     {
       "id": "sardina",
@@ -28,7 +28,7 @@
       "descripcion": "Pez chico y plateado que suele moverse en cardúmenes.",
       "valor_oro": 5,
       "url": "assets/materiales/sardina.png",
-      "peso": 60
+      "peso": 80
     },
     {
       "id": "carpa_pequena",
@@ -38,7 +38,7 @@
       "descripcion": "Una carpa joven, resistente y muy habitual en aguas dulces.",
       "valor_oro": 7,
       "url": "assets/materiales/carpa_pequena.png",
-      "peso": 110
+      "peso": 90
     },
     {
       "id": "pejerrey",
@@ -48,7 +48,7 @@
       "descripcion": "Pez alargado y veloz, apreciado por su carne y algo más difícil de capturar.",
       "valor_oro": 12,
       "url": "assets/materiales/pejerrey.png",
-      "peso": 140
+      "peso": 35
     },
     {
       "id": "doradillo",
@@ -58,7 +58,7 @@
       "descripcion": "Pariente pequeño del dorado, fuerte y muy combativo al pescar.",
       "valor_oro": 14,
       "url": "assets/materiales/doradillo.png",
-      "peso": 160
+      "peso": 40
     },
     {
       "id": "trucha_criolla",
@@ -68,7 +68,7 @@
       "descripcion": "Pez ágil de aguas frías, menos común y más valioso.",
       "valor_oro": 15,
       "url": "assets/materiales/trucha_criolla.png",
-      "peso": 150
+      "peso": 38
     },
     {
       "id": "tararira",
@@ -78,7 +78,27 @@
       "descripcion": "Depredador de agua dulce, conocido por su agresividad.",
       "valor_oro": 16,
       "url": "assets/materiales/tararira.png",
-      "peso": 180
+      "peso": 45
+    },
+    {
+      "id": "pez_solar",
+      "nombre": "Pez Solar",
+      "tipo": "material",
+      "rareza": "raro",
+      "descripcion": "Un pez que brilla con luz cálida. Usado en pociones y comidas que otorgan energías especiales.",
+      "valor_oro": 25,
+      "url": "assets/materiales/pez_solar.png",
+      "peso": 8
+    },
+    {
+      "id": "alga_magica",
+      "nombre": "Alga Mágica",
+      "tipo": "material",
+      "rareza": "raro",
+      "descripcion": "Una alga que se encuentra en aguas profundas y tiene propiedades curativas. Utilizada en pociones y recetas.",
+      "valor_oro": 20,
+      "url": "assets/materiales/alga_magica.png",
+      "peso": 10
     },
     {
       "id": "surubi",
@@ -88,7 +108,7 @@
       "descripcion": "Un pez grande y esquivo de río profundo. Muy apreciado por su calidad.",
       "valor_oro": 22,
       "url": "assets/materiales/surubi.png",
-      "peso": 220
+      "peso": 15
     },
     {
       "id": "pacú",
@@ -98,7 +118,7 @@
       "descripcion": "Pez fuerte y desconfiado, difícil de capturar sin buena técnica.",
       "valor_oro": 24,
       "url": "assets/materiales/pacu.png",
-      "peso": 210
+      "peso": 14
     },
     {
       "id": "mero_joven",
@@ -108,7 +128,7 @@
       "descripcion": "Un ejemplar joven de un pez poderoso, poco frecuente en las capturas.",
       "valor_oro": 26,
       "url": "assets/materiales/mero_joven.png",
-      "peso": 230
+      "peso": 12
     },
     {
       "id": "corvina_negra",
@@ -118,7 +138,7 @@
       "descripcion": "Pez grande y silencioso de aguas profundas, muy buscado por pescadores expertos.",
       "valor_oro": 28,
       "url": "assets/materiales/corvina_negra.png",
-      "peso": 240
+      "peso": 10
     },
     {
       "id": "pez_epico",
@@ -129,6 +149,16 @@
       "valor_oro": 50,
       "url": "assets/materiales/pez_epico.png",
       "peso": 5
+    },
+    {
+      "id": "pez_fantasma",
+      "nombre": "Pez Fantasma",
+      "tipo": "material",
+      "rareza": "epico",
+      "descripcion": "Un pez casi invisible que se mueve sigilosamente en las profundidades. Muy difícil de atrapar.",
+      "valor_oro": 75,
+      "url": "assets/materiales/pez_fantasma.png",
+      "peso": 2
     },
     {
       "id": "pez_legendario",
@@ -146,39 +176,9 @@
       "tipo": "material",
       "rareza": "legendario",
       "descripcion": "Un pez con escamas de colores vivos y resistente como un dragón. Su carne y escamas son altamente valoradas.",
-      "valor_oro": 350,
+      "valor_oro": 250,
       "url": "assets/materiales/pez_dragon.png",
       "peso": 1
-    },
-    {
-      "id": "pez_fantasma",
-      "nombre": "Pez Fantasma",
-      "tipo": "material",
-      "rareza": "epico",
-      "descripcion": "Un pez casi invisible que se mueve sigilosamente en las profundidades. Muy difícil de atrapar.",
-      "valor_oro": 75,
-      "url": "assets/materiales/pez_fantasma.png",
-      "peso": 2
-    },
-    {
-      "id": "pez_solar",
-      "nombre": "Pez Solar",
-      "tipo": "material",
-      "rareza": "raro",
-      "descripcion": "Un pez que brilla con luz cálida. Usado en pociones y comidas que otorgan energías especiales.",
-      "valor_oro": 25,
-      "url": "assets/materiales/pez_solar.png",
-      "peso": 10
-    },
-    {
-      "id": "alga_magica",
-      "nombre": "Alga Mágica",
-      "tipo": "material",
-      "rareza": "raro",
-      "descripcion": "Una alga que se encuentra en aguas profundas y tiene propiedades curativas. Utilizada en pociones y recetas.",
-      "valor_oro": 20,
-      "url": "assets/materiales/alga_magica.png",
-      "peso": 15
     }
   ]
 }
