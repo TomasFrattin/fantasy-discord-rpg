@@ -12,12 +12,15 @@ from services.jugadores import obtener_jugador, sumar_oro
 from services.acciones import actualizar_accion, actualizar_accion_fin
 from views.fish import PrimeraCanaView
 from utils.helpers import preparar_imagen_pez
+from data.canas import CANAS
 from config import configurar_logging
 import logging 
+from views.combat import CombatView
+from utils.combat_manager import create_combat
 
 configurar_logging()
 
-COOLDOWN_PESCA = 900  # segundos
+COOLDOWN_PESCA = 1020  # segundos
 minutos_cooldown = COOLDOWN_PESCA // 60
 segundos_cooldown = COOLDOWN_PESCA % 60
 
@@ -26,11 +29,13 @@ def elegir_pez_por_peso(peces):
     return random.choices(peces, weights=pesos, k=1)[0]
 
 
-def peces_por_cana(cana):
-    # Por ahora solo caña rústica → peces comunes
-    if cana == "cana_rustica":
-        return [p for p in PECES if p["rareza"] == "comun"]
-    return []
+def peces_por_cana(cana_id: str):
+    cana = CANAS.get(cana_id)
+    if not cana:
+        return []
+
+    rarezas_permitidas = cana["rareza_permitida"]
+    return [p for p in PECES if p["rareza"] in rarezas_permitidas]
 
 
 async def run_fish(interaction: Interaction):
@@ -88,6 +93,50 @@ async def run_fish(interaction: Interaction):
         )
 
     pez = elegir_pez_por_peso(peces_disponibles)
+    cana = CANAS[jugador["cana_equipada"]]
+
+    if pez.get("hostil", False):
+        combat_payload = {
+            "mob_id": pez["id"],
+            "mob_nombre": pez["nombre"],
+            "mob_emoji": "🐟",
+            "mob_hp": pez["vida_max"],
+            "mob_hp_max": pez["vida_max"],
+            "mob_valor_oro": pez["valor_oro"],
+            "mob_atk": pez["ataque"],
+            "mob_exp": pez["exp"],
+            "mob_loot_bonus": 0,
+            "player_hp": jugador["vida"],
+            "player_hp_max": jugador["vida_max"],
+            "image_shown": False,
+        }
+        create_combat(user_id, combat_payload)
+        
+
+        embed = Embed(
+            title="⚔️ ¡Has pescado un pez hostil!",
+            description=(
+                f"🎯 **Caña usada:** {cana['nombre']}\n\n"
+                f"🐟 **{pez['nombre']}**\n"
+                f"_{pez['descripcion']}_\n\n"
+                f"⏳ Prepárate para luchar contra él."
+            ),
+            color=0xFF4500
+        )
+        view = CombatView(user_id)
+        
+        pez_img_path = preparar_imagen_pez(f"assets/peces/{os.path.basename(pez['url'])}", size=(280,280))
+        if pez_img_path and pez_img_path.exists():
+            file = discord.File(pez_img_path, filename=pez_img_path.name)
+            embed.set_image(url=f"attachment://{pez_img_path.name}")
+            await interaction.response.send_message(embed=embed, view=view, file=file)
+            try: os.remove(pez_img_path)
+            except: pass
+        else:
+            await interaction.response.send_message(embed=embed, view=view)
+
+        return
+
     oro_ganado = pez["valor_oro"]
 
     sumar_oro(user_id, oro_ganado)
@@ -98,6 +147,7 @@ async def run_fish(interaction: Interaction):
     embed = Embed(
         title="🎣 ¡Pescaste algo!",
         description=(
+            f"🎯 **Caña usada:** {cana['nombre']}\n\n"
             f"🐟 **{pez['nombre']}**\n"
             f"_{pez['descripcion']}_\n\n"
             f"💰 Ganaste **{oro_ganado} de oro**\n"
@@ -105,8 +155,12 @@ async def run_fish(interaction: Interaction):
         ),
         color=Color.blue()
     )
-    
-    logging.info(f"[HUNT] Usuario {user_id} ({jugador['username']}) pescó {pez['nombre']} valorado en {oro_ganado} de oro.")
+
+    logging.info(
+        f"[FISH] Usuario {user_id} ({jugador['username']}) "
+        f"usó {cana['nombre']} y pescó {pez['nombre']} "
+        f"({pez['rareza']}) por {oro_ganado} oro."
+    )
     pez_img_path = preparar_imagen_pez(f"assets/peces/{os.path.basename(pez['url'])}", size=(280,280))
     if pez_img_path and pez_img_path.exists():
         file = discord.File(pez_img_path, filename=pez_img_path.name)

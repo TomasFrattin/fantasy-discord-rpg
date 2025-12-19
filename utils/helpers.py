@@ -1,11 +1,28 @@
 import os
 from PIL import Image
+from data.canas import CANAS
+
+def canas_ordenadas():
+    return sorted(CANAS.items(), key=lambda x: x[1]["tier"])
 
 def preparar_imagen_mob(ruta, size=(300, 300)):
     img = Image.open(ruta).convert("RGBA")
     img.thumbnail(size, Image.LANCZOS)
     fondo = Image.new("RGBA", size, (0, 0, 0, 0))
     offset = ((size[0] - img.width)//2, (size[1] - img.height)//2)
+    fondo.paste(img, offset, img)
+    output_path = f"data/temp/temp_mob_{os.path.basename(ruta)}"
+    fondo.save(output_path)
+    return output_path
+
+
+def preparar_imagen_npc(ruta, size=(300, 300)):
+    img = Image.open(ruta).convert("RGBA")
+    img.thumbnail(size, Image.LANCZOS)
+    # Reducimos el lienzo vertical a la altura de la imagen + margen mínimo
+    new_height = img.height + 20  # por ejemplo, 10px arriba y abajo
+    fondo = Image.new("RGBA", (size[0], new_height), (0, 0, 0, 0))
+    offset = ((size[0] - img.width)//2, 10)  # 10px arriba
     fondo.paste(img, offset, img)
     output_path = f"data/temp/temp_mob_{os.path.basename(ruta)}"
     fondo.save(output_path)
