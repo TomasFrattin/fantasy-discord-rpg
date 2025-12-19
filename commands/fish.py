@@ -96,6 +96,8 @@ async def run_fish(interaction: Interaction):
     cana = CANAS[jugador["cana_equipada"]]
 
     if pez.get("hostil", False):
+        actualizar_accion_fin(user_id, now + COOLDOWN_PESCA)
+
         combat_payload = {
             "mob_id": pez["id"],
             "mob_nombre": pez["nombre"],
