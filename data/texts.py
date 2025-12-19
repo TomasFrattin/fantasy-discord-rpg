@@ -27,6 +27,18 @@ Elige tu afinidad sabiamente y forja tu camino como héroe de este mundo.
 🧙‍♂️ **¡Ha llegado el momento de decidir tu camino!** 🔮
 """
 
+FRASES_MERCADER = [
+    "🛒 **Bienvenido, joven aventurero**. ¿Qué buscas hoy? Tal vez unas flechas nuevas para tu arco, alguna espada afilada, una caña de pescar reluciente o pociones que revitalicen tu energía. ¡Todo lo que un héroe necesita lo encontrarás aquí! ⚔️🍶",
+    "🌟 ¡Ah, un visitante! Veo que tus ojos brillan con ansias de aventuras. **¿Buscas armas para tus combates, herramientas para tus viajes o tal vez algún elixir mágico** que te dé fuerza y vigor? No dudes en preguntar, todo está a tu disposición.",
+    "⚔️ **Saludos, valiente viajero**. Hoy traigo artículos recién llegados: flechas precisas, pociones burbujeantes, cañas de pescar resistentes y artefactos que podrían salvar tu vida. ¿Qué deseas inspeccionar primero? 🏹🪄",
+    "🛡️ Bienvenido a mi humilde puesto. Aquí encontrarás **de todo para tus aventuras**: armas, pociones que sanan, cañas de pescar y objetos curiosos que podrían serte útiles. ¿Qué te interesa hoy, joven héroe? ✨",
+    "🍃 **Ah, llegas justo a tiempo**. Tengo en exhibición las mejores armas, flechas, pociones y cañas de pesca que puedas imaginar. Todo preparado para aventureros como tú. ¿Por dónde quieres empezar a mirar primero? 🔮",
+    "🏰 ¡Salve, viajero! Mi puesto está lleno de **tesoros y herramientas** para tu travesía: flechas, espadas, pociones de toda clase, y hasta cañas de pescar que atrapan los peces más codiciados. ¿Qué deseas llevar hoy? 🐟⚔️",
+    "🌿 **Saludos, joven aventurero**. Mi mercadería no es común: cada arma afila tus habilidades, cada poción restaura tu vigor, y cada caña de pescar es un portal a la paciencia y la fortuna. ¿Qué deseas explorar primero? 🍶🛠️",
+    "✨ ¡Ah, justo lo que esperaba! **Tienes la mirada de quien busca aventuras**. Mi puesto ofrece flechas, armas finas, pociones y objetos que podrían cambiar tu destino. ¿Qué deseas tomar primero? 🏹🪄",
+]
+
+
 ELEMENT_DESCRIPTIONS = {
     "Fuego": "🔥 **Fuego**\n_Las llamas de los volcanes eternos y la pasión que arde en los corazones._\n💥 Dominarás la chispa que ilumina la oscuridad y consume lo que se interponga en tu camino.",
     "Hielo": "❄️ **Hielo**\n_Los glaciares milenarios y la calma de la noche estrellada._\n🧊 Tu toque congela el tiempo y la mente de tus enemigos, dejando tras de sí un silencio helado.",

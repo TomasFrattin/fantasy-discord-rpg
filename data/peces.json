@@ -8,7 +8,8 @@
       "descripcion": "Un pez pequeño y abundante en aguas tranquilas. Muy común en la pesca diaria.",
       "valor_oro": 5,
       "url": "assets/materiales/mojarra.png",
-      "peso": 70
+      "peso": 70,
+      "hostil":false
     },
     {
       "id": "bagre_joven",
@@ -18,7 +19,8 @@
       "descripcion": "Un bagre de tamaño pequeño, frecuente en ríos y lagunas.",
       "valor_oro": 6,
       "url": "assets/materiales/bagre_joven.png",
-      "peso": 75
+      "peso": 75,
+      "hostil":false
     },
     {
       "id": "sardina",
@@ -28,7 +30,8 @@
       "descripcion": "Pez chico y plateado que suele moverse en cardúmenes.",
       "valor_oro": 5,
       "url": "assets/materiales/sardina.png",
-      "peso": 80
+      "peso": 80,
+      "hostil":false
     },
     {
       "id": "carpa_pequena",
@@ -38,7 +41,8 @@
       "descripcion": "Una carpa joven, resistente y muy habitual en aguas dulces.",
       "valor_oro": 7,
       "url": "assets/materiales/carpa_pequena.png",
-      "peso": 90
+      "peso": 90,
+      "hostil":false
     },
     {
       "id": "pejerrey",
@@ -48,7 +52,8 @@
       "descripcion": "Pez alargado y veloz, apreciado por su carne y algo más difícil de capturar.",
       "valor_oro": 12,
       "url": "assets/materiales/pejerrey.png",
-      "peso": 35
+      "peso": 35,
+      "hostil":false
     },
     {
       "id": "doradillo",
@@ -58,7 +63,8 @@
       "descripcion": "Pariente pequeño del dorado, fuerte y muy combativo al pescar.",
       "valor_oro": 14,
       "url": "assets/materiales/doradillo.png",
-      "peso": 40
+      "peso": 40,
+      "hostil":false
     },
     {
       "id": "trucha_criolla",
@@ -68,7 +74,8 @@
       "descripcion": "Pez ágil de aguas frías, menos común y más valioso.",
       "valor_oro": 15,
       "url": "assets/materiales/trucha_criolla.png",
-      "peso": 38
+      "peso": 38,
+      "hostil":false
     },
     {
       "id": "tararira",
@@ -78,7 +85,8 @@
       "descripcion": "Depredador de agua dulce, conocido por su agresividad.",
       "valor_oro": 16,
       "url": "assets/materiales/tararira.png",
-      "peso": 45
+      "peso": 45,
+      "hostil":false
     },
     {
       "id": "pez_solar",
@@ -88,7 +96,8 @@
       "descripcion": "Un pez que brilla con luz cálida. Usado en pociones y comidas que otorgan energías especiales.",
       "valor_oro": 25,
       "url": "assets/materiales/pez_solar.png",
-      "peso": 8
+      "peso": 8,
+      "hostil":false
     },
     {
       "id": "alga_magica",
@@ -98,7 +107,8 @@
       "descripcion": "Una alga que se encuentra en aguas profundas y tiene propiedades curativas. Utilizada en pociones y recetas.",
       "valor_oro": 20,
       "url": "assets/materiales/alga_magica.png",
-      "peso": 10
+      "peso": 10,
+      "hostil":false
     },
     {
       "id": "surubi",
@@ -108,7 +118,8 @@
       "descripcion": "Un pez grande y esquivo de río profundo. Muy apreciado por su calidad.",
       "valor_oro": 22,
       "url": "assets/materiales/surubi.png",
-      "peso": 15
+      "peso": 15,
+      "hostil":false
     },
     {
       "id": "pacú",
@@ -118,7 +129,8 @@
       "descripcion": "Pez fuerte y desconfiado, difícil de capturar sin buena técnica.",
       "valor_oro": 24,
       "url": "assets/materiales/pacu.png",
-      "peso": 14
+      "peso": 14,
+      "hostil":false
     },
     {
       "id": "mero_joven",
@@ -128,7 +140,8 @@
       "descripcion": "Un ejemplar joven de un pez poderoso, poco frecuente en las capturas.",
       "valor_oro": 26,
       "url": "assets/materiales/mero_joven.png",
-      "peso": 12
+      "peso": 12,
+      "hostil":false
     },
     {
       "id": "corvina_negra",
@@ -138,7 +151,8 @@
       "descripcion": "Pez grande y silencioso de aguas profundas, muy buscado por pescadores expertos.",
       "valor_oro": 28,
       "url": "assets/materiales/corvina_negra.png",
-      "peso": 10
+      "peso": 10,
+      "hostil":false
     },
     {
       "id": "pez_epico",
@@ -148,7 +162,8 @@
       "descripcion": "Un pez épico y muy difícil de pescar. Ideal para recetas avanzadas y comercio de alto valor.",
       "valor_oro": 50,
       "url": "assets/materiales/pez_epico.png",
-      "peso": 5
+      "peso": 5,
+      "hostil":false
     },
     {
       "id": "pez_fantasma",
@@ -158,7 +173,8 @@
       "descripcion": "Un pez casi invisible que se mueve sigilosamente en las profundidades. Muy difícil de atrapar.",
       "valor_oro": 75,
       "url": "assets/materiales/pez_fantasma.png",
-      "peso": 2
+      "peso": 2,
+      "hostil":false
     },
     {
       "id": "pez_legendario",
@@ -168,7 +184,8 @@
       "descripcion": "Un pez mítico, extremadamente raro y codiciado. Su captura es un verdadero logro.",
       "valor_oro": 200,
       "url": "assets/materiales/pez_legendario.png",
-      "peso": 1
+      "peso": 1,
+      "hostil":false
     },
     {
       "id": "pez_dragon",
@@ -178,7 +195,148 @@
       "descripcion": "Un pez con escamas de colores vivos y resistente como un dragón. Su carne y escamas son altamente valoradas.",
       "valor_oro": 250,
       "url": "assets/materiales/pez_dragon.png",
-      "peso": 1
+      "peso": 1,
+      "hostil":false
+    },
+    {
+      "id": "pez_espina_comun",
+      "nombre": "Pez Espina",
+      "tier": "comun",
+      "rareza": "comun",
+      "descripcion": "Un pez pequeño y agresivo, sus espinas pueden rasguñar al desprevenido 🎣🩸.",
+      "valor_oro": 8,
+      "vida_max": 20,
+      "ataque": 5,
+      "exp": 6,
+      "url": "assets/materiales/pez_espina.png",
+      "peso": 6,
+      "hostil":true
+    },
+    {
+      "id": "pez_leonado",
+      "nombre": "Pez Leonado",
+      "tier": "comun",
+      "rareza": "comun",
+      "descripcion": "Aunque pequeño, sus afiladas mandíbulas lo hacen peligroso para pescadores inexpertos 🐟🦷.",
+      "valor_oro": 10,
+      "vida_max": 25,
+      "ataque": 6,
+      "exp": 8,
+      "url": "assets/materiales/pez_leonado.png",
+      "peso": 6,
+      "hostil":true
+    },
+    {
+      "id": "doradillo_furia",
+      "nombre": "Doradillo Furia",
+      "tier": "poco_comun",
+      "rareza": "poco_comun",
+      "descripcion": "Pequeño pero veloz y combativo, ataca sin piedad ⚡🎣.",
+      "valor_oro": 15,
+      "vida_max": 35,
+      "ataque": 10,
+      "exp": 14,
+      "url": "assets/materiales/doradillo_furia.png",
+      "peso": 5,
+      "hostil":true
+    },
+    {
+      "id": "trucha_rabiosa",
+      "nombre": "Trucha Rabiosa",
+      "tier": "poco_comun",
+      "rareza": "poco_comun",
+      "descripcion": "Agil y esquiva, su mordida duele mucho si no estás atento 🐟💥.",
+      "valor_oro": 18,
+      "vida_max": 40,
+      "ataque": 12,
+      "exp": 16,
+      "url": "assets/materiales/trucha_rabiosa.png",
+      "peso": 5,
+      "hostil":true
+    },
+    {
+      "id": "pez_garfio",
+      "nombre": "Pez Garfio",
+      "tier": "raro",
+      "rareza": "raro",
+      "descripcion": "Con sus afilados ganchos ataca ferozmente a quien lo saque del agua 🐠🪝.",
+      "valor_oro": 25,
+      "vida_max": 50,
+      "ataque": 18,
+      "exp": 23,
+      "url": "assets/materiales/pez_garfio.png",
+      "peso": 4,
+      "hostil":true
+    },
+    {
+      "id": "bagre_sombrío",
+      "nombre": "Bagre Sombrío",
+      "tier": "raro",
+      "rareza": "raro",
+      "descripcion": "Se oculta en las sombras del río y embiste cuando menos lo esperas 🌑🐟.",
+      "valor_oro": 28,
+      "vida_max": 55,
+      "ataque": 20,
+      "exp": 27,
+      "url": "assets/materiales/bagre_sombrio.png",
+      "peso": 4,
+      "hostil":true
+    },
+    {
+      "id": "trucha_fantasma",
+      "nombre": "Trucha Fantasma",
+      "tier": "epico",
+      "rareza": "epico",
+      "descripcion": "Aparece y desaparece en corrientes místicas, atacando con precisión fantasmal 👻🐟.",
+      "valor_oro": 45,
+      "vida_max": 70,
+      "ataque": 30,
+      "exp": 35,
+      "url": "assets/materiales/trucha_fantasma.png",
+      "peso": 3,
+      "hostil":true
+    },
+    {
+      "id": "pez_dragoncito",
+      "nombre": "Pez Dragoncito",
+      "tier": "epico",
+      "rareza": "epico",
+      "descripcion": "Pequeño dragón acuático que lanza chorros de agua punzantes 🔥🌊.",
+      "valor_oro": 50,
+      "vida_max": 75,
+      "ataque": 32,
+      "exp": 38,
+      "url": "assets/materiales/pez_dragoncito.png",
+      "peso": 3,
+      "hostil":true
+    },
+    {
+      "id": "pulpo_legendario",
+      "nombre": "Pulpo Legendario",
+      "tier": "legendario",
+      "rareza": "legendario",
+      "descripcion": "Se dice que este carpa guarda la magia de los ríos antiguos, y no deja escapar a nadie sin luchar 🐲✨.",
+      "valor_oro": 120,
+      "vida_max": 120,
+      "ataque": 50,
+      "exp": 75,
+      "url": "assets/materiales/pulpo_legendario.png",
+      "peso": 2,
+      "hostil":true
+    },
+    {
+      "id": "dragón_azul",
+      "nombre": "Dragón Azul Acuático",
+      "tier": "legendario",
+      "rareza": "legendario",
+      "descripcion": "Un legendario dragón de río que desafía incluso a los pescadores más experimentados 🐉💦.",
+      "valor_oro": 150,
+      "vida_max": 140,
+      "ataque": 55,
+      "exp": 97,
+      "url": "assets/materiales/dragon_azul.png",
+      "peso": 2,
+      "hostil":true
     }
   ]
 }
