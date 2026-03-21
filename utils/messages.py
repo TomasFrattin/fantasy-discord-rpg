@@ -29,13 +29,20 @@ def mensaje_sin_energia():
 
 def mensaje_accion_en_progreso(user_id: str):
     accion = obtener_accion_actual(user_id)
-    accion_texto = accion if accion else "desconocida"
     
-    embed = Embed(
-        title="⏳ Acción en progreso",
-        description=f"Ya estás realizando la acción `{accion_texto}`. Por favor, finaliza la actual antes de iniciar una nueva.",
-        color=Color.red()
-    )
+    if accion:
+        embed = Embed(
+            title="⏳ Acción en progreso",
+            description=f"Ya estás realizando la acción `{accion}`. Por favor, finaliza la actual antes de iniciar una nueva.",
+            color=Color.red()
+        )
+    else:
+        embed = Embed(
+            title="⏳ En cooldown",
+            description="Espera a que se reinicie tu última acción antes de intentar de nuevo.",
+            color=Color.orange()
+        )
+    
     return embed
 
 def mensaje_funcionalidad_en_progreso():

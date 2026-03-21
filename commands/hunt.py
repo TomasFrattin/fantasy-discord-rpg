@@ -9,6 +9,7 @@ from data.texts import DEFEAT_DESCS, ESCAPE_CONFIG
 from utils.messages import mensaje_usuario_no_creado, mensaje_sin_energia, mensaje_accion_en_progreso
 from PIL import Image
 import os
+import asyncio
 from commands.loot import generar_loot_para_usuario
 from data_loader import MOBS
 from utils.helpers import preparar_imagen_mob
@@ -65,6 +66,11 @@ class HuntView(View):
     def __init__(self, user_id: str):
         super().__init__(timeout=60)
         self.user_id = user_id
+
+    async def on_timeout(self):
+        """Se ejecuta cuando la vista expira sin interacción."""
+        logging.warning(f"[HUNT] Vista de HuntView expiró para usuario {self.user_id}. Limpiando combate.")
+        delete_combat(self.user_id)
 
     @button(label="Atacar", style=ButtonStyle.primary)
     async def atacar(self, interaction: Interaction, button: Button):

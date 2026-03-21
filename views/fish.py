@@ -8,8 +8,9 @@ from services.acciones import actualizar_accion, actualizar_accion_fin
 
 class PrimeraCanaView(View):
     def __init__(self, user_id: str):
-        super().__init__(timeout=None)
+        super().__init__(timeout=120)  # 2 minutos de timeout
         self.user_id = user_id
+        self.interacted = False
 
     @discord.ui.button(label="Aceptar la caña rústica", style=ButtonStyle.success)
     async def aceptar(self, interaction: discord.Interaction, button: Button):
@@ -19,6 +20,7 @@ class PrimeraCanaView(View):
                 ephemeral=True
             )
 
+        self.interacted = True
         actualizar_cana(self.user_id, "cana_rustica")
         embed = Embed(
             title="🎣 ¡Recibiste tu primera caña!",
@@ -41,6 +43,7 @@ class PrimeraCanaView(View):
                 ephemeral=True
             )
 
+        self.interacted = True
         jugador = obtener_jugador(self.user_id)
         costo = 10
         if jugador["oro"] >= costo:
@@ -67,6 +70,7 @@ class PrimeraCanaView(View):
     async def irme(self, interaction: discord.Interaction, button: Button):
         if str(interaction.user.id) != self.user_id:
             return
+        self.interacted = True
         embed = Embed(
             title="🚶 Te retiras",
             description=(

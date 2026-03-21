@@ -1,5 +1,6 @@
 # views/combat.py
 import random
+import logging
 from discord.ui import View, button, Button
 from discord import ButtonStyle, Interaction, Embed
 from services.jugadores import obtener_jugador, actualizar_vida, sumar_oro
@@ -21,6 +22,11 @@ class CombatView(View):
     def __init__(self, user_id: str):
         super().__init__(timeout=60)
         self.user_id = user_id
+
+    async def on_timeout(self):
+        """Se ejecuta cuando la vista expira sin interacción."""
+        logging.warning(f"[COMBAT] Vista de CombatView expiró para usuario {self.user_id}. Limpiando combate.")
+        delete_combat(self.user_id)
 
     @button(label="Atacar", style=ButtonStyle.primary)
     async def atacar(self, interaction: Interaction, button: Button):
