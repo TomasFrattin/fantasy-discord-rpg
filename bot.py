@@ -48,7 +48,7 @@ async def main():
         await bot.load_extension("commands.craft")    # <- cog de crafting
         await bot.load_extension("commands.contribution")
         await bot.load_extension("commands.ranking")
-        await bot.load_extension("commands.dungeon")
+        # await bot.load_extension("commands.dungeon")
 
         await bot.start(TOKEN)
 
