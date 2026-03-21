@@ -5,6 +5,7 @@ import discord
 from discord import app_commands, Interaction, Embed, Color
 from discord.ext import commands
 import os
+import asyncio
 from utils.messages import mensaje_usuario_no_creado
 from data_loader import PECES
 from data.texts import ENCUENTRO_VIEJO_PESCADOR
@@ -60,7 +61,11 @@ async def run_fish(interaction: Interaction):
         )
         view = PrimeraCanaView(user_id)
         await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
-        await view.wait()
+        try:
+            await asyncio.wait_for(view.wait(), timeout=120.0)
+        except asyncio.TimeoutError:
+            # El usuario no interactuó dentro del timeout
+            logging.warning(f"[FISH] Usuario {user_id} ({jugador['username']}) no interactuó con la vista de caña (timeout).")
         return
 
     now = int(time.time())

@@ -5,10 +5,14 @@ from data.texts import RECOLECTAR_DESCRIPTIONS
 import random
 import os
 from PIL import Image
+import logging
 from utils.messages import mensaje_usuario_no_creado, mensaje_sin_energia, mensaje_accion_en_progreso
 from utils.helpers import crear_collage
 from services.jugadores import obtener_energia, gastar_energia, obtener_jugador
 from services.acciones import obtener_accion_actual
+from config import configurar_logging
+
+configurar_logging()
 
 class ForageCommand(commands.Cog):
     def __init__(self, bot):
@@ -31,9 +35,11 @@ class ForageCommand(commands.Cog):
 
         accion = obtener_accion_actual(user_id)
         if accion:
+            logging.warning(f"[FORAGE] Usuario {user_id} intentó recolectar pero tiene acción activa: {accion}")
             return await interaction.response.send_message(embed=mensaje_accion_en_progreso(user_id), ephemeral=True)
         
         gastar_energia(user_id, 1)
+        logging.info(f"[FORAGE] Usuario {user_id} ({jugador['username']}) gastó 1 energía.")
 
         try:
             resultados = db.recolectar_materiales(user_id)

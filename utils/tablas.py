@@ -11,9 +11,67 @@ def borrar_tabla_jugadores():
     conn.commit()
     conn.close()
 
-def crear_tabla_jugadores():
+def migrar_accion_fin_a_integer():
+    """Migra la columna accion_fin de TEXT a INTEGER si es necesario."""
     conn = conectar()
     cursor = conn.cursor()
+    
+    try:
+        # Verificar si la tabla existe
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='jugadores'")
+        if not cursor.fetchone():
+            conn.close()
+            return
+        
+        # Verificar el tipo de accion_fin
+        cursor.execute("PRAGMA table_info(jugadores)")
+        columnas = cursor.fetchall()
+        
+        accion_fin_type = None
+        for col in columnas:
+            if col[1] == "accion_fin":
+                accion_fin_type = col[2]
+                break
+        
+        # Si ya es INTEGER, no hacer nada
+        if accion_fin_type == "INTEGER":
+            conn.close()
+            return
+        
+        # Hacer la migración
+        cursor.execute("""
+            CREATE TABLE jugadores_migrado AS
+            SELECT 
+                user_id, username, afinidad,
+                vida_base, vida, vida_max,
+                base_damage, damage,
+                energia, energia_max,
+                lvl_recoleccion, exp_recoleccion,
+                lvl_caceria, exp_caceria,
+                lvl_prestigio, exp_prestigio,
+                arma_equipada, armadura_equipada, casco_equipado, botas_equipadas,
+                cana_equipada, oro, last_reset,
+                accion_actual,
+                CASE WHEN accion_fin = '' OR accion_fin IS NULL THEN NULL ELSE CAST(accion_fin AS INTEGER) END as accion_fin
+            FROM jugadores
+        """)
+        
+        cursor.execute("DROP TABLE jugadores")
+        cursor.execute("ALTER TABLE jugadores_migrado RENAME TO jugadores")
+        
+        conn.commit()
+    except Exception as e:
+        print(f"Error en migración de accion_fin: {e}")
+    finally:
+        conn.close()
+
+def crear_tabla_jugadores():
+    # Primero intentar migrar si es necesario
+    migrar_accion_fin_a_integer()
+    
+    conn = conectar()
+    cursor = conn.cursor()
+
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS jugadores (
         user_id TEXT PRIMARY KEY,
@@ -54,7 +112,7 @@ def crear_tabla_jugadores():
 
         -- acciones
         accion_actual TEXT DEFAULT NULL,
-        accion_fin TEXT DEFAULT NULL
+        accion_fin INTEGER DEFAULT NULL
     )
     """)
     conn.commit()
@@ -176,3 +234,182 @@ def crear_tabla_inventario():
     """)
     conn.commit()
     conn.close()
+
+# ------------------------
+# Crear tabla dungeon
+# ------------------------
+def crear_tabla_dungeon():
+    conn = conectar()
+    cursor = conn.cursor()
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS dungeon (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            nombre TEXT NOT NULL,
+            oro_recompensa INTEGER NOT NULL,
+            nivel_recomendado INTEGER NOT NULL
+        )
+    """)
+    conn.commit()
+    conn.close()
+
+# ------------------------
+# Crear tabla boss
+# ------------------------
+def crear_tabla_boss():
+    conn = conectar()
+    cursor = conn.cursor()
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS boss (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            dungeon_id INTEGER NOT NULL,
+            nombre TEXT NOT NULL,
+            vida INTEGER NOT NULL,
+            damage INTEGER NOT NULL,
+            FOREIGN KEY (dungeon_id) REFERENCES dungeon(id) ON DELETE CASCADE
+        )
+    """)
+    conn.commit()
+    conn.close()
+
+# ------------------------
+# Insertar dungeon de ejemplo
+# ------------------------
+def insertar_dungeons_base():
+    dungeons = [
+        ("Cripta Antigua", 500, 3),
+        ("Abismo del Coloso", 900, 6),
+        ("Santuario del Eclipse", 1500, 9),
+        ("Trono del Vacío", 2500, 13),
+        ("Trono del Apocalipsis", 4000, 18),
+    ]
+
+    conn = conectar()
+    cursor = conn.cursor()
+
+    for nombre, oro, nivel in dungeons:
+        cursor.execute(
+            "SELECT id FROM dungeon WHERE nombre = ?",
+            (nombre,)
+        )
+        if cursor.fetchone() is None:
+            cursor.execute(
+                """
+                INSERT INTO dungeon (nombre, oro_recompensa, nivel_recomendado)
+                VALUES (?, ?, ?)
+                """,
+                (nombre, oro, nivel)
+            )
+
+    conn.commit()
+    conn.close()
+
+# ------------------------
+# Insertar bosses de ejemplo
+# ------------------------
+def insertar_bosses_base():
+    bosses_por_dungeon = {
+        "Cripta Antigua": [
+            ("Guardián Óseo", 150, 25),
+            ("Nigromante Caído", 120, 35),
+            ("Rey de los Huesos", 200, 40),
+            ("Liche Despierto", 260, 45),
+        ],
+        "Abismo del Coloso": [
+            ("Titán de Piedra", 450, 50),
+            ("Martillo Viviente", 500, 55),
+            ("Coloso Ancestral", 600, 60),
+            ("Corazón del Abismo", 750, 70),
+        ],
+        "Santuario del Eclipse": [
+            ("Sacerdote Sombrío", 420, 65),
+            ("Avatar del Eclipse", 520, 75),
+            ("Vigía Crepuscular", 600, 85),
+            ("Señor del Eclipse", 750, 95),
+        ],
+        "Trono del Vacío": [
+            ("Heraldo del Vacío", 700, 90),
+            ("Entropía Viva", 850, 105),
+            ("Eco del Fin", 1000, 120),
+            ("Rey del Vacío", 1200, 140),
+        ],
+        "Trono del Apocalipsis": [
+            ("Destructor Primordial", 1200, 150),
+            ("Fragmento del Caos", 1400, 170),
+            ("Juicio Final", 1600, 190),
+            ("El Innombrable", 2000, 220),
+        ],
+    }
+
+    conn = conectar()
+    cursor = conn.cursor()
+
+    for dungeon_nombre, bosses in bosses_por_dungeon.items():
+        cursor.execute(
+            "SELECT id FROM dungeon WHERE nombre = ?",
+            (dungeon_nombre,)
+        )
+        fila = cursor.fetchone()
+        if not fila:
+            continue
+
+        dungeon_id = fila[0]
+
+        for nombre, vida, damage in bosses:
+            cursor.execute(
+                """
+                SELECT id FROM boss
+                WHERE dungeon_id = ? AND nombre = ?
+                """,
+                (dungeon_id, nombre)
+            )
+            if cursor.fetchone() is None:
+                cursor.execute(
+                    """
+                    INSERT INTO boss (dungeon_id, nombre, vida, damage)
+                    VALUES (?, ?, ?, ?)
+                    """,
+                    (dungeon_id, nombre, vida, damage)
+                )
+
+    conn.commit()
+    conn.close()
+
+# ------------------------
+# Crear tablas de contribuciones
+# ------------------------
+def crear_tabla_fondos():
+    conn = conectar()
+    cursor = conn.cursor()
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS fondos (
+            id TEXT PRIMARY KEY,
+            objetivo INTEGER NOT NULL,
+            acumulado INTEGER DEFAULT 0
+        )
+    """)
+    conn.commit()
+    conn.close()
+
+def crear_tabla_contribuciones():
+    conn = conectar()
+    cursor = conn.cursor()
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS contribuciones (
+            user_id TEXT NOT NULL,
+            fondo_id TEXT NOT NULL,
+            cantidad INTEGER NOT NULL,
+            PRIMARY KEY (user_id, fondo_id),
+            FOREIGN KEY (fondo_id) REFERENCES fondos(id) ON DELETE CASCADE
+        )
+    """)
+    conn.commit()
+    conn.close()
+
+# ------------------------
+# Función de inicialización completa
+# ------------------------
+def inicializar_dungeons():
+    crear_tabla_dungeon()
+    crear_tabla_boss()
+    insertar_dungeons_base()
+    insertar_bosses_base()
