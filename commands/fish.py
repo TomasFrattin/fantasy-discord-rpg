@@ -21,7 +21,7 @@ from utils.combat_manager import create_combat
 
 configurar_logging()
 
-COOLDOWN_PESCA = 1020  # segundos
+COOLDOWN_PESCA = 5  # segundos
 minutos_cooldown = COOLDOWN_PESCA // 60
 segundos_cooldown = COOLDOWN_PESCA % 60
 

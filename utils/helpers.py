@@ -1,9 +1,20 @@
-import os
+from pathlib import Path
+from uuid import uuid4
+
 from PIL import Image
 from data.canas import CANAS
 
+TEMP_DIR = Path("data/temp")
+
 def canas_ordenadas():
     return sorted(CANAS.items(), key=lambda x: x[1]["tier"])
+
+
+def ruta_temporal(prefijo: str, ruta_origen: str | Path) -> Path:
+    """Devuelve una ruta PNG única para evitar colisiones entre interacciones."""
+    TEMP_DIR.mkdir(parents=True, exist_ok=True)
+    nombre = Path(ruta_origen).stem
+    return TEMP_DIR / f"{prefijo}_{nombre}_{uuid4().hex}.png"
 
 def preparar_imagen_mob(ruta, size=(300, 300)):
     img = Image.open(ruta).convert("RGBA")
@@ -11,7 +22,7 @@ def preparar_imagen_mob(ruta, size=(300, 300)):
     fondo = Image.new("RGBA", size, (0, 0, 0, 0))
     offset = ((size[0] - img.width)//2, (size[1] - img.height)//2)
     fondo.paste(img, offset, img)
-    output_path = f"data/temp/temp_mob_{os.path.basename(ruta)}"
+    output_path = ruta_temporal("mob", ruta)
     fondo.save(output_path)
     return output_path
 
@@ -24,12 +35,11 @@ def preparar_imagen_npc(ruta, size=(300, 300)):
     fondo = Image.new("RGBA", (size[0], new_height), (0, 0, 0, 0))
     offset = ((size[0] - img.width)//2, 10)  # 10px arriba
     fondo.paste(img, offset, img)
-    output_path = f"data/temp/temp_mob_{os.path.basename(ruta)}"
+    output_path = ruta_temporal("npc", ruta)
     fondo.save(output_path)
     return output_path
 
 def preparar_imagen_pez(ruta, size=(300, 300)):
-    from pathlib import Path
     ruta = Path(ruta)
     if not ruta.is_file():
         ruta = Path("assets/peces") / ruta.name
@@ -43,9 +53,7 @@ def preparar_imagen_pez(ruta, size=(300, 300)):
     offset = ((size[0]-img.width)//2, (size[1]-img.height)//2)
     fondo.paste(img, offset, img)
 
-    output_dir = Path("data/temp")
-    output_dir.mkdir(parents=True, exist_ok=True)
-    output_path = output_dir / f"temp_pez_{ruta.name}"
+    output_path = ruta_temporal("pez", ruta)
     fondo.save(output_path)
 
     return output_path  # Path, no string
@@ -66,6 +74,6 @@ def crear_collage(rutas, tamaño_celda=(128, 128), gap=10):
         y = (idx // cols) * (tamaño_celda[1] + gap)
         collage.paste(img, (x, y), img)
 
-    output_path = "data/temp/temp_collage.png"
+    output_path = ruta_temporal("collage", "recoleccion.png")
     collage.save(output_path)
     return output_path

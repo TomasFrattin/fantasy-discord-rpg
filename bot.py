@@ -22,7 +22,6 @@ tablas.crear_tabla_contribuciones()
 # print("Base de datos borrada y tabla recreada al iniciar el bot.")
 tablas.inicializar_dungeons()
 
-resetear_jugador("366690600709521419")
 # eliminar_jugador("366690600709521419")
 # resetear_todos()
 
@@ -48,7 +47,7 @@ async def main():
         await bot.load_extension("commands.craft")    # <- cog de crafting
         await bot.load_extension("commands.contribution")
         await bot.load_extension("commands.ranking")
-        # await bot.load_extension("commands.dungeon")
+        await bot.load_extension("commands.dungeon")
 
         await bot.start(TOKEN)
 

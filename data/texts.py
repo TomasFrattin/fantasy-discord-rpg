@@ -5,6 +5,7 @@ STARTUP_COMMANDS = [
     {"comando": "⚡ /energy", "descripcion": "Mostrar tu energía actual."},
     {"comando": "🎒 /inventory", "descripcion": "Mostrar tu inventario de personaje."},
     {"comando": "🐺 /hunt (⚡)", "descripcion": "Combatir y conseguir items o morir en el intento."},
+    {"comando": "🎣 /fish", "descripcion": "Tirar la caña y probar suerte en el océano."},
     {"comando": "🧾 /profile", "descripcion": "Mostrar tu perfil de personaje."},
     {"comando": "🧺 /forage (⚡)", "descripcion": "Recolectar materiales."},
     {"comando": "😴 /sleep (⚡)", "descripcion": "Recupera vida descansando."},
@@ -141,7 +142,6 @@ MENSAJES_PESCA = [
     "Entre árboles y brisa fresca 🌲, lanzas la caña. Tu pesca durará **{minutos}** minutos. ¡Que encuentres algo especial!"
 ]
 
-
 def mensaje_inicio_pesca(minutos: int) -> str:
     return random.choice(MENSAJES_PESCA).format(minutos=minutos)
 
@@ -177,3 +177,37 @@ ENCUENTRO_VIEJO_PESCADOR = {
         "¿Qué decidís hacer?"
     )
 }
+
+
+DUNGEON_DESCRIPTIONS = {
+    "Cripta Antigua": (
+        "⚰️ **Las paredes de la Cripta Antigua** susurran secretos olvidados. "
+        "Se dice que los **ecos de antiguos rituales** aún resuenan, y los valientes que se adentren "
+        "deben enfrentarse a **guardianes espectrales** y **trampas mortales**. 💀"
+    ),
+    "Abismo del Coloso": (
+        "🪨 Frente al **Abismo del Coloso**, sentirás cómo la tierra **tiembla bajo tus pies**. "
+        "**Gigantes dormidos** y **bestias colosales** custodian tesoros inimaginables. "
+        "Solo los más **fuertes y astutos** sobrevivirán. ⚔️"
+    ),
+    "Santuario del Eclipse": (
+        "🌑 Durante el **eclipse**, el **Santuario del Eclipse** se llena de energía **arcana**. "
+        "**Sombras danzantes** y **enigmas ancestrales** esperan a los aventureros que buscan **poder y conocimiento**. ✨"
+    ),
+    "Trono del Vacío": (
+        "🖤 El **Trono del Vacío** emana una **oscuridad que absorbe la luz y la esperanza**. "
+        "**Criaturas de pesadilla** habitan en su interior, y solo quienes dominen la **valentía y astucia** podrán enfrentarlas. 💀🔥"
+    ),
+    "Trono del Apocalipsis": (
+        "🔥 El **Trono del Apocalipsis** es la **prueba final** de cualquier héroe. "
+        "**Catástrofes**, **demonios** y **desafíos incomparables** aguardan a los que osen acercarse. "
+        "Solo los **legendarios** pueden reclamar sus secretos. 🌟🛡️"
+    ),
+    "default": (
+        "🏰 Una **dungeon misteriosa y peligrosa**, llena de **secretos** y **desafíos** por descubrir. ⚔️"
+    ),
+}
+
+def descripcion_dungeon(dungeon_name):
+    """Devuelve la descripción narrativa de una dungeon por su nombre, con estilo épico y emojis."""
+    return DUNGEON_DESCRIPTIONS.get(dungeon_name, DUNGEON_DESCRIPTIONS["default"])

@@ -66,12 +66,18 @@ async def mostrar_mercader(interaction: Interaction, primera_vez=True):
         ruta_imagen = Path("assets/npcs/merchant.png")
         imagen_final = preparar_imagen_npc(ruta_imagen)
         embed.set_image(url=f"attachment://{Path(imagen_final).name}")
-        await interaction.response.send_message(
-            embed=embed,
-            view=MerchantView(),
-            file=discord.File(imagen_final, filename=Path(imagen_final).name),
-            ephemeral=True
-        )
+        try:
+            await interaction.response.send_message(
+                embed=embed,
+                view=MerchantView(),
+                file=discord.File(imagen_final, filename=Path(imagen_final).name),
+                ephemeral=True
+            )
+        finally:
+            try:
+                Path(imagen_final).unlink(missing_ok=True)
+            except OSError:
+                pass
     else:
         # Mensajes editados, sin imagen
         await interaction.response.edit_message(

@@ -10,6 +10,7 @@ from utils.messages import mensaje_usuario_no_creado, mensaje_sin_energia, mensa
 from utils.helpers import crear_collage
 from services.jugadores import obtener_energia, gastar_energia, obtener_jugador
 from services.acciones import obtener_accion_actual
+from services.recoleccion import agregar_experiencia, recolectar_materiales
 from config import configurar_logging
 
 configurar_logging()
@@ -18,11 +19,8 @@ class ForageCommand(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @app_commands.command(
-        name="forage",
-        description="Gastas 1 energía y recolectás materiales."
-    )
-    async def forage(self, interaction: Interaction):
+    @staticmethod
+    async def run(interaction: Interaction):
         user_id = str(interaction.user.id)
 
         jugador = obtener_jugador(user_id)
@@ -42,7 +40,7 @@ class ForageCommand(commands.Cog):
         logging.info(f"[FORAGE] Usuario {user_id} ({jugador['username']}) gastó 1 energía.")
 
         try:
-            resultados = db.recolectar_materiales(user_id)
+            resultados = recolectar_materiales(user_id)
             if not resultados:
                 return await interaction.response.send_message(
                     "No conseguiste ningún material esta vez.",
@@ -73,7 +71,7 @@ class ForageCommand(commands.Cog):
                 else:
                     exp_total += 45 * cantidad
 
-            nuevo_lvl, exp_restante, niveles_subidos = db.agregar_exp_recoleccion(user_id, exp_total)
+            nuevo_lvl, exp_restante, niveles_subidos = agregar_experiencia(user_id, exp_total)
             # -----------------------------------
 
             embed = Embed(
@@ -124,19 +122,42 @@ class ForageCommand(commands.Cog):
                     rutas_imagenes.append(item["url"])
 
             collage_path = crear_collage(rutas_imagenes)
-            files = []
             if collage_path:
-                files.append(File(collage_path))
-                embed.set_image(url=f"attachment://{os.path.basename(collage_path)}")
+                embed.set_image(url=f"attachment://{collage_path.name}")
             # -----------------------------
 
-            await interaction.response.send_message(embed=embed, files=files)
+            try:
+                if collage_path:
+                    await interaction.response.send_message(
+                        embed=embed,
+                        file=File(collage_path, filename=collage_path.name)
+                    )
+                else:
+                    await interaction.response.send_message(embed=embed)
+            finally:
+                if collage_path:
+                    try:
+                        collage_path.unlink(missing_ok=True)
+                    except OSError:
+                        logging.warning("No se pudo eliminar el collage temporal: %s", collage_path)
 
         except Exception as e:
             print(f"[FORAGE] ERROR: {e}")
             await interaction.response.send_message(
                 "⚠️ Ocurrió un error durante la recolección.", ephemeral=True
             )
+
+    @app_commands.command(
+        name="forage",
+        description="Gastas 1 energía y recolectás materiales."
+    )
+    async def forage(self, interaction: Interaction):
+        await self.run(interaction)
+
+
+async def run_forage(interaction: Interaction):
+    """Punto de entrada reutilizable para el comando y el menú."""
+    await ForageCommand.run(interaction)
 
 
 async def setup(bot):

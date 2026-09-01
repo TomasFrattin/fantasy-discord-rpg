@@ -2,7 +2,11 @@
 from discord import app_commands, Interaction, Embed, ButtonStyle
 from discord.ext import commands
 from discord.ui import View, button, Button
-from utils.messages import mensaje_funcionalidad_en_progreso, mensaje_accion_caducada
+from utils.messages import (
+    mensaje_funcionalidad_en_progreso,
+    mensaje_accion_caducada,
+    mensaje_usuario_no_creado,
+)
 
 # Importar funciones independientes de otros comandos
 from commands.fish import run_fish
@@ -11,41 +15,16 @@ from commands.craft import run_craft
 from commands.sleep import run_sleep
 from commands.profile import run_profile
 from commands.energy import run_energy
+from commands.inventory import run_inventory
+from commands.forage import run_forage
 # Para otros comandos, por ahora usamos un mensaje temporal
 from discord.ui import Modal, TextInput
 
-MIN_PESCA = 1
-MAX_PESCA = 60
 
 class FishModal(Modal):
     def __init__(self):
         super().__init__(title="🎣 Pesca")
-        self.minutos_input = TextInput(
-            label=f"Minutos a pescar ({MIN_PESCA}-{MAX_PESCA})",
-            placeholder="Ej: 10",
-            required=True,
-            max_length=3  # suficiente para 120 minutos
-        )
-        self.add_item(self.minutos_input)
 
-    async def on_submit(self, interaction: Interaction):
-        try:
-            minutos = int(self.minutos_input.value)
-            if minutos < MIN_PESCA or minutos > MAX_PESCA:
-                await interaction.response.send_message(
-                    f"❌ Debés ingresar un número entre {MIN_PESCA} y {MAX_PESCA}.",
-                    ephemeral=True
-                )
-                return
-
-            # Llamada a tu función principal de pesca
-            await run_fish(interaction, minutos)
-
-        except ValueError:
-            await interaction.response.send_message(
-                "❌ Debés ingresar un número válido.",
-                ephemeral=True
-            )
 class MenuView(View):
     """Vista principal del menú de acciones con todos los botones."""
 
@@ -59,11 +38,11 @@ class MenuView(View):
 
     @button(label="Forage 🧺", style=ButtonStyle.primary)
     async def forage_button(self, interaction: Interaction, button: Button):
-        await interaction.response.send_message(embed=mensaje_funcionalidad_en_progreso(), ephemeral=True)
+        await run_forage(interaction)
 
     @button(label="Fish 🎣", style=ButtonStyle.success)
     async def fish_button(self, interaction: Interaction, button: Button):
-        await interaction.response.send_modal(FishModal())
+        await run_fish(interaction)
 
     @button(label="Merchant 🏪", style=ButtonStyle.success)
     async def merchant_button(self, interaction: Interaction, button: Button):
@@ -75,7 +54,13 @@ class MenuView(View):
 
     @button(label="Inventory 🎒", style=ButtonStyle.secondary)
     async def inventory_button(self, interaction: Interaction, button: Button):
-        await interaction.response.send_message(embed=mensaje_funcionalidad_en_progreso(), ephemeral=True)
+        embed = await run_inventory(interaction)
+        if not embed:
+            return await interaction.response.send_message(
+                embed=mensaje_usuario_no_creado(),
+                ephemeral=True,
+            )
+        await interaction.response.send_message(embed=embed, ephemeral=True)
 
     @button(label="Profile 🧾", style=ButtonStyle.secondary)
     async def profile_button(self, interaction: Interaction, button: Button):
@@ -102,6 +87,7 @@ class MenuView(View):
             except:
                 # Puede fallar si el mensaje ya desapareció o era efímero, se ignora
                 pass
+
 class MenuCommand(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
