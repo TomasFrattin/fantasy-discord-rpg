@@ -11,15 +11,6 @@ class MerchantView(View):
     def __init__(self):
         super().__init__(timeout=None)
 
-        # Botones deshabilitados con emojis
-        self.add_item(Button(
-            label="Consumibles",
-            style=ButtonStyle.green,
-            emoji="🧪",
-            custom_id="mercader_consumibles",
-            disabled=True
-        ))
-
         self.add_item(Button(
             label="Objetos",
             style=ButtonStyle.grey,
@@ -50,6 +41,39 @@ class MerchantView(View):
         await interaction.response.edit_message(
             embed=embed,
             view=MerchantToolsView(str(interaction.user.id)),
+            attachments=[]
+        )
+
+    @discord.ui.button(
+        label="🧪 Consumibles",
+        style=ButtonStyle.green,
+        custom_id="mercader_consumibles_menu",
+        row=1
+    )
+    async def consumibles(self, interaction: Interaction, button: Button):
+        from views.merchant_consumables import MerchantConsumablesView
+
+        consumibles = MerchantConsumablesView.obtener_catalogo()
+        if not consumibles:
+            descripcion = "El mercader todavía no tiene consumibles disponibles."
+        else:
+            descripcion = "\n".join(
+                f"🧪 **{item['nombre']}** — {item['descripcion']}"
+                for item in consumibles
+            )
+
+        embed = Embed(
+            title="🧪 Consumibles del Mercader",
+            description=(
+                "Pociones preparadas para los viajeros que se aventuran más allá de las murallas.\n\n"
+                f"{descripcion}\n\n"
+            ),
+            color=0x2ECC71
+        )
+
+        await interaction.response.edit_message(
+            embed=embed,
+            view=MerchantConsumablesView(str(interaction.user.id)),
             attachments=[]
         )
 

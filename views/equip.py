@@ -2,7 +2,7 @@ import discord
 from discord.ui import View, Button
 from utils import db
 import logging
-from services.jugadores import sumar_oro, obtener_jugador
+from services.jugadores import obtener_jugador
 
 # Configuración básica del logging
 logging.basicConfig(level=logging.INFO)
@@ -62,17 +62,36 @@ class EquiparOVender(View):
             logger.error(f"Error equipando item {self.item.get('id')} para {self.user_id}: {e}", exc_info=True)
             await interaction.response.send_message("⚠️ Ocurrió un error al equipar el ítem.", ephemeral=True)
 
+    @discord.ui.button(label="Guardar", style=discord.ButtonStyle.secondary)
+    async def guardar(self, interaction: discord.Interaction, button: Button):
+        if str(interaction.user.id) != self.user_id:
+            return await interaction.response.send_message("No podés usar este menú.", ephemeral=True)
+
+        await interaction.response.edit_message(
+            embed=discord.Embed(
+                title=f"🎒 Guardaste {self.item['nombre']}",
+                description="El objeto quedó disponible en tu inventario.",
+                color=discord.Color.blurple(),
+            ),
+            view=None,
+        )
+
     @discord.ui.button(label="Vender", style=discord.ButtonStyle.danger)
     async def vender(self, interaction: discord.Interaction, button: Button):
         if str(interaction.user.id) != self.user_id:
             return await interaction.response.send_message("No podés usar este menú.", ephemeral=True)
 
         try:
-            oro = self.item.get("valor_oro", 0)
-            sumar_oro(self.user_id, oro)
+            vendido, resultado = db.vender_item(self.user_id, self.item["id"])
+            if not vendido:
+                return await interaction.response.send_message(
+                    f"❌ {resultado}.", ephemeral=True
+                )
+
+            oro = resultado["oro"]
 
             # Embed visual para vender
-            embed = discord.Embed(title=f"💰 Vendiste {self.item['nombre']}", color=discord.Color.gold())
+            embed = discord.Embed(title=f"💰 Vendiste {resultado['nombre']}", color=discord.Color.gold())
             embed.add_field(name="Precio", value=f"{oro} de oro", inline=False)
             embed.set_footer(text="¡Transacción completada!")
 

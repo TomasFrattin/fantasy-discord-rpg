@@ -201,13 +201,22 @@ def crear_tabla_items():
             tipo TEXT,
             descripcion TEXT,
             rareza TEXT,
-            url TEXT
+            url TEXT,
+            valor_oro INTEGER NOT NULL DEFAULT 0
         )
     """)
+
+    cursor.execute("PRAGMA table_info(items)")
+    columnas_items = {columna[1] for columna in cursor.fetchall()}
+    if "valor_oro" not in columnas_items:
+        cursor.execute(
+            "ALTER TABLE items ADD COLUMN valor_oro INTEGER NOT NULL DEFAULT 0"
+        )
 
     catalogos = (
         ("data/materiales.json", "materiales"),
         ("data/equipables.json", "equipables"),
+        ("data/consumibles.json", "consumibles"),
     )
 
     for ruta, clave in catalogos:
@@ -217,14 +226,15 @@ def crear_tabla_items():
         for item in items:
             cursor.execute(
                 """
-                INSERT INTO items (id, nombre, tipo, descripcion, rareza, url)
-                VALUES (?, ?, ?, ?, ?, ?)
+                INSERT INTO items (id, nombre, tipo, descripcion, rareza, url, valor_oro)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
                 ON CONFLICT(id) DO UPDATE SET
                     nombre = excluded.nombre,
                     tipo = excluded.tipo,
                     descripcion = excluded.descripcion,
                     rareza = excluded.rareza,
-                    url = excluded.url
+                    url = excluded.url,
+                    valor_oro = excluded.valor_oro
                 """,
                 (
                     item["id"],
@@ -233,6 +243,7 @@ def crear_tabla_items():
                     item["descripcion"],
                     item["rareza"],
                     item.get("url"),
+                    item.get("valor_oro", 0),
                 ),
             )
 

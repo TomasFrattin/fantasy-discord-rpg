@@ -12,9 +12,10 @@ PECES = json.loads(p.read_text(encoding="utf-8"))["peces"]
 p = Path(__file__).parent / "data" / "mobs.json"
 MOBS = json.loads(p.read_text(encoding="utf-8"))["mobs"]
 
-# PARA LAS POCIONES
-# p = Path(__file__).parent / "data" / "consumibles.json"
-# CONSUMIBLES = json.loads(p.read_text(encoding="utf-8"))["consumibles"]
+# ---------- CONSUMIBLES ----------
+p = Path(__file__).parent / "data" / "consumibles.json"
+CONSUMIBLES = json.loads(p.read_text(encoding="utf-8"))["consumibles"]
+CONSUMIBLES_BY_ID = {item["id"]: item for item in CONSUMIBLES}
 
 p = Path(__file__).parent / "data" / "equipables.json"
 EQUIPABLES = json.loads(p.read_text(encoding="utf-8"))["equipables"]

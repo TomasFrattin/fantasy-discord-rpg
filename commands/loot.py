@@ -116,6 +116,7 @@ class LootCommand(commands.Cog):
         # Elegir ítem por rareza
         item = random.choice(EQUIPABLES_BY_RARITY[tier])
         tipo = item.get("tipo", "otro")
+        db.agregar_item(user_id, item["id"], 1)
 
         # Equipable
         columnas = {

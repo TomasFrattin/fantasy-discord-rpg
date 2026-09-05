@@ -1,51 +1,40 @@
-# commands/profile.py
 import discord
-from discord import app_commands, Interaction, Embed
+from discord import app_commands, Interaction
 from discord.ext import commands
-from utils import db
-from utils.messages import mensaje_usuario_no_creado
+
 from services.jugadores import obtener_jugador
+from utils.estado_jugador import formatear_estado_jugador
+from utils.messages import mensaje_usuario_no_creado
+
 
 async def run_profile(interaction: Interaction):
-    user_id = str(interaction.user.id)
-    
-    row = obtener_jugador(user_id)
+    row = obtener_jugador(str(interaction.user.id))
     if not row:
-        return await interaction.response.send_message(embed=mensaje_usuario_no_creado(), ephemeral=True)
-    
-    # --------------------------
-    # EMBED DEL PERFIL
-    # --------------------------
+        return await interaction.response.send_message(
+            embed=mensaje_usuario_no_creado(), ephemeral=True
+        )
+
     embed = discord.Embed(
         title=f"📜 Perfil de {row['username']}",
-        color=0x1ABC9C
+        color=0x1ABC9C,
     )
-
-    # ----- Vida -----
-    vida_actual = row["vida"]
-    vida_max = row["vida_max"]
 
     embed.add_field(
-        name="❤️ Vida",
-        value=f"**{vida_actual} / {vida_max}**",
-        inline=True
+        name="📊 Estado actual",
+        value=formatear_estado_jugador(row),
+        inline=False,
     )
-
-    # ----- Daño -----
     embed.add_field(
         name="⚔️ Daño",
         value=f"**{row['damage']}**",
-        inline=True
+        inline=True,
     )
-
-    # ----- Afinidad -----
     embed.add_field(
         name="🔮 Afinidad",
         value=f"**{row['afinidad']}**",
-        inline=False
+        inline=True,
     )
 
-    # ----- Progresión -----
     lvl_c = row["lvl_caceria"]
     exp_c = row["exp_caceria"]
     exp_c_needed = int(150 * (lvl_c ** 1.3))
@@ -54,23 +43,19 @@ async def run_profile(interaction: Interaction):
     exp_r = row["exp_recoleccion"]
     exp_r_needed = int(150 * (lvl_r ** 1.3))
 
-    lvl_p = row["lvl_prestigio"]
-
     embed.add_field(
         name="📈 Progresión",
         value=(
             f"🏹 **Cacería**\n"
             f"   Nivel: **{lvl_c}**\n"
             f"   EXP: **{exp_c} / {exp_c_needed}**\n\n"
-
             f"🌿 **Recolección**\n"
             f"   Nivel: **{lvl_r}**\n"
             f"   EXP: **{exp_r} / {exp_r_needed}**\n\n"
-
             f"✨ **Prestigio**\n"
-            f"   Nivel: **{lvl_p}**"
+            f"   Nivel: **{row['lvl_prestigio']}**"
         ),
-        inline=False
+        inline=False,
     )
 
     await interaction.response.send_message(embed=embed)
@@ -83,6 +68,7 @@ class ProfileCommand(commands.Cog):
     @app_commands.command(name="profile", description="Muestra tu perfil de personaje.")
     async def profile(self, interaction: discord.Interaction):
         await run_profile(interaction)
+
 
 async def setup(bot):
     await bot.add_cog(ProfileCommand(bot))

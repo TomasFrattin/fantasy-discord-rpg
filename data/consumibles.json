@@ -1,0 +1,70 @@
+{
+  "consumibles": [
+    {
+      "id": "pocion_vida_menor",
+      "nombre": "Poción de vida menor",
+      "tipo": "consumible",
+      "subtipo": "curacion",
+      "rareza": "comun",
+      "efecto": { "recurso": "vida", "porcentaje": 10 },
+      "valor_oro": 50,
+      "descripcion": "Recupera el 10% de la vida máxima.",
+      "url": "assets/consumibles/pocion_vida_menor.jpg"
+    },
+    {
+      "id": "pocion_vida_mediana",
+      "nombre": "Poción de vida mediana",
+      "tipo": "consumible",
+      "subtipo": "curacion",
+      "rareza": "raro",
+      "efecto": { "recurso": "vida", "porcentaje": 25 },
+      "valor_oro": 100,
+      "descripcion": "Recupera el 25% de la vida máxima.",
+      "url": "assets/consumibles/pocion_vida_mediana.jpg"
+    },
+    {
+      "id": "pocion_vida_mayor",
+      "nombre": "Poción de vida mayor",
+      "tipo": "consumible",
+      "subtipo": "curacion",
+      "rareza": "epico",
+      "efecto": { "recurso": "vida", "porcentaje": 50 },
+      "valor_oro": 200,
+      "descripcion": "Recupera el 50% de la vida máxima.",
+      "url": "assets/consumibles/pocion_vida_mayor.jpg"
+    },
+    {
+      "id": "pocion_vida_grande",
+      "nombre": "Poción de vida suprema",
+      "tipo": "consumible",
+      "subtipo": "curacion",
+      "rareza": "legendario",
+      "efecto": { "recurso": "vida", "porcentaje": 100 },
+      "valor_oro": 400,
+      "descripcion": "Recupera el 100% de la vida máxima.",
+      "url": "assets/consumibles/pocion_vida_grande.jpg"
+    },
+    {
+      "id": "pocion_mana_mediana",
+      "nombre": "Poción de maná mediana",
+      "tipo": "consumible",
+      "subtipo": "recuperacion_energia",
+      "rareza": "raro",
+      "efecto": { "recurso": "energia", "porcentaje": 50 },
+      "valor_oro": 100,
+      "descripcion": "Recupera el 50% de la energía máxima.",
+      "url": "assets/consumibles/pocion_mana_mediana.jpg"
+    },
+    {
+      "id": "pocion_mana_mayor",
+      "nombre": "Poción de maná mayor",
+      "tipo": "consumible",
+      "subtipo": "recuperacion_energia",
+      "rareza": "epico",
+      "efecto": { "recurso": "energia", "porcentaje": 100 },
+      "valor_oro": 250,
+      "descripcion": "Recupera el 100% de la energía máxima.",
+      "url": "assets/consumibles/pocion_mana_mayor.jpg"
+    }
+  ]
+}
