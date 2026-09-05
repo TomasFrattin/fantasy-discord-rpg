@@ -56,7 +56,7 @@ SQLite contiene las tablas `jugadores`, `items`, `inventario`, `fondos`, `contri
 | Recolección | `commands/forage.py` → `services/recoleccion.py` → `utils/db.py` |
 | Cacería | `commands/hunt.py` → `utils/combat_manager.py` / `views/combat.py` → loot |
 | Pesca | `commands/fish.py` → `views/fish.py` y `data/canas.py` |
-| Mercader | `commands/merchant.py` → `views/merchant.py` / `views/merchant_tools.py` |
+| Mercader | `commands/merchant.py` → `views/merchant.py` / `views/merchant_tools.py` / `views/merchant_consumables.py` / `views/merchant_sell.py` |
 | Fondo y ranking | `commands/contribution.py`, `commands/ranking.py`, `services/contribution.py` |
 | Dungeons | `commands/dungeon.py` → `views/dungeon.py` → `services/dungeon_run.py` |
 

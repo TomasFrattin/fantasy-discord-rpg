@@ -1,28 +1,22 @@
-# views/merchant.py
 import random
 from pathlib import Path
-from discord import Embed, Interaction, ButtonStyle
+
 import discord
-from discord.ui import View, Button
-from utils.helpers import preparar_imagen_npc  # tu helper
+from discord import ButtonStyle, Embed, Interaction
+from discord.ui import Button, View
+
 from data.texts import FRASES_MERCADER
+from utils.helpers import preparar_imagen_npc
+
 
 class MerchantView(View):
     def __init__(self):
         super().__init__(timeout=None)
 
-        self.add_item(Button(
-            label="Objetos",
-            style=ButtonStyle.grey,
-            emoji="📦",
-            custom_id="mercader_objetos",
-            disabled=True
-        ))
-
     @discord.ui.button(
         label="🎣 Cañas",
         style=ButtonStyle.blurple,
-        custom_id="mercader_equipo"
+        custom_id="mercader_equipo",
     )
     async def equipo(self, interaction: Interaction, button: Button):
         from views.merchant_tools import MerchantToolsView
@@ -35,72 +29,75 @@ class MerchantView(View):
                 "Sin embargo, la tradición de este mercado es clara: solo puedes llevar **una al siguiente nivel** a la vez. "
                 "Elige sabiamente, y tu próxima caña te será revelada cuando domines la que tienes en mano."
             ),
-            color=0x3498db
+            color=0x3498DB,
         )
-
         view = MerchantToolsView(str(interaction.user.id))
         view.message = interaction.message
-        await interaction.response.edit_message(
-            embed=embed,
-            view=view,
-            attachments=[]
-        )
+        await interaction.response.edit_message(embed=embed, view=view, attachments=[])
 
     @discord.ui.button(
         label="🧪 Consumibles",
         style=ButtonStyle.green,
         custom_id="mercader_consumibles_menu",
-        row=1
+        row=1,
     )
     async def consumibles(self, interaction: Interaction, button: Button):
         from views.merchant_consumables import MerchantConsumablesView
 
         consumibles = MerchantConsumablesView.obtener_catalogo()
-        if not consumibles:
-            descripcion = "El mercader todavía no tiene consumibles disponibles."
-        else:
-            descripcion = "\n".join(
-                f"🧪 **{item['nombre']}** — {item['descripcion']}"
-                for item in consumibles
-            )
-
+        descripcion = "\n".join(
+            f"🧪 **{item['nombre']}** — {item['descripcion']}"
+            for item in consumibles
+        ) or "El mercader todavía no tiene consumibles disponibles."
         embed = Embed(
             title="🧪 Consumibles del Mercader",
             description=(
                 "Pociones preparadas para los viajeros que se aventuran más allá de las murallas.\n\n"
                 f"{descripcion}\n\n"
             ),
-            color=0x2ECC71
+            color=0x2ECC71,
         )
-
         view = MerchantConsumablesView(str(interaction.user.id))
         view.message = interaction.message
+        await interaction.response.edit_message(embed=embed, view=view, attachments=[])
+
+    @discord.ui.button(
+        label="📦 Vender objetos",
+        style=ButtonStyle.danger,
+        custom_id="mercader_vender_objetos",
+        row=2,
+    )
+    async def vender_objetos(self, interaction: Interaction, button: Button):
+        from views.merchant_sell import MerchantSellView
+
+        view = MerchantSellView(str(interaction.user.id))
+        view.message = interaction.message
         await interaction.response.edit_message(
-            embed=embed,
+            embed=Embed(
+                title="📦 Vender objetos",
+                description=(
+                    "Seleccioná un equipable almacenado para venderlo por una unidad.\n"
+                    "La última unidad que tengas equipada no se puede vender."
+                ),
+                color=0xE74C3C,
+            ),
             view=view,
-            attachments=[]
+            attachments=[],
         )
+
 
 async def mostrar_mercader(interaction: Interaction, primera_vez=True):
     frase = random.choice(FRASES_MERCADER)
-    embed = Embed(
-        title="🏪 El Mercader del Pueblo",
-        description=frase,
-        color=0xFFA500
-    )
+    embed = Embed(title="🏪 El Mercader del Pueblo", description=frase, color=0xFFA500)
 
     if primera_vez:
-        # Preparamos imagen solo en el primer mensaje
         ruta_imagen = Path("assets/npcs/merchant.png")
         imagen_final = preparar_imagen_npc(ruta_imagen)
         embed.set_image(url=f"attachment://{Path(imagen_final).name}")
         file = discord.File(imagen_final, filename=Path(imagen_final).name)
         try:
             await interaction.response.send_message(
-                embed=embed,
-                view=MerchantView(),
-                file=file,
-                ephemeral=True
+                embed=embed, view=MerchantView(), file=file, ephemeral=True
             )
         finally:
             file.close()
@@ -109,8 +106,4 @@ async def mostrar_mercader(interaction: Interaction, primera_vez=True):
             except OSError:
                 pass
     else:
-        # Mensajes editados, sin imagen
-        await interaction.response.edit_message(
-            embed=embed,
-            view=MerchantView()
-        )
+        await interaction.response.edit_message(embed=embed, view=MerchantView())

@@ -185,6 +185,28 @@ def obtener_inventario(user_id: str):
                 "tipo": r["tipo"], "rareza": r["rareza"]} for r in rows]
 
 
+def obtener_objetos_vendibles(user_id: str):
+    with get_cursor() as cursor:
+        cursor.execute(
+            """
+            SELECT i.item_id, it.nombre, it.tipo, it.rareza, it.valor_oro,
+                   i.cantidad,
+                   CASE WHEN i.item_id IN (
+                       j.arma_equipada, j.armadura_equipada,
+                       j.casco_equipado, j.botas_equipadas
+                   ) THEN 1 ELSE 0 END AS equipado
+            FROM inventario i
+            JOIN items it ON it.id = i.item_id
+            JOIN jugadores j ON j.user_id = i.user_id
+            WHERE i.user_id = ?
+              AND it.tipo IN ('arma', 'armadura', 'casco', 'botas')
+            ORDER BY it.tipo, it.nombre
+            """,
+            (user_id,),
+        )
+        return [dict(row) for row in cursor.fetchall()]
+
+
 def vender_item(user_id: str, item_id: str):
     """Vende una unidad y evita vender la última unidad actualmente equipada."""
     with get_cursor() as cursor:
