@@ -14,6 +14,7 @@ config/
 # Archivos temporales o de trabajo
 # ---------------------------
 temp_*.png        
+data/temp/
 
 # ---------------------------
 # Archivos de datos de proyecto

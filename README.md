@@ -54,4 +54,4 @@ Al iniciar, el bot crea las tablas faltantes, carga los comandos y sincroniza lo
 
 ## Desarrollo
 
-`data/` contiene la base SQLite y los catálogos JSON. `assets/` contiene imágenes de juego. Las imágenes generadas durante una interacción se escriben temporalmente en `data/temp/` con nombres únicos y se eliminan tras enviarse.
+`data/` contiene la base SQLite y los catálogos JSON. `materiales.json` y `equipables.json` se mantienen separados como fuentes de contenido, pero ambos se sincronizan al catálogo SQLite `items`, que usa el inventario. `assets/` contiene imágenes de juego. Las imágenes generadas durante una interacción se escriben temporalmente en `data/temp/` con nombres únicos y se eliminan tras enviarse.
