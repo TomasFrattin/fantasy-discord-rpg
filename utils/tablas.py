@@ -190,6 +190,7 @@ def crear_tabla_jugadores_nueva():
     conn.close()
 
 def crear_tabla_items():
+    """Crea y sincroniza el catálogo común de materiales y equipables."""
     conn = conectar()
     cursor = conn.cursor()
     
@@ -204,18 +205,36 @@ def crear_tabla_items():
         )
     """)
 
-    # Cargar materiales desde JSON
-    with open("data/materiales.json", "r", encoding="utf-8") as f:
-        data = json.load(f)
+    catalogos = (
+        ("data/materiales.json", "materiales"),
+        ("data/equipables.json", "equipables"),
+    )
 
-    for item in data["materiales"]:
-        cursor.execute(
-            """
-            INSERT OR IGNORE INTO items (id, nombre, tipo, descripcion, rareza, url)
-            VALUES (?, ?, ?, ?, ?, ?)
-            """,
-            (item["id"], item["nombre"], item["tipo"], item["descripcion"], item["rareza"], item.get("url"))
-        )
+    for ruta, clave in catalogos:
+        with open(ruta, "r", encoding="utf-8") as archivo:
+            items = json.load(archivo)[clave]
+
+        for item in items:
+            cursor.execute(
+                """
+                INSERT INTO items (id, nombre, tipo, descripcion, rareza, url)
+                VALUES (?, ?, ?, ?, ?, ?)
+                ON CONFLICT(id) DO UPDATE SET
+                    nombre = excluded.nombre,
+                    tipo = excluded.tipo,
+                    descripcion = excluded.descripcion,
+                    rareza = excluded.rareza,
+                    url = excluded.url
+                """,
+                (
+                    item["id"],
+                    item["nombre"],
+                    item["tipo"],
+                    item["descripcion"],
+                    item["rareza"],
+                    item.get("url"),
+                ),
+            )
 
     conn.commit()
     conn.close()

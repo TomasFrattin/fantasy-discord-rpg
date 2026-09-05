@@ -8,7 +8,6 @@ from utils.combat_manager import create_combat, get_combat, delete_combat, has_c
 from data.texts import DEFEAT_DESCS, ESCAPE_CONFIG
 from utils.messages import mensaje_usuario_no_creado, mensaje_sin_energia, mensaje_accion_en_progreso
 from PIL import Image
-import os
 import asyncio
 from commands.loot import generar_loot_para_usuario
 from data_loader import MOBS
@@ -286,8 +285,8 @@ class HuntCommand(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @app_commands.command(name="hunt", description="Buscar un enemigo para combatir (gasta 1 energía).")
-    async def hunt(self, interaction: Interaction):
+    @staticmethod
+    async def run(interaction: Interaction):
         user_id = str(interaction.user.id)
         jugador = obtener_jugador(user_id)
         if not jugador:
@@ -338,13 +337,27 @@ class HuntCommand(commands.Cog):
         view = HuntView(user_id)
         mob_img_path = preparar_imagen_mob(mob["url"], size=(280,280))
         if mob_img_path:
-            file = discord.File(mob_img_path, filename=os.path.basename(mob_img_path))
-            embed.set_image(url=f"attachment://{os.path.basename(mob_img_path)}")
-            await interaction.response.send_message(embed=embed, view=view, file=file)
-            try: os.remove(mob_img_path)
-            except: pass
+            file = discord.File(mob_img_path, filename=mob_img_path.name)
+            embed.set_image(url=f"attachment://{mob_img_path.name}")
+            try:
+                await interaction.response.send_message(embed=embed, view=view, file=file)
+            finally:
+                file.close()
+                try:
+                    mob_img_path.unlink(missing_ok=True)
+                except OSError:
+                    logging.warning("No se pudo eliminar la imagen temporal: %s", mob_img_path)
         else:
             await interaction.response.send_message(embed=embed, view=view)
+
+    @app_commands.command(name="hunt", description="Buscar un enemigo para combatir (gasta 1 energía).")
+    async def hunt(self, interaction: Interaction):
+        await self.run(interaction)
+
+
+async def run_hunt(interaction: Interaction):
+    """Punto de entrada reutilizable para el comando y el menú."""
+    await HuntCommand.run(interaction)
 
 
 async def setup(bot):

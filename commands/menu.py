@@ -17,6 +17,7 @@ from commands.profile import run_profile
 from commands.energy import run_energy
 from commands.inventory import run_inventory
 from commands.forage import run_forage
+from commands.hunt import run_hunt
 # Para otros comandos, por ahora usamos un mensaje temporal
 from discord.ui import Modal, TextInput
 
@@ -34,7 +35,7 @@ class MenuView(View):
         
     @button(label="Hunt 🐺", style=ButtonStyle.primary)
     async def hunt_button(self, interaction: Interaction, button: Button):
-        await interaction.response.send_message(embed=mensaje_funcionalidad_en_progreso(), ephemeral=True)
+        await run_hunt(interaction)
 
     @button(label="Forage 🧺", style=ButtonStyle.primary)
     async def forage_button(self, interaction: Interaction, button: Button):

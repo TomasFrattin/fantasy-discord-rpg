@@ -136,9 +136,14 @@ async def run_fish(interaction: Interaction):
         if pez_img_path and pez_img_path.exists():
             file = discord.File(pez_img_path, filename=pez_img_path.name)
             embed.set_image(url=f"attachment://{pez_img_path.name}")
-            await interaction.response.send_message(embed=embed, view=view, file=file)
-            try: os.remove(pez_img_path)
-            except: pass
+            try:
+                await interaction.response.send_message(embed=embed, view=view, file=file)
+            finally:
+                file.close()
+                try:
+                    pez_img_path.unlink(missing_ok=True)
+                except OSError:
+                    logging.warning("No se pudo eliminar la imagen temporal: %s", pez_img_path)
         else:
             await interaction.response.send_message(embed=embed, view=view)
 
@@ -172,9 +177,14 @@ async def run_fish(interaction: Interaction):
     if pez_img_path and pez_img_path.exists():
         file = discord.File(pez_img_path, filename=pez_img_path.name)
         embed.set_image(url=f"attachment://{pez_img_path.name}")
-        await interaction.response.send_message(embed=embed, file=file)
-        try: os.remove(pez_img_path)
-        except: pass
+        try:
+            await interaction.response.send_message(embed=embed, file=file)
+        finally:
+            file.close()
+            try:
+                pez_img_path.unlink(missing_ok=True)
+            except OSError:
+                logging.warning("No se pudo eliminar la imagen temporal: %s", pez_img_path)
     else:
         await interaction.response.send_message(embed=embed)
 

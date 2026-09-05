@@ -126,16 +126,20 @@ class ForageCommand(commands.Cog):
                 embed.set_image(url=f"attachment://{collage_path.name}")
             # -----------------------------
 
+            file = None
             try:
                 if collage_path:
+                    file = File(collage_path, filename=collage_path.name)
                     await interaction.response.send_message(
                         embed=embed,
-                        file=File(collage_path, filename=collage_path.name)
+                        file=file
                     )
                 else:
                     await interaction.response.send_message(embed=embed)
             finally:
                 if collage_path:
+                    if file:
+                        file.close()
                     try:
                         collage_path.unlink(missing_ok=True)
                     except OSError:

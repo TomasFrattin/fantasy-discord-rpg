@@ -13,8 +13,8 @@ intents.message_content = True
 bot = commands.Bot(command_prefix=PREFIX, intents=intents)
 
 # ---------- INICIALIZACIÓN DE BASE DE DATOS ----------
-tablas.crear_tabla_inventario()
 tablas.crear_tabla_items()
+tablas.crear_tabla_inventario()
 tablas.crear_tabla_jugadores()
 tablas.crear_tabla_fondos()
 tablas.crear_tabla_contribuciones()
