@@ -77,3 +77,30 @@ def crear_collage(rutas, tamaño_celda=(128, 128), gap=10):
     output_path = ruta_temporal("collage", "recoleccion.png")
     collage.save(output_path)
     return output_path
+def preparar_imagen_equipable(ruta, size=(300, 300)):
+    """Prepara la imagen de un equipable y tolera extensiones desactualizadas."""
+    if not ruta:
+        return None
+
+    ruta = Path(ruta)
+    if not ruta.is_file():
+        ruta = Path("assets/equipables") / ruta.name
+
+    if not ruta.is_file():
+        for extension in (".png", ".jpg", ".jpeg"):
+            alternativa = ruta.with_suffix(extension)
+            if alternativa.is_file():
+                ruta = alternativa
+                break
+
+    if not ruta.is_file():
+        return None
+
+    img = Image.open(ruta).convert("RGBA")
+    img.thumbnail(size, Image.LANCZOS)
+    fondo = Image.new("RGBA", size, (0, 0, 0, 0))
+    offset = ((size[0] - img.width) // 2, (size[1] - img.height) // 2)
+    fondo.paste(img, offset, img)
+    output_path = ruta_temporal("equipable", ruta)
+    fondo.save(output_path)
+    return output_path

@@ -61,6 +61,7 @@ async def run_fish(interaction: Interaction):
         )
         view = PrimeraCanaView(user_id)
         await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
+        view.message = await interaction.original_response()
         try:
             await asyncio.wait_for(view.wait(), timeout=120.0)
         except asyncio.TimeoutError:
@@ -138,6 +139,7 @@ async def run_fish(interaction: Interaction):
             embed.set_image(url=f"attachment://{pez_img_path.name}")
             try:
                 await interaction.response.send_message(embed=embed, view=view, file=file)
+                view.message = await interaction.original_response()
             finally:
                 file.close()
                 try:
@@ -146,6 +148,7 @@ async def run_fish(interaction: Interaction):
                     logging.warning("No se pudo eliminar la imagen temporal: %s", pez_img_path)
         else:
             await interaction.response.send_message(embed=embed, view=view)
+            view.message = await interaction.original_response()
 
         return
 

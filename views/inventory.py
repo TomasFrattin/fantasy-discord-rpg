@@ -1,3 +1,4 @@
+import discord
 from discord import ButtonStyle, Interaction, SelectOption
 from discord.ui import Button, Select, View
 
@@ -78,9 +79,12 @@ class UsarConsumibleButton(Button):
                 f"❌ {resultado}.", ephemeral=True
             )
 
+        view = InventoryView(self.owner_id, "consumible")
+        view.message = interaction.message
+        self.view.stop()
         await interaction.response.edit_message(
             embed=construir_inventario_embed(self.owner_id, "consumible"),
-            view=InventoryView(self.owner_id, "consumible"),
+            view=view,
         )
         await interaction.followup.send(
             f"✅ Usaste **{resultado['nombre']}** y recuperaste "
@@ -181,9 +185,12 @@ class EquiparSeleccionadoButton(Button):
                 f"❌ {resultado}.", ephemeral=True
             )
 
+        view = InventoryView(self.owner_id, "equipamiento")
+        view.message = interaction.message
+        self.view.stop()
         await interaction.response.edit_message(
             embed=construir_inventario_embed(self.owner_id, "equipamiento"),
-            view=InventoryView(self.owner_id, "equipamiento"),
+            view=view,
         )
         await interaction.followup.send(
             f"✅ Equipaste **{resultado['nombre']}**. "
@@ -196,6 +203,7 @@ class InventoryView(View):
     def __init__(self, owner_id: str, categoria="todos"):
         super().__init__(timeout=120)
         self.owner_id = owner_id
+        self.message = None
         self.item_seleccionado = None
         self.usar_button = None
         self.equipar_button = None
@@ -236,6 +244,25 @@ class InventoryView(View):
                 self.equipar_button = EquiparSeleccionadoButton(owner_id)
                 self.add_item(self.equipar_button)
 
+    async def on_timeout(self):
+        for child in self.children:
+            child.disabled = True
+
+        if not self.message:
+            return
+
+        try:
+            await self.message.edit(
+                embed=discord.Embed(
+                    title="⏳ Inventario vencido",
+                    description="Este menú expiró. Usá `/inventory` para abrirlo de nuevo.",
+                    color=0x808080,
+                ),
+                view=self,
+            )
+        except discord.HTTPException:
+            pass
+
     def obtener_jugador_actual(self):
         from services.jugadores import obtener_jugador
         return obtener_jugador(self.owner_id)
@@ -247,9 +274,12 @@ class InventoryView(View):
                     "❌ Este inventario pertenece a otro aventurero.", ephemeral=True
                 )
 
+            view = InventoryView(self.owner_id, categoria)
+            view.message = interaction.message
+            self.stop()
             await interaction.response.edit_message(
                 embed=construir_inventario_embed(self.owner_id, categoria),
-                view=InventoryView(self.owner_id, categoria),
+                view=view,
             )
 
         return callback

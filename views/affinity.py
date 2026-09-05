@@ -19,6 +19,7 @@ class ElegirAfinidad(View):
         super().__init__(timeout=120)
         self.user_id = user_id
         self.seleccion = None
+        self.message = None
 
         for elem in ELEMENTS:
             btn = AfinidadButton(elem["name"], self)
@@ -28,6 +29,19 @@ class ElegirAfinidad(View):
         # Botón Random
         random_btn = RandomAfinidadButton(self)
         self.add_item(random_btn)
+
+    async def on_timeout(self):
+        terminar_accion(self.user_id)
+        for child in self.children:
+            child.disabled = True
+        if self.message:
+            try:
+                await self.message.edit(
+                    content="⏳ La elección de afinidad venció. Podés volver a usar `/start`.",
+                    view=self,
+                )
+            except discord.HTTPException:
+                pass
 
 class RandomAfinidadButton(Button):
     def __init__(self, view_obj):
@@ -51,6 +65,7 @@ class RandomAfinidadButton(Button):
 
         # Liberar el lock
         terminar_accion(self.view_obj.user_id)
+        self.view_obj.stop()
 
         await interaction.response.edit_message(
             content=f"🎲 Afinidad seleccionada automáticamente: **{afinidad_random}**.",
@@ -83,6 +98,8 @@ class AfinidadButton(Button):
         self.view_obj.seleccion = self.afinidad
 
         confirm_view = ConfirmarAfinidad(self.afinidad, self.view_obj.user_id)
+        confirm_view.message = interaction.message
+        self.view_obj.stop()
 
         await interaction.response.edit_message(
             content=f"{emoji} Elegiste **{self.afinidad}**.\n¿Confirmás tu afinidad? *No se podrá cambiar.*",
@@ -95,6 +112,20 @@ class ConfirmarAfinidad(View):
         super().__init__(timeout=30)
         self.afinidad = afinidad
         self.user_id = user_id
+        self.message = None
+
+    async def on_timeout(self):
+        terminar_accion(self.user_id)
+        for child in self.children:
+            child.disabled = True
+        if self.message:
+            try:
+                await self.message.edit(
+                    content="⏳ La confirmación de afinidad venció. Podés volver a usar `/start`.",
+                    view=self,
+                )
+            except discord.HTTPException:
+                pass
 
     @discord.ui.button(label="Confirmar", style=discord.ButtonStyle.success)
     async def confirmar(self, interaction: discord.Interaction, button: Button):
@@ -109,6 +140,7 @@ class ConfirmarAfinidad(View):
 
         # Liberar el lock
         terminar_accion(self.user_id)
+        self.stop()
 
         await interaction.response.edit_message(
             content="✅ Afinidad confirmada.",
@@ -131,6 +163,8 @@ class ConfirmarAfinidad(View):
 
         # Volver a elegir, pero se mantiene la acción bloqueada (sigue en curso)
         nueva_view = ElegirAfinidad(self.user_id)
+        nueva_view.message = interaction.message
+        self.stop()
 
         await interaction.response.edit_message(
             content="🔁 Volvé a elegir tu afinidad:",

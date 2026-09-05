@@ -11,6 +11,23 @@ class PrimeraCanaView(View):
         super().__init__(timeout=120)  # 2 minutos de timeout
         self.user_id = user_id
         self.interacted = False
+        self.message = None
+
+    async def on_timeout(self):
+        for child in self.children:
+            child.disabled = True
+        if self.message:
+            try:
+                await self.message.edit(
+                    embed=Embed(
+                        title="⏳ Decisión vencida",
+                        description="No elegiste una caña a tiempo. Podés volver a usar `/fish` cuando quieras.",
+                        color=Color.grey(),
+                    ),
+                    view=self,
+                )
+            except discord.HTTPException:
+                pass
 
     @discord.ui.button(label="Aceptar la caña rústica", style=ButtonStyle.success)
     async def aceptar(self, interaction: discord.Interaction, button: Button):
@@ -32,7 +49,7 @@ class PrimeraCanaView(View):
             color=Color.green()
         )
 
-        await interaction.response.send_message(embed=embed, ephemeral=True)
+        await interaction.response.edit_message(embed=embed, view=None)
         self.stop()
 
     @discord.ui.button(label="Darle algo de oro (10)", style=ButtonStyle.primary)
@@ -58,7 +75,7 @@ class PrimeraCanaView(View):
                 ),
                 color=Color.green()
             )
-            await interaction.response.send_message(embed=embed, ephemeral=True)
+            await interaction.response.edit_message(embed=embed, view=None)
             self.stop()
         else:
             await interaction.response.send_message(
@@ -80,6 +97,6 @@ class PrimeraCanaView(View):
             ),          
             color=Color.red()
         )
-        await interaction.response.send_message(embed=embed, ephemeral=True)
+        await interaction.response.edit_message(embed=embed, view=None)
         self.stop()
 

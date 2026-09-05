@@ -27,6 +27,21 @@ class CombatView(View):
         """Se ejecuta cuando la vista expira sin interacción."""
         logging.warning(f"[COMBAT] Vista de CombatView expiró para usuario {self.user_id}. Limpiando combate.")
         delete_combat(self.user_id)
+        for child in self.children:
+            child.disabled = True
+
+        if self.message:
+            try:
+                await self.message.edit(
+                    embed=Embed(
+                        title="⏳ Combate vencido",
+                        description="No hubo interacción a tiempo. El combate terminó.",
+                        color=0x808080,
+                    ),
+                    view=self,
+                )
+            except discord.HTTPException:
+                logging.info("No se pudo actualizar el combate vencido para %s", self.user_id)
 
     @button(label="Atacar", style=ButtonStyle.primary)
     async def atacar(self, interaction: Interaction, button: Button):
@@ -104,6 +119,7 @@ class CombatView(View):
             desc = random.choice(DEFEAT_DESCS)
             embed.add_field(name="🪦 Derrota", value=desc, inline=False)
             await interaction.response.edit_message(embed=embed, view=None, attachments=[])
+            self.stop()
             return
 
         # --- Victoria ---
@@ -134,6 +150,7 @@ class CombatView(View):
 
             delete_combat(self.user_id)
             await interaction.response.edit_message(embed=embed, view=None, attachments=[])
+            self.stop()
             return
 
         # Continuar combate
@@ -165,3 +182,4 @@ class CombatView(View):
             delete_combat(self.user_id)
 
         await interaction.response.edit_message(embed=embed, view=None, attachments=[])
+        self.stop()

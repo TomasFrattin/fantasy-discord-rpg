@@ -39,6 +39,7 @@ class StartCommand(commands.Cog):
             view=view,
             ephemeral=True
         )
+        view.message = await interaction.original_response()
 
 async def setup(bot):
     await bot.add_cog(StartCommand(bot))

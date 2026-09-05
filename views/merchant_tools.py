@@ -56,8 +56,25 @@ class CanaButton(Button):
 
 
 class MerchantToolsView(View):
+    async def on_timeout(self):
+        for child in self.children:
+            child.disabled = True
+        if self.message:
+            try:
+                await self.message.edit(
+                    embed=Embed(
+                        title="⏳ Mercader cerrado",
+                        description="La sección de cañas venció. Volvé a abrir el mercader cuando quieras.",
+                        color=0x808080,
+                    ),
+                    view=self,
+                )
+            except discord.HTTPException:
+                pass
+
     def __init__(self, user_id: str):
         super().__init__(timeout=60)
+        self.message = None
 
         jugador = obtener_jugador(user_id)
         cana_actual = jugador["cana_equipada"]

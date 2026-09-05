@@ -62,11 +62,13 @@ class MenuView(View):
                 ephemeral=True,
             )
         from views.inventory import InventoryView
+        view = InventoryView(str(interaction.user.id))
         await interaction.response.send_message(
             embed=embed,
-            view=InventoryView(str(interaction.user.id)),
+            view=view,
             ephemeral=True,
         )
+        view.message = await interaction.original_response()
 
     @button(label="Profile 🧾", style=ButtonStyle.secondary)
     async def profile_button(self, interaction: Interaction, button: Button):

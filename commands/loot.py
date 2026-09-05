@@ -8,6 +8,7 @@ from utils import db
 from data_loader import EQUIPABLES, EQUIPABLES_BY_ID
 from views.equip import EquiparOVender
 from services.jugadores import obtener_energia, gastar_energia, obtener_jugador
+from utils.helpers import preparar_imagen_equipable
 
 RARITY_COLORS = {
     "comun": 0xB0B0B0,
@@ -172,7 +173,7 @@ class LootCommand(commands.Cog):
                 )
 
             view = EquiparOVender(user_id, item, slot_col=columna_equipo)
-            return await interaction.response.send_message(embed=embed, view=view)
+            return await _enviar_loot(interaction, embed, view, item)
 
 
         # --------------------------
@@ -205,7 +206,33 @@ class LootCommand(commands.Cog):
             )
 
         view = EquiparOVender(user_id, item, slot_col=columna_equipo)
-        await interaction.response.send_message(embed=embed, view=view)
+        await _enviar_loot(interaction, embed, view, item)
+
+
+async def _enviar_loot(interaction, embed, view, item, followup=False):
+    imagen = preparar_imagen_equipable(item.get("url"))
+    if imagen and imagen.exists():
+        file = discord.File(imagen, filename=imagen.name)
+        embed.set_image(url=f"attachment://{imagen.name}")
+        try:
+            if followup:
+                view.message = await interaction.followup.send(
+                    embed=embed, view=view, file=file, ephemeral=True, wait=True
+                )
+            else:
+                await interaction.response.send_message(embed=embed, view=view, file=file)
+                view.message = await interaction.original_response()
+        finally:
+            file.close()
+            imagen.unlink(missing_ok=True)
+    else:
+        if followup:
+            view.message = await interaction.followup.send(
+                embed=embed, view=view, ephemeral=True, wait=True
+            )
+        else:
+            await interaction.response.send_message(embed=embed, view=view)
+            view.message = await interaction.original_response()
 
 def generar_loot_para_usuario(user_id, mob=None):
     jugador = obtener_jugador(user_id)
@@ -303,9 +330,11 @@ def generar_loot_para_usuario(user_id, mob=None):
     view = EquiparOVender(user_id, item, slot_col=columna_equipo)
     db.agregar_item(user_id, item["id"], 1)
 
+    imagen = preparar_imagen_equipable(item.get("url"))
+
     # Devolver también la experiencia que otorga el mob
     mob_exp = mob.get("mob_exp", 0) if mob else 0
-    return embed, view, mob_exp
+    return embed, view, mob_exp, imagen
 
 
 async def setup(bot):

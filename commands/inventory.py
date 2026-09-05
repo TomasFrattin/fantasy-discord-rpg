@@ -124,11 +124,13 @@ class InventoryCommand(commands.Cog):
             )
 
         from views.inventory import InventoryView
+        view = InventoryView(str(interaction.user.id))
         await interaction.response.send_message(
             embed=embed,
-            view=InventoryView(str(interaction.user.id)),
+            view=view,
             ephemeral=True,
         )
+        view.message = await interaction.original_response()
 
 
 async def setup(bot):

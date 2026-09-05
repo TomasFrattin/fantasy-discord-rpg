@@ -19,6 +19,26 @@ class EquiparOVender(View):
         self.item = item
         self.slot_col = slot_col
 
+    async def on_timeout(self):
+        for child in self.children:
+            child.disabled = True
+
+        if not self.message:
+            return
+
+        embed = discord.Embed(
+            title="⏳ Decisión de loot vencida",
+            description=(
+                f"**{self.item['nombre']}** quedó guardado automáticamente en tu inventario.\n"
+                "Podés administrarlo desde `/inventory`."
+            ),
+            color=discord.Color.orange(),
+        )
+        try:
+            await self.message.edit(embed=embed, view=self)
+        except discord.HTTPException:
+            logger.info("No se pudo actualizar el loot vencido para %s", self.user_id)
+
     @discord.ui.button(label="Equipar", style=discord.ButtonStyle.success)
     async def equipar(self, interaction: discord.Interaction, button: Button):
         if str(interaction.user.id) != self.user_id:
@@ -56,6 +76,7 @@ class EquiparOVender(View):
 
             embed.set_footer(text="¡Equipado con éxito!")
             await interaction.response.edit_message(embed=embed, view=None)
+            self.stop()
 
 
         except Exception as e:
@@ -75,6 +96,7 @@ class EquiparOVender(View):
             ),
             view=None,
         )
+        self.stop()
 
     @discord.ui.button(label="Vender", style=discord.ButtonStyle.danger)
     async def vender(self, interaction: discord.Interaction, button: Button):
@@ -96,6 +118,7 @@ class EquiparOVender(View):
             embed.set_footer(text="¡Transacción completada!")
 
             await interaction.response.edit_message(embed=embed, view=None)
+            self.stop()
 
         except Exception as e:
             logger.error(f"Error vendiendo item {self.item.get('id')} para {self.user_id}: {e}", exc_info=True)

@@ -70,6 +70,24 @@ class HuntView(View):
         """Se ejecuta cuando la vista expira sin interacción."""
         logging.warning(f"[HUNT] Vista de HuntView expiró para usuario {self.user_id}. Limpiando combate.")
         delete_combat(self.user_id)
+        for child in self.children:
+            child.disabled = True
+
+        if self.message:
+            try:
+                await self.message.edit(
+                    embed=Embed(
+                        title="⏳ Combate vencido",
+                        description=(
+                            "No hubo interacción a tiempo. El enemigo escapó y el hunt terminó.\n"
+                            "La energía utilizada no se devuelve."
+                        ),
+                        color=0x808080,
+                    ),
+                    view=self,
+                )
+            except discord.HTTPException:
+                logging.info("No se pudo actualizar el hunt vencido para %s", self.user_id)
 
     @button(label="Atacar", style=ButtonStyle.primary)
     async def atacar(self, interaction: Interaction, button: Button):
@@ -150,6 +168,7 @@ class HuntView(View):
             embed.add_field(name="🪦 Derrota",
                             value=f"{desc}\n\nPerdiste todo tu oro y estás exhausto 😓", inline=False)
             await interaction.response.edit_message(embed=embed, view=None, attachments=[])
+            self.stop()
             return
 
         # --- Victoria ---
@@ -184,12 +203,30 @@ class HuntView(View):
                     )
                     
             await interaction.response.edit_message(embed=embed, view=None, attachments=[])
+            self.stop()
 
-            loot_embed, loot_view, mob_exp = generar_loot_para_usuario(self.user_id, combate)
+            loot_embed, loot_view, mob_exp, loot_image_path = generar_loot_para_usuario(self.user_id, combate)
 
             delete_combat(self.user_id)
 
-            await interaction.followup.send(embed=loot_embed, view=loot_view, ephemeral=True)
+            if loot_image_path and loot_image_path.exists():
+                loot_file = discord.File(loot_image_path, filename=loot_image_path.name)
+                loot_embed.set_image(url=f"attachment://{loot_image_path.name}")
+                try:
+                    loot_view.message = await interaction.followup.send(
+                        embed=loot_embed,
+                        view=loot_view,
+                        file=loot_file,
+                        ephemeral=True,
+                        wait=True,
+                    )
+                finally:
+                    loot_file.close()
+                    loot_image_path.unlink(missing_ok=True)
+            else:
+                loot_view.message = await interaction.followup.send(
+                    embed=loot_embed, view=loot_view, ephemeral=True, wait=True
+                )
             return
 
         # Continuar combate
@@ -222,6 +259,7 @@ class HuntView(View):
                 inline=False
             )
             await interaction.response.edit_message(embed=embed, view=None, attachments=[])
+            self.stop()
             return
 
         # Falló el escape: el mob ataca automáticamente
@@ -341,6 +379,7 @@ class HuntCommand(commands.Cog):
             embed.set_image(url=f"attachment://{mob_img_path.name}")
             try:
                 await interaction.response.send_message(embed=embed, view=view, file=file)
+                view.message = await interaction.original_response()
             finally:
                 file.close()
                 try:
@@ -349,6 +388,7 @@ class HuntCommand(commands.Cog):
                     logging.warning("No se pudo eliminar la imagen temporal: %s", mob_img_path)
         else:
             await interaction.response.send_message(embed=embed, view=view)
+            view.message = await interaction.original_response()
 
     @app_commands.command(name="hunt", description="Buscar un enemigo para combatir (gasta 1 energía).")
     async def hunt(self, interaction: Interaction):

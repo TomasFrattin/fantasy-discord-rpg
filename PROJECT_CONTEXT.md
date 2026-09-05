@@ -62,13 +62,13 @@ SQLite contiene las tablas `jugadores`, `items`, `inventario`, `fondos`, `contri
 
 ## Recursos temporales
 
-`utils/helpers.py` genera PNGs únicos en `data/temp/` para mobs, peces, NPCs y collages. El código que los adjunta debe cerrar `discord.File` y borrar el PNG en `finally`. `data/temp/` está ignorado por Git.
+`utils/helpers.py` genera PNGs únicos en `data/temp/` para mobs, peces, NPCs, equipables y collages. El código que los adjunta debe cerrar `discord.File` y borrar el PNG en `finally`. `data/temp/` está ignorado por Git.
 
 ## Tareas y estados
 
 `tasks/tasks.py` ejecuta `reset_diario` cada minuto y aplica el reset cuando el reloj local marca 20:00. El comentario histórico menciona medianoche, pero el comportamiento real es 20:00.
 
-Los estados de acción y cooldown viven en `jugadores.accion_actual` y `jugadores.accion_fin`; el combate activo también mantiene estado temporal en memoria mediante `utils/combat_manager.py`.
+Los estados de acción y cooldown viven en `jugadores.accion_actual` y `jugadores.accion_fin`; el combate activo también mantiene estado temporal en memoria mediante `utils/combat_manager.py`. Las vistas temporales deben deshabilitar sus componentes y editar el mensaje al vencer, aplicando la consecuencia específica del flujo.
 
 ## Navegación rápida para nuevas features
 

@@ -41,6 +41,7 @@ class MerchantConsumablesView(View):
     def __init__(self, owner_id: str):
         super().__init__(timeout=60)
         self.owner_id = owner_id
+        self.message = None
 
         for item in obtener_consumibles():
             self.add_item(ConsumibleButton(item, owner_id))
@@ -53,6 +54,22 @@ class MerchantConsumablesView(View):
         volver.callback = self.volver_callback
         self.add_item(volver)
 
+    async def on_timeout(self):
+        for child in self.children:
+            child.disabled = True
+        if self.message:
+            try:
+                await self.message.edit(
+                    embed=discord.Embed(
+                        title="⏳ Mercader cerrado",
+                        description="La sección de consumibles venció. Volvé a abrir el mercader cuando quieras.",
+                        color=0x808080,
+                    ),
+                    view=self,
+                )
+            except discord.HTTPException:
+                pass
+
     async def volver_callback(self, interaction: Interaction):
         if str(interaction.user.id) != self.owner_id:
             return await interaction.response.send_message(
@@ -61,6 +78,7 @@ class MerchantConsumablesView(View):
 
         from views.merchant import MerchantView
 
+        self.stop()
         await interaction.response.edit_message(
             embed=Embed(
                 title="🏪 El Mercader del Pueblo",

@@ -38,9 +38,11 @@ class MerchantView(View):
             color=0x3498db
         )
 
+        view = MerchantToolsView(str(interaction.user.id))
+        view.message = interaction.message
         await interaction.response.edit_message(
             embed=embed,
-            view=MerchantToolsView(str(interaction.user.id)),
+            view=view,
             attachments=[]
         )
 
@@ -71,9 +73,11 @@ class MerchantView(View):
             color=0x2ECC71
         )
 
+        view = MerchantConsumablesView(str(interaction.user.id))
+        view.message = interaction.message
         await interaction.response.edit_message(
             embed=embed,
-            view=MerchantConsumablesView(str(interaction.user.id)),
+            view=view,
             attachments=[]
         )
 

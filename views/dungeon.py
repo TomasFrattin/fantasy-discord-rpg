@@ -61,6 +61,22 @@ class DungeonSelectView(View):
         cancelar_btn.callback = self.cancelar_callback  # callback manual
         self.add_item(cancelar_btn)
 
+    async def on_timeout(self):
+        for child in self.children:
+            child.disabled = True
+        if self.message:
+            try:
+                await self.message.edit(
+                    embed=Embed(
+                        title="⏳ Selección de dungeon vencida",
+                        description="No se eligió una dungeon a tiempo. Podés iniciar otra con `/dungeon`.",
+                        color=0x808080,
+                    ),
+                    view=self,
+                )
+            except discord.HTTPException:
+                pass
+
     async def cancelar_callback(self, interaction: discord.Interaction):
         if str(interaction.user.id) != self.leader_id:
             return await interaction.response.send_message(
@@ -97,6 +113,7 @@ class DungeonButton(Button):
 
         # Crear la dungeon real
         view = DungeonView(leader_id=self.leader_id, dungeon_id=self.dungeon_id)
+        self.stop()
 
         nombre_afinidad = view.run.jugadores[0]['afinidad']  # Ej: "Fuego"
         emoji_afinidad = AFINIDAD_EMOJI.get(nombre_afinidad, "")
