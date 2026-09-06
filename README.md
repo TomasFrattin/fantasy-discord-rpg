@@ -33,7 +33,10 @@ Crear un archivo `.env` en la raíz del proyecto:
 DISCORD_TOKEN=tu_token_del_bot
 DB_FILE=data/arkanor.db
 PREFIX=!
+EVENTOS_MODO_PRUEBA=1
 ```
+
+`EVENTOS_MODO_PRUEBA=1` activa temporalmente eventos frecuentes, de duración corta y con recompensas garantizadas para probarlos. Usá `0` para el comportamiento normal.
 
 El token es secreto: no debe compartirse ni subirse a Git. La base SQLite guarda el progreso de los jugadores; hacer una copia de `data/arkanor.db` antes de cambios importantes.
 

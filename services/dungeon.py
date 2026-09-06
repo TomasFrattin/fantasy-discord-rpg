@@ -3,6 +3,19 @@ from contextlib import contextmanager
 from config import DB_FILE
 import random
 
+
+LLAVES_POR_DUNGEON = {
+    1: "llave_cripta_antigua",
+    2: "llave_abismo_coloso",
+    3: "llave_santuario_eclipse",
+    4: "llave_trono_vacio",
+    5: "llave_trono_apocalipsis",
+}
+
+
+def obtener_llave_dungeon(dungeon_id):
+    return LLAVES_POR_DUNGEON.get(int(dungeon_id))
+
 def conectar():
     conn = sqlite3.connect(DB_FILE)
     conn.row_factory = sqlite3.Row

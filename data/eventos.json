@@ -1,0 +1,49 @@
+{
+  "items": [
+    {
+      "id": "llave_cripta_antigua",
+      "nombre": "Llave de la Cripta Antigua",
+      "tipo": "llave",
+      "rareza": "comun",
+      "descripcion": "Una llave fría y oxidada, marcada con el símbolo de la primera mazmorra.",
+      "valor_oro": 0,
+      "url": "assets/items/llave_cripta_antigua.jpg"
+    },
+    {
+      "id": "llave_abismo_coloso",
+      "nombre": "Llave del Abismo del Coloso",
+      "tipo": "llave",
+      "rareza": "poco_comun",
+      "descripcion": "Una llave pesada que vibra con una fuerza profunda y antigua.",
+      "valor_oro": 0,
+      "url": "assets/items/llave_abismo_coloso.jpg"
+    },
+    {
+      "id": "llave_santuario_eclipse",
+      "nombre": "Llave del Santuario del Eclipse",
+      "tipo": "llave",
+      "rareza": "raro",
+      "descripcion": "Una llave oscura, atravesada por un reflejo que no parece venir de este mundo.",
+      "valor_oro": 0,
+      "url": "assets/items/llave_santuario_eclipse.jpg"
+    },
+    {
+      "id": "llave_trono_vacio",
+      "nombre": "Llave del Trono del Vacío",
+      "tipo": "llave",
+      "rareza": "epico",
+      "descripcion": "Una llave sin cerradura visible, tallada en una materia que absorbe la luz.",
+      "valor_oro": 0,
+      "url": "assets/items/llave_trono_vacio.jpg"
+    },
+    {
+      "id": "llave_trono_apocalipsis",
+      "nombre": "Llave del Trono del Apocalipsis",
+      "tipo": "llave",
+      "rareza": "legendario",
+      "descripcion": "Una llave imposible de sostener por mucho tiempo; algo al otro lado parece reconocerla.",
+      "valor_oro": 0,
+      "url": "assets/items/llave_trono_apocalipsis.jpg"
+    }
+  ]
+}

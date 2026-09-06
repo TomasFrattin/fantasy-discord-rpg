@@ -217,6 +217,7 @@ def crear_tabla_items():
         ("data/materiales.json", "materiales"),
         ("data/equipables.json", "equipables"),
         ("data/consumibles.json", "consumibles"),
+        ("data/eventos.json", "items"),
     )
 
     for ruta, clave in catalogos:
@@ -260,6 +261,31 @@ def crear_tabla_inventario():
             cantidad INTEGER NOT NULL DEFAULT 0,
             PRIMARY KEY (user_id, item_id),
             FOREIGN KEY (item_id) REFERENCES items(id) ON DELETE CASCADE
+        )
+    """)
+    conn.commit()
+    conn.close()
+
+def crear_tablas_eventos():
+    conn = conectar()
+    cursor = conn.cursor()
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS eventos_instancias (
+            instance_id TEXT PRIMARY KEY,
+            event_id TEXT NOT NULL,
+            started_at INTEGER NOT NULL,
+            ends_at INTEGER NOT NULL,
+            status TEXT NOT NULL DEFAULT 'active'
+        )
+    """)
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS eventos_recompensas (
+            instance_id TEXT NOT NULL,
+            user_id TEXT NOT NULL,
+            item_id TEXT NOT NULL,
+            obtained_at INTEGER NOT NULL,
+            PRIMARY KEY (instance_id, user_id, item_id),
+            FOREIGN KEY (instance_id) REFERENCES eventos_instancias(instance_id)
         )
     """)
     conn.commit()

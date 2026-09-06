@@ -3,7 +3,8 @@ from discord.ui import View, Button
 from discord import Embed, ButtonStyle
 from services.jugadores import obtener_jugador, sumar_oro
 from services.dungeon_run import DungeonRun
-from services.dungeon import obtener_dungeon, obtener_lista_dungeons
+from services.dungeon import obtener_dungeon, obtener_lista_dungeons, obtener_llave_dungeon
+from utils import db
 from views.affinity import ELEMENTS
 from data.texts import descripcion_dungeon
 
@@ -111,9 +112,25 @@ class DungeonButton(Button):
                 "❌ Solo el líder puede elegir la dungeon.", ephemeral=True
             )
 
+        llave_id = obtener_llave_dungeon(self.dungeon_id)
+        if not db.tiene_item(self.leader_id, llave_id):
+            llave = db.obtener_item_por_id(llave_id)
+            return await interaction.response.send_message(
+                embed=Embed(
+                    title="🔒 La entrada está sellada",
+                    description=(
+                        f"Para formar una expedición a **{obtener_dungeon(self.dungeon_id)['nombre']}**, "
+                        f"necesitás una **{llave['nombre']}**.\n\n"
+                        "La llave no se consume hasta que la expedición comienza."
+                    ),
+                    color=0xC0392B,
+                ),
+                ephemeral=True,
+            )
+
         # Crear la dungeon real
         view = DungeonView(leader_id=self.leader_id, dungeon_id=self.dungeon_id)
-        self.stop()
+        self.view.stop()
 
         nombre_afinidad = view.run.jugadores[0]['afinidad']  # Ej: "Fuego"
         emoji_afinidad = AFINIDAD_EMOJI.get(nombre_afinidad, "")
@@ -179,8 +196,17 @@ class DungeonView(View):
         if not jugador:
             return await interaction.response.send_message("❌ No estás registrado.", ephemeral=True)
 
-        # if jugador["llaves"] < 1:
-        #     return await interaction.response.send_message("❌ No tenés llave para entrar a la dungeon.", ephemeral=True)
+        llave_id = obtener_llave_dungeon(self.dungeon_id)
+        llave = db.obtener_item_por_id(llave_id)
+        if not db.tiene_item(user_id, llave_id):
+            return await interaction.response.send_message(
+                embed=Embed(
+                    title="🔒 No podés unirte todavía",
+                    description=f"Necesitás una **{llave['nombre']}** para participar en esta expedición.",
+                    color=0xC0392B,
+                ),
+                ephemeral=True,
+            )
 
         if len(self.run.jugadores) >= self.MAX_JUGADORES:
             return await interaction.response.send_message("❌ La dungeon ya está llena.", ephemeral=True)
@@ -223,6 +249,36 @@ class DungeonView(View):
         await self.message.edit(embed=embed, view=self)
         await interaction.response.send_message(f"✅ {jugador['username']} se unió a la dungeon.", ephemeral=True)
 
+    @discord.ui.button(label="Salir", style=ButtonStyle.secondary)
+    async def salir(self, interaction: discord.Interaction, button: Button):
+        user_id = str(interaction.user.id)
+        if user_id == self.leader_id:
+            return await interaction.response.send_message(
+                "❌ El líder no puede salir del lobby. Puede cancelarlo.", ephemeral=True
+            )
+        if user_id not in self.jugadores_ids:
+            return await interaction.response.send_message("❌ No estás dentro de esta dungeon.", ephemeral=True)
+
+        self.jugadores_ids.remove(user_id)
+        self.run.jugadores = [j for j in self.run.jugadores if str(j["user_id"]) != user_id]
+        jugadores_nombres = [
+            f"{j['username']} {AFINIDAD_EMOJI.get(j['afinidad'], '')}"
+            for j in self.run.jugadores
+        ]
+        embed = Embed(
+            title=f"🗝️ Dungeon: {self.dungeon['nombre']}",
+            description=(
+                f"{descripcion_dungeon(self.dungeon['nombre'])}\n\n"
+                f"🔑 **Llave requerida:** {db.obtener_item_por_id(obtener_llave_dungeon(self.dungeon_id))['nombre']}\n\n"
+                f"👑 **Líder:** {jugadores_nombres[0]}\n"
+                f"🧑‍🤝‍🧑 **Jugadores unidos ({len(jugadores_nombres)-1}):** {', '.join(jugadores_nombres[1:]) or 'Ninguno'}\n\n"
+                "🗝️ Las llaves se consumen únicamente al comenzar."
+            ),
+            color=0xFFD700,
+        )
+        await self.message.edit(embed=embed, view=self)
+        await interaction.response.send_message("✅ Saliste de la expedición. Tu llave no fue consumida.", ephemeral=True)
+
     # ---------------------------
     # Botón Comenzar
     # ---------------------------
@@ -231,6 +287,23 @@ class DungeonView(View):
         user_id = str(interaction.user.id)
         if user_id != self.leader_id:
             return await interaction.response.send_message("❌ Solo el líder puede comenzar la dungeon.", ephemeral=True)
+
+        llave_id = obtener_llave_dungeon(self.dungeon_id)
+        nombres_por_id = {str(j["user_id"]): j["username"] for j in self.run.jugadores}
+        consumidas, faltantes = db.consumir_item_por_usuario(nombres_por_id, llave_id)
+        if not consumidas:
+            nombres_faltantes = ", ".join(nombres_por_id[user_id] for user_id in faltantes)
+            return await interaction.response.send_message(
+                embed=Embed(
+                    title="🔒 La expedición no puede comenzar",
+                    description=(
+                        f"Falta la llave de **{nombres_faltantes}**.\n\n"
+                        "Cada integrante necesita aportar su propia llave específica."
+                    ),
+                    color=0xC0392B,
+                ),
+                ephemeral=True,
+            )
 
         resultado = self.run.resolver_combate()
         jugadores_nombres = ", ".join([j["username"] for j in self.run.jugadores])

@@ -28,7 +28,7 @@ La base no se elimina en cada arranque. Las inserciones de catálogo y dungeons 
 | `utils/` | Acceso SQLite, creación de tablas, mensajes, locks, combate e imágenes. |
 | `data/` | Base SQLite y catálogos JSON. |
 | `assets/` | Imágenes de mobs, peces, NPCs, materiales y equipo. |
-| `tasks/` | Loops programados. |
+| `tasks/` | Loops programados y activación de eventos globales. |
 
 ## Comandos publicados
 
@@ -56,9 +56,10 @@ SQLite contiene las tablas `jugadores`, `items`, `inventario`, `fondos`, `contri
 | Recolección | `commands/forage.py` → `services/recoleccion.py` → `utils/db.py` |
 | Cacería | `commands/hunt.py` → `utils/combat_manager.py` / `views/combat.py` → loot |
 | Pesca | `commands/fish.py` → `views/fish.py` y `data/canas.py` |
+| Eventos globales | `services/eventos.py` → `tasks/tasks.py` y hooks de cada actividad |
 | Mercader | `commands/merchant.py` → `views/merchant.py` / `views/merchant_tools.py` / `views/merchant_consumables.py` / `views/merchant_sell.py` |
 | Fondo y ranking | `commands/contribution.py`, `commands/ranking.py`, `services/contribution.py` |
-| Dungeons | `commands/dungeon.py` → `views/dungeon.py` → `services/dungeon_run.py` |
+| Dungeons | `commands/dungeon.py` → `views/dungeon.py` → `services/dungeon.py` / `services/dungeon_run.py` |
 
 ## Recursos temporales
 
@@ -82,4 +83,6 @@ Los estados de acción y cooldown viven en `jugadores.accion_actual` y `jugadore
 
 - Crafting está publicado pero aún es un mensaje de funcionalidad futura.
 - Unificar y simplificar los mecanismos de acciones, locks y cooldowns es una mejora pendiente.
+- El sistema de eventos globales está preparado para efectos por actividad; actualmente `Marea de los Abismos` se integra con pesca y entrega llaves persistentes por instancia.
+- Cada dungeon requiere su llave específica; el lobby valida la llave de cada jugador y la consume atómicamente al comenzar la expedición.
 - Los nombres de slash commands tienen mezcla histórica de inglés y español; no renombrarlos sin un plan de transición.

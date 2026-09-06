@@ -80,6 +80,82 @@ def agregar_item(user_id: str, item_id: str, cantidad: int = 1):
             (user_id, item_id, cantidad, cantidad)
         )
 
+def tiene_item(user_id: str, item_id: str, cantidad: int = 1):
+    with get_cursor() as cursor:
+        cursor.execute(
+            "SELECT cantidad FROM inventario WHERE user_id = ? AND item_id = ?",
+            (user_id, item_id),
+        )
+        fila = cursor.fetchone()
+        return bool(fila and fila["cantidad"] >= cantidad)
+
+def consumir_item_por_usuario(user_ids, item_id: str):
+    """Consume una unidad por usuario; si falta alguna, no consume ninguna."""
+    user_ids = list(dict.fromkeys(str(user_id) for user_id in user_ids))
+    with get_cursor() as cursor:
+        faltantes = []
+        for user_id in user_ids:
+            cursor.execute(
+                "SELECT cantidad FROM inventario WHERE user_id = ? AND item_id = ?",
+                (user_id, item_id),
+            )
+            fila = cursor.fetchone()
+            if not fila or fila["cantidad"] < 1:
+                faltantes.append(user_id)
+
+        if faltantes:
+            return False, faltantes
+
+        for user_id in user_ids:
+            cursor.execute(
+                "UPDATE inventario SET cantidad = cantidad - 1 WHERE user_id = ? AND item_id = ?",
+                (user_id, item_id),
+            )
+            cursor.execute(
+                "DELETE FROM inventario WHERE user_id = ? AND item_id = ? AND cantidad <= 0",
+                (user_id, item_id),
+            )
+    return True, []
+
+def obtener_evento_activo(event_id=None):
+    with get_cursor() as cursor:
+        if event_id:
+            cursor.execute("SELECT * FROM eventos_instancias WHERE status = 'active' AND event_id = ? ORDER BY started_at DESC LIMIT 1", (event_id,))
+        else:
+            cursor.execute("SELECT * FROM eventos_instancias WHERE status = 'active' ORDER BY started_at DESC LIMIT 1")
+        return cursor.fetchone()
+
+def obtener_ultimo_evento(event_id):
+    with get_cursor() as cursor:
+        cursor.execute("SELECT * FROM eventos_instancias WHERE event_id = ? ORDER BY started_at DESC LIMIT 1", (event_id,))
+        return cursor.fetchone()
+
+def crear_evento(instance_id, event_id, started_at, ends_at):
+    with get_cursor() as cursor:
+        cursor.execute("INSERT INTO eventos_instancias (instance_id, event_id, started_at, ends_at) VALUES (?, ?, ?, ?)", (instance_id, event_id, started_at, ends_at))
+
+def finalizar_evento(instance_id, ended_at):
+    with get_cursor() as cursor:
+        cursor.execute("UPDATE eventos_instancias SET status = 'ended', ends_at = MIN(ends_at, ?) WHERE instance_id = ?", (ended_at, instance_id))
+
+def usuario_obtuvo_recompensa_evento(instance_id, user_id, item_id):
+    with get_cursor() as cursor:
+        cursor.execute("SELECT 1 FROM eventos_recompensas WHERE instance_id = ? AND user_id = ? AND item_id = ?", (instance_id, user_id, item_id))
+        return cursor.fetchone() is not None
+
+def registrar_recompensa_evento(instance_id, user_id, item_id):
+    with get_cursor() as cursor:
+        try:
+            cursor.execute("INSERT INTO eventos_recompensas (instance_id, user_id, item_id, obtained_at) VALUES (?, ?, ?, strftime('%s', 'now'))", (instance_id, user_id, item_id))
+        except Exception:
+            return False
+        cursor.execute(
+            "INSERT INTO inventario (user_id, item_id, cantidad) VALUES (?, ?, 1) "
+            "ON CONFLICT(user_id, item_id) DO UPDATE SET cantidad = cantidad + 1",
+            (user_id, item_id),
+        )
+        return True
+
 
 def comprar_item(user_id: str, item_id: str, cantidad: int = 1):
     """Compra un consumible y entrega la cantidad de forma atómica."""
@@ -434,7 +510,7 @@ def obtener_item_por_id(item_id):
     cursor = conn.cursor()
 
     cursor.execute(
-        "SELECT id, nombre, rareza, url FROM items WHERE id = ?",
+        "SELECT id, nombre, rareza, descripcion, url FROM items WHERE id = ?",
         (item_id,)
     )
     

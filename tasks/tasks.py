@@ -2,6 +2,7 @@
 import datetime
 from discord.ext import tasks
 from services.jugadores import resetear_todos
+from services.eventos import procesar_eventos
 
 # ---------- Tasks ----------
 
@@ -25,3 +26,9 @@ def start_all(bot):
     """
     if not reset_diario.is_running():
         reset_diario.start()
+    if not eventos_globales.is_running():
+        eventos_globales.start(bot)
+
+@tasks.loop(minutes=1)
+async def eventos_globales(bot):
+    await procesar_eventos(bot)

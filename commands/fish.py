@@ -12,12 +12,13 @@ from data.texts import ENCUENTRO_VIEJO_PESCADOR
 from services.jugadores import obtener_jugador, sumar_oro
 from services.acciones import actualizar_accion, actualizar_accion_fin
 from views.fish import PrimeraCanaView
-from utils.helpers import preparar_imagen_pez
+from utils.helpers import preparar_imagen_pez, preparar_imagen_equipable
 from data.canas import CANAS
 from config import configurar_logging
 import logging 
 from views.combat import CombatView
 from utils.combat_manager import create_combat
+from services.eventos import intentar_recompensa_pesca
 
 configurar_logging()
 
@@ -100,6 +101,35 @@ async def run_fish(interaction: Interaction):
 
     pez = elegir_pez_por_peso(peces_disponibles)
     cana = CANAS[jugador["cana_equipada"]]
+
+    llave = intentar_recompensa_pesca(user_id, cana["tier"])
+    if llave:
+        actualizar_accion_fin(user_id, now + COOLDOWN_PESCA)
+        embed = Embed(
+            title="🌊 ¡La Marea de los Abismos te respondió!",
+            description=(
+                f"Tu **{cana['nombre']}** arrastra algo mucho más pesado que un pez.\n\n"
+                f"🗝️ Encontraste **{llave['nombre']}**.\n"
+                f"_{llave['descripcion']}_\n\n"
+                "La llave quedó guardada en tu inventario."
+            ),
+            color=0x1ABC9C,
+        )
+        llave_img_path = preparar_imagen_equipable(llave["url"], size=(280, 280))
+        if llave_img_path and llave_img_path.exists():
+            file = discord.File(llave_img_path, filename=llave_img_path.name)
+            embed.set_image(url=f"attachment://{llave_img_path.name}")
+            try:
+                await interaction.response.send_message(embed=embed, file=file)
+            finally:
+                file.close()
+                try:
+                    llave_img_path.unlink(missing_ok=True)
+                except OSError:
+                    logging.warning("No se pudo eliminar la imagen temporal de la llave: %s", llave_img_path)
+        else:
+            await interaction.response.send_message(embed=embed)
+        return
 
     if pez.get("hostil", False):
         actualizar_accion_fin(user_id, now + COOLDOWN_PESCA)

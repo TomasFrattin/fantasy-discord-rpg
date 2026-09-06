@@ -14,6 +14,44 @@ STARTUP_COMMANDS = [
     {"comando": "🪙 /contribution", "descripcion": "Aporta una cantidad de oro a las mejoras del reino."}
 ]
 
+MAREA_ABISMOS_INICIO = [
+    (
+        "🌊 **Las aguas de Arkanor han cambiado.** La marea se retira más allá de lo posible y deja al descubierto sombras que ninguna costa debería conocer.\n\n"
+        "🌑 Desde el fondo del océano llega un rugido antiguo; algo ha despertado bajo las olas y está llamando a quienes se atrevan a lanzar sus anzuelos."
+    ),
+    (
+        "🔱 **Una corriente oscura atraviesa el muelle.** La luna se tiñe de rojo y el mar comienza a girar alrededor de las embarcaciones como si obedeciera a una voluntad perdida.\n\n"
+        "✨ Los abismos han abierto sus ojos. Durante un tiempo, tesoros olvidados y secretos sellados pueden subir desde las profundidades."
+    ),
+    (
+        "🌕 **La noche acaba de recibir una señal del océano.** Bajo el reflejo de la luna, siluetas gigantescas se mueven en las profundidades y las aguas brillan con una luz azulada.\n\n"
+        "⚓ La Marea de los Abismos ha comenzado. Quienes pesquen durante este presagio podrían encontrar algo mucho más valioso que un pez."
+    ),
+    (
+        "🌊 **El océano ruge contra las costas de Arkanor.** Las olas traen consigo ecos de ruinas hundidas, cadenas rotas y nombres que el tiempo había borrado.\n\n"
+        "🗝️ La frontera entre el mundo conocido y las profundidades se ha debilitado. El mar ahora puede devolver aquello que jamás debió perderse."
+    ),
+]
+
+MAREA_ABISMOS_FIN = [
+    (
+        "🌘 **El rugido bajo las aguas se apaga poco a poco**, y las sombras vuelven a hundirse detrás de una cortina de espuma.\n\n"
+        "⚓ El mar recupera su calma, pero nadie en el muelle podrá olvidar lo que vio esta noche."
+    ),
+    (
+        "🌊 **Las aguas oscuras han vuelto a su cauce.** La corriente imposible se deshace y la luz de la luna deja de temblar sobre la superficie.\n\n"
+        "🔒 Los abismos vuelven a cerrar sus puertas... por ahora."
+    ),
+    (
+        "🌑 **El llamado de las profundidades ha cesado.** Una última luz azul se hunde en el océano y desaparece entre las ruinas sumergidas.\n\n"
+        "🗝️ La Marea de los Abismos terminó, pero algunos secretos ya encontraron el camino hasta la superficie."
+    ),
+    (
+        "🕯️ **La noche vuelve a pertenecer a los vivos.** Las olas dejan de golpear con furia y las criaturas de las profundidades se alejan del alcance de los pescadores.\n\n"
+        "🌊 El presagio ha terminado. El océano guarda silencio una vez más."
+    ),
+]
+
 
 # - `/menu`: Crea un menu con las acciones disponibles.
 
